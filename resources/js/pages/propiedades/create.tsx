@@ -63,7 +63,7 @@ export default function PropiedadCreate({
                                     id="tipo"
                                     name="tipo"
                                     required
-                                    className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+                                    className="h-9 rounded-md border border-input bg-background px-3 text-sm"
                                 >
                                     {tipos.map((tipo) => (
                                         <option
@@ -105,7 +105,7 @@ export default function PropiedadCreate({
                                     id="unidad_medida"
                                     name="unidad_medida"
                                     required
-                                    className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+                                    className="h-9 rounded-md border border-input bg-background px-3 text-sm"
                                 >
                                     {unidadesMedida.map((unidad) => (
                                         <option
@@ -139,7 +139,7 @@ export default function PropiedadCreate({
                                     id="moneda"
                                     name="moneda"
                                     required
-                                    className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+                                    className="h-9 rounded-md border border-input bg-background px-3 text-sm"
                                 >
                                     {monedas.map((moneda) => (
                                         <option
@@ -161,7 +161,7 @@ export default function PropiedadCreate({
                                     id="forma_pago"
                                     name="forma_pago"
                                     required
-                                    className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+                                    className="h-9 rounded-md border border-input bg-background px-3 text-sm"
                                 >
                                     {formasPago.map((forma) => (
                                         <option
@@ -184,7 +184,7 @@ export default function PropiedadCreate({
                                 id="condicion_legal"
                                 name="condicion_legal"
                                 defaultValue=""
-                                className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+                                className="h-9 rounded-md border border-input bg-background px-3 text-sm"
                             >
                                 <option value="">Sin especificar</option>
                                 {condicionesLegales.map((condicion) => (
@@ -265,6 +265,11 @@ export default function PropiedadCreate({
                                 className="text-sm"
                             />
                             <InputError message={errors.fotos} />
+                            {Object.entries(errors)
+                                .filter(([key]) => key.startsWith('fotos.'))
+                                .map(([key, message]) => (
+                                    <InputError key={key} message={message} />
+                                ))}
 
                             {previews.length > 0 && (
                                 <div className="flex flex-wrap gap-2">

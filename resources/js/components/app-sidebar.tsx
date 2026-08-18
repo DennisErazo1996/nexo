@@ -1,5 +1,11 @@
 import { Link } from '@inertiajs/react';
-import { Building2, LayoutGrid, UserRound, Users } from 'lucide-react';
+import {
+    Building2,
+    LayoutGrid,
+    Sparkles,
+    UserRound,
+    Users,
+} from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -14,6 +20,7 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { index as indexClientes } from '@/routes/clientes';
+import { index as indexCoincidencias } from '@/routes/coincidencias';
 import { edit as editEquipo } from '@/routes/equipo';
 import { index as indexPropiedades } from '@/routes/propiedades';
 import type { NavItem } from '@/types';
@@ -33,6 +40,11 @@ const mainNavItems: NavItem[] = [
         title: 'Propiedades',
         href: indexPropiedades(),
         icon: Building2,
+    },
+    {
+        title: 'Coincidencias',
+        href: indexCoincidencias(),
+        icon: Sparkles,
     },
     {
         title: 'Equipo',

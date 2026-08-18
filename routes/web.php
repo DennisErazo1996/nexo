@@ -12,3 +12,4 @@ require __DIR__.'/settings.php';
 require __DIR__.'/equipo.php';
 require __DIR__.'/clientes.php';
 require __DIR__.'/propiedades.php';
+require __DIR__.'/coincidencias.php';

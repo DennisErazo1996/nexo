@@ -114,7 +114,7 @@ export default function EquipoEdit({
                                                     onChange={(event) =>
                                                         event.target.form?.requestSubmit()
                                                     }
-                                                    className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+                                                    className="h-9 rounded-md border border-input bg-background px-3 text-sm"
                                                 >
                                                     <option value="agente">
                                                         Agente

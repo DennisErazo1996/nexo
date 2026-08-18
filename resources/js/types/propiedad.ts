@@ -20,7 +20,7 @@ export type PropiedadAgente = {
     id: number;
     agente_id: number;
     porcentaje_comision: string | null;
-    agente?: { id: number; name: string };
+    agente?: { id: number; name: string; telefono: string | null };
 };
 
 export type Propiedad = {

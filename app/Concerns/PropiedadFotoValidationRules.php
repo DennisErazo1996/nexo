@@ -23,6 +23,6 @@ trait PropiedadFotoValidationRules
      */
     protected function fotoRules(): array
     {
-        return ['image', 'max:5120'];
+        return ['image', 'max:10240'];
     }
 }

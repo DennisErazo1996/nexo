@@ -4,6 +4,9 @@ use App\Http\Controllers\Propiedad\PropiedadController;
 use App\Http\Controllers\PropiedadFoto\PropiedadFotoController;
 use Illuminate\Support\Facades\Route;
 
+Route::pattern('propiedad', '[0-9]+');
+Route::pattern('foto', '[0-9]+');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('propiedades', [PropiedadController::class, 'index'])->name('propiedades.index');
     Route::get('propiedades/nueva', [PropiedadController::class, 'create'])->name('propiedades.create');

@@ -50,7 +50,7 @@ export default function ClienteShow({ cliente, etiquetas, estados }: Props) {
                                 onChange={(event) =>
                                     event.target.form?.requestSubmit()
                                 }
-                                className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+                                className="h-9 rounded-md border border-input bg-background px-3 text-sm"
                             >
                                 {estados.map((estado) => (
                                     <option
@@ -94,7 +94,7 @@ export default function ClienteShow({ cliente, etiquetas, estados }: Props) {
                                                     id="etiqueta_id"
                                                     name="etiqueta_id"
                                                     required
-                                                    className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+                                                    className="h-9 rounded-md border border-input bg-background px-3 text-sm"
                                                 >
                                                     {etiquetas.map(
                                                         (etiqueta) => (

@@ -64,7 +64,7 @@ export default function PropiedadesIndex({
                                 estado: event.target.value || undefined,
                             })
                         }
-                        className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+                        className="h-9 rounded-md border border-input bg-background px-3 text-sm"
                     >
                         <option value="">Todos los estados</option>
                         {estados.map((estado) => (
@@ -81,7 +81,7 @@ export default function PropiedadesIndex({
                                 tipo: event.target.value || undefined,
                             })
                         }
-                        className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+                        className="h-9 rounded-md border border-input bg-background px-3 text-sm"
                     >
                         <option value="">Todos los tipos</option>
                         {tipos.map((tipo) => (

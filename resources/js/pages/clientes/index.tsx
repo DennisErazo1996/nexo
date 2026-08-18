@@ -60,7 +60,7 @@ export default function ClientesIndex({ clientes, filters, estados }: Props) {
                                     EstadoCliente | undefined,
                             })
                         }
-                        className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+                        className="h-9 rounded-md border border-input bg-background px-3 text-sm"
                     >
                         <option value="">Todos los estados</option>
                         {estados.map((estado) => (

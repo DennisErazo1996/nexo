@@ -46,4 +46,16 @@ class StorePropiedadRequest extends FormRequest
             'fotos.*' => $this->fotoRules(),
         ];
     }
+
+    /**
+     * Get custom attributes for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'fotos.*' => __('foto'),
+        ];
+    }
 }

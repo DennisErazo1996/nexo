@@ -1,19 +1,59 @@
 import { Form, Head } from '@inertiajs/react';
+import { useState } from 'react';
 import PropiedadController from '@/actions/App/Http/Controllers/Propiedad/PropiedadController';
 import PropiedadFotoController from '@/actions/App/Http/Controllers/PropiedadFoto/PropiedadFotoController';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { buildTextoCompartir } from '@/lib/texto-compartir';
 import { index } from '@/routes/propiedades';
+import type { Coincidencia } from '@/types/coincidencia';
 import type { EnumOption, Propiedad } from '@/types/propiedad';
 
 type Props = {
     propiedad: Propiedad;
+    coincidencias: Coincidencia[];
     estados: EnumOption[];
+    tipos: EnumOption[];
+    unidadesMedida: EnumOption[];
+    monedas: EnumOption[];
+    formasPago: EnumOption[];
+    condicionesLegales: EnumOption[];
 };
 
-export default function PropiedadShow({ propiedad, estados }: Props) {
+export default function PropiedadShow({
+    propiedad,
+    coincidencias,
+    estados,
+    tipos,
+    unidadesMedida,
+    monedas,
+    formasPago,
+    condicionesLegales,
+}: Props) {
+    const [textoCompartir, setTextoCompartir] = useState<string | null>(null);
+
+    function generarTextoCompartir() {
+        setTextoCompartir(
+            buildTextoCompartir(
+                propiedad,
+                tipos,
+                unidadesMedida,
+                monedas,
+                formasPago,
+                condicionesLegales,
+            ),
+        );
+    }
+
+    function copiarTextoCompartir() {
+        if (textoCompartir) {
+            void navigator.clipboard.writeText(textoCompartir);
+        }
+    }
+
     return (
         <>
             <Head title={`${propiedad.tipo} — ${propiedad.zona}`} />
@@ -37,7 +77,7 @@ export default function PropiedadShow({ propiedad, estados }: Props) {
                                 onChange={(event) =>
                                     event.target.form?.requestSubmit()
                                 }
-                                className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+                                className="h-9 rounded-md border border-input bg-background px-3 text-sm"
                             >
                                 {estados.map((estado) => (
                                     <option
@@ -105,6 +145,55 @@ export default function PropiedadShow({ propiedad, estados }: Props) {
                         </ul>
                     </div>
                 )}
+
+                {coincidencias.length > 0 && (
+                    <div className="space-y-2">
+                        <h3 className="text-base font-medium">
+                            Clientes potenciales
+                        </h3>
+                        <ul className="text-sm">
+                            {coincidencias.map((coincidencia) => (
+                                <li
+                                    key={coincidencia.id}
+                                    className="flex items-center gap-2"
+                                >
+                                    <span>{coincidencia.cliente?.nombre}</span>
+                                    <Badge variant="secondary">
+                                        {coincidencia.estado}
+                                    </Badge>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
+                <div className="space-y-2">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={generarTextoCompartir}
+                    >
+                        Generar texto para compartir
+                    </Button>
+
+                    {textoCompartir && (
+                        <div className="grid gap-2">
+                            <Textarea
+                                readOnly
+                                rows={10}
+                                value={textoCompartir}
+                            />
+                            <Button
+                                type="button"
+                                size="sm"
+                                className="w-fit"
+                                onClick={copiarTextoCompartir}
+                            >
+                                Copiar
+                            </Button>
+                        </div>
+                    )}
+                </div>
 
                 <div className="space-y-4">
                     <h3 className="text-base font-medium">Fotos</h3>

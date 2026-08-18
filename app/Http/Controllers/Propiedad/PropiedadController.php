@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Propiedad;
 
+use App\Actions\Coincidencia\GenerarCoincidencias;
 use App\Actions\PropiedadFoto\ProcesarFoto;
 use App\Enums\CondicionLegal;
 use App\Enums\EstadoPropiedad;
@@ -12,6 +13,7 @@ use App\Enums\UnidadMedida;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Propiedad\StorePropiedadRequest;
 use App\Http\Requests\Propiedad\UpdateEstadoPropiedadRequest;
+use App\Models\Coincidencia;
 use App\Models\EtiquetaInteres;
 use App\Models\Propiedad;
 use Illuminate\Http\RedirectResponse;
@@ -62,7 +64,7 @@ class PropiedadController extends Controller
     /**
      * Create the propiedad along with its etiquetas, co-listers, and fotos.
      */
-    public function store(StorePropiedadRequest $request, ProcesarFoto $procesarFoto): RedirectResponse
+    public function store(StorePropiedadRequest $request, ProcesarFoto $procesarFoto, GenerarCoincidencias $generarCoincidencias): RedirectResponse
     {
         $propiedad = DB::transaction(function () use ($request, $procesarFoto) {
             $propiedad = Propiedad::create($request->safe()->except(['etiquetas', 'agentes', 'fotos']));
@@ -91,34 +93,53 @@ class PropiedadController extends Controller
             return $propiedad;
         });
 
+        $generarCoincidencias->paraPropiedad($propiedad);
+
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Propiedad creada.')]);
 
         return to_route('propiedades.show', $propiedad);
     }
 
     /**
-     * Show a propiedad's detail: fotos, etiquetas, and co-listers.
+     * Show a propiedad's detail: fotos, etiquetas, co-listers, and matched clientes.
      */
     public function show(Propiedad $propiedad): Response
     {
         $propiedad->load([
             'fotos',
             'etiquetas.etiqueta:id,nombre',
-            'agentes.agente:id,name',
+            'agentes.agente:id,name,telefono',
         ]);
+
+        $coincidencias = Coincidencia::with('cliente:id,nombre,telefono')
+            ->where('propiedad_id', $propiedad->id)
+            ->get();
 
         return Inertia::render('propiedades/show', [
             'propiedad' => $propiedad,
+            'coincidencias' => $coincidencias,
             'estados' => $this->options(EstadoPropiedad::cases()),
+            'tipos' => $this->options(TipoPropiedad::cases()),
+            'unidadesMedida' => $this->options(UnidadMedida::cases()),
+            'monedas' => $this->options(Moneda::cases()),
+            'formasPago' => $this->options(FormaPago::cases()),
+            'condicionesLegales' => $this->options(CondicionLegal::cases()),
         ]);
     }
 
     /**
-     * Update a propiedad's estado.
+     * Update a propiedad's estado, regenerating coincidencias if it becomes disponible again.
      */
-    public function updateEstado(UpdateEstadoPropiedadRequest $request, Propiedad $propiedad): RedirectResponse
+    public function updateEstado(UpdateEstadoPropiedadRequest $request, Propiedad $propiedad, GenerarCoincidencias $generarCoincidencias): RedirectResponse
     {
+        $estabaDisponible = $propiedad->estado === EstadoPropiedad::Disponible;
+        $estadoNuevo = EstadoPropiedad::from($request->validated('estado'));
+
         $propiedad->update($request->validated());
+
+        if (! $estabaDisponible && $estadoNuevo === EstadoPropiedad::Disponible) {
+            $generarCoincidencias->paraPropiedad($propiedad);
+        }
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Estado actualizado.')]);
 

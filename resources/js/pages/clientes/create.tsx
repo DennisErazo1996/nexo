@@ -81,7 +81,7 @@ export default function ClienteCreate({ step, telefono, etiquetas }: Props) {
                                         id="etiqueta_id"
                                         name="etiqueta_id"
                                         required
-                                        className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+                                        className="h-9 rounded-md border border-input bg-background px-3 text-sm"
                                     >
                                         {etiquetas.map((etiqueta) => (
                                             <option
