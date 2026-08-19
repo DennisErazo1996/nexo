@@ -1,6 +1,7 @@
 import { Form, Head } from '@inertiajs/react';
 import ClienteController from '@/actions/App/Http/Controllers/Cliente/ClienteController';
 import ClienteInteresController from '@/actions/App/Http/Controllers/ClienteInteres/ClienteInteresController';
+import CoincidenciaController from '@/actions/App/Http/Controllers/Coincidencia/CoincidenciaController';
 import NotaSeguimientoController from '@/actions/App/Http/Controllers/NotaSeguimiento/NotaSeguimientoController';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
@@ -19,14 +20,21 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { index } from '@/routes/clientes';
 import type { Cliente, EstadoOption, EtiquetaInteres } from '@/types/cliente';
+import type { Coincidencia } from '@/types/coincidencia';
 
 type Props = {
     cliente: Cliente;
+    coincidencias: Coincidencia[];
     etiquetas: EtiquetaInteres[];
     estados: EstadoOption[];
 };
 
-export default function ClienteShow({ cliente, etiquetas, estados }: Props) {
+export default function ClienteShow({
+    cliente,
+    coincidencias,
+    etiquetas,
+    estados,
+}: Props) {
     return (
         <>
             <Head title={cliente.nombre} />
@@ -195,6 +203,24 @@ export default function ClienteShow({ cliente, etiquetas, estados }: Props) {
                                         {interes.presupuesto_max ?? '?'}
                                     </span>
                                 )}
+                                <Form
+                                    {...ClienteInteresController.destroy.form(
+                                        [cliente.id, interes.id],
+                                    )}
+                                    options={{ preserveScroll: true }}
+                                    className="ml-auto"
+                                >
+                                    {({ processing }) => (
+                                        <Button
+                                            type="submit"
+                                            size="sm"
+                                            variant="ghost"
+                                            disabled={processing}
+                                        >
+                                            Eliminar
+                                        </Button>
+                                    )}
+                                </Form>
                             </div>
                         ))}
                         {cliente.intereses?.length === 0 && (
@@ -204,6 +230,50 @@ export default function ClienteShow({ cliente, etiquetas, estados }: Props) {
                         )}
                     </div>
                 </div>
+
+                {coincidencias.length > 0 && (
+                    <div className="space-y-2">
+                        <h3 className="text-base font-medium">
+                            Propiedades potenciales
+                        </h3>
+                        <ul className="text-sm">
+                            {coincidencias.map((coincidencia) => (
+                                <li
+                                    key={coincidencia.id}
+                                    className="flex items-center gap-2"
+                                >
+                                    <span>
+                                        {coincidencia.propiedad?.tipo} en{' '}
+                                        {coincidencia.propiedad?.zona} —{' '}
+                                        {coincidencia.propiedad?.moneda}{' '}
+                                        {coincidencia.propiedad?.precio}
+                                    </span>
+                                    <Badge variant="secondary">
+                                        {coincidencia.estado}
+                                    </Badge>
+                                    <Form
+                                        {...CoincidenciaController.destroy.form(
+                                            coincidencia.id,
+                                        )}
+                                        options={{ preserveScroll: true }}
+                                        className="ml-auto"
+                                    >
+                                        {({ processing }) => (
+                                            <Button
+                                                type="submit"
+                                                size="sm"
+                                                variant="ghost"
+                                                disabled={processing}
+                                            >
+                                                Eliminar
+                                            </Button>
+                                        )}
+                                    </Form>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
 
                 <div className="space-y-4">
                     <h3 className="text-base font-medium">

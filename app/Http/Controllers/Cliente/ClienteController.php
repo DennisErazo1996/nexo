@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Cliente;
 
+use App\Actions\Coincidencia\GenerarCoincidencias;
 use App\Enums\EstadoCliente;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Cliente\BuscarClienteRequest;
 use App\Http\Requests\Cliente\StoreClienteRequest;
 use App\Http\Requests\Cliente\UpdateEstadoClienteRequest;
 use App\Models\Cliente;
+use App\Models\Coincidencia;
 use App\Models\EtiquetaInteres;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -91,16 +93,16 @@ class ClienteController extends Controller
     /**
      * Create the cliente along with its first interest.
      */
-    public function store(StoreClienteRequest $request): RedirectResponse
+    public function store(StoreClienteRequest $request, GenerarCoincidencias $generarCoincidencias): RedirectResponse
     {
-        $cliente = DB::transaction(function () use ($request) {
+        [$cliente, $interes] = DB::transaction(function () use ($request) {
             $cliente = Cliente::create([
                 'nombre' => $request->validated('nombre'),
                 'telefono' => $request->validated('telefono'),
                 'agente_registro_id' => $request->user()->id,
             ]);
 
-            $cliente->intereses()->create([
+            $interes = $cliente->intereses()->create([
                 'etiqueta_id' => $request->validated('etiqueta_id'),
                 'zona' => $request->validated('zona'),
                 'presupuesto_min' => $request->validated('presupuesto_min'),
@@ -108,8 +110,10 @@ class ClienteController extends Controller
                 'agente_id' => $request->user()->id,
             ]);
 
-            return $cliente;
+            return [$cliente, $interes];
         });
+
+        $generarCoincidencias->paraInteres($interes);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Cliente creado.')]);
 
@@ -129,8 +133,13 @@ class ClienteController extends Controller
         ]);
         $cliente->setRelation('notas', $cliente->notas->sortByDesc('created_at')->values());
 
+        $coincidencias = Coincidencia::with('propiedad:id,tipo,zona,precio,moneda')
+            ->where('cliente_id', $cliente->id)
+            ->get();
+
         return Inertia::render('clientes/show', [
             'cliente' => $cliente,
+            'coincidencias' => $coincidencias,
             'etiquetas' => EtiquetaInteres::orderBy('nombre')->get(['id', 'nombre']),
             'estados' => $this->estadosOptions(),
         ]);

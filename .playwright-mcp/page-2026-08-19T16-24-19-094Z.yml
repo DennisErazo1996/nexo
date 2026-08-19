@@ -1,0 +1,110 @@
+- generic [active]:
+  - generic:
+    - generic:
+      - generic:
+        - generic:
+          - generic:
+            - generic:
+              - list:
+                - listitem:
+                  - link:
+                    - /url: /dashboard
+                    - generic: nexo
+            - generic:
+              - generic:
+                - generic: Platform
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /dashboard
+                      - generic: Panel
+                  - listitem:
+                    - link:
+                      - /url: /clientes
+                      - generic: Clientes
+                  - listitem:
+                    - link:
+                      - /url: /propiedades
+                      - generic: Propiedades
+                  - listitem:
+                    - link:
+                      - /url: /coincidencias
+                      - generic: Coincidencias
+                  - listitem:
+                    - link:
+                      - /url: /equipo
+                      - generic: Equipo
+            - generic:
+              - list:
+                - listitem:
+                  - button:
+                    - generic: AD
+                    - generic: Admin Debug
+      - main:
+        - generic:
+          - generic:
+            - button:
+              - generic: Toggle sidebar
+            - navigation:
+              - list:
+                - listitem:
+                  - link:
+                    - /url: /clientes
+                    - text: Clientes
+                - listitem
+                - listitem:
+                  - link [disabled]: Cliente Interes Test
+        - generic:
+          - generic:
+            - generic:
+              - heading [level=2]: Cliente Interes Test
+              - paragraph: "+50499112233"
+            - generic:
+              - combobox
+          - generic:
+            - generic:
+              - heading [level=3]: Intereses
+              - button [expanded]: Agregar interés
+            - generic:
+              - generic: agricola
+              - generic:
+                - generic: agricola
+                - generic: Danli
+          - generic:
+            - heading [level=3]: Notas de seguimiento
+            - generic:
+              - textbox:
+                - /placeholder: Nueva nota...
+              - button: Agregar nota
+            - generic:
+              - paragraph: Sin notas de seguimiento.
+    - region "Notifications alt+T":
+      - list:
+        - listitem:
+          - generic: Interés agregado.
+  - dialog [ref=f15e127]:
+    - heading "Agregar interés" [level=2] [ref=f15e129]
+    - generic [ref=f15e130]:
+      - generic [ref=f15e131]:
+        - generic [ref=f15e132]: Interés
+        - combobox "Interés" [ref=f15e133]:
+          - option "agricola" [selected]
+          - option "apartamento"
+          - option "bodega"
+          - option "casa"
+          - option "ganadero"
+          - option "local_comercial"
+          - option "lotificacion"
+          - option "terreno"
+      - generic [ref=f15e134]:
+        - generic [ref=f15e135]: Zona
+        - textbox "Zona" [ref=f15e136]: Danli
+      - generic [ref=f15e137]:
+        - generic [ref=f15e138]:
+          - generic [ref=f15e139]: Presupuesto mín.
+          - spinbutton "Presupuesto mín." [ref=f15e140]
+        - generic [ref=f15e141]:
+          - generic [ref=f15e142]: Presupuesto máx.
+          - spinbutton "Presupuesto máx." [ref=f15e143]
+      - button "Agregar" [ref=f15e145]
+    - button "Close" [ref=f15e146]

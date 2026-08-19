@@ -48,4 +48,14 @@ trait ProfileValidationRules
                 : Rule::unique(User::class)->ignore($userId),
         ];
     }
+
+    /**
+     * Get the validation rules used to validate user telefono numbers.
+     *
+     * @return array<int, ValidationRule|array<mixed>|string>
+     */
+    protected function telefonoRules(): array
+    {
+        return ['required', 'string', 'max:20'];
+    }
 }

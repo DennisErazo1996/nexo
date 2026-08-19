@@ -1,0 +1,37 @@
+- generic [ref=e2]:
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - link "Inicia sesión en tu cuenta" [ref=e7] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e12]:
+        - heading "Inicia sesión en tu cuenta" [level=1] [ref=e13]
+        - paragraph [ref=e14]: Ingresa tu correo y contraseña para iniciar sesión
+    - button "Sign in with a passkey" [ref=e16]
+    - generic [ref=e17]: Or continue with email
+    - generic [ref=e21]:
+      - generic [ref=e22]:
+        - generic [ref=e23]:
+          - generic [ref=e24]: Correo electrónico
+          - textbox "Correo electrónico" [ref=e25]:
+            - /placeholder: email@example.com
+            - text: test@example.com
+        - generic [ref=e26]:
+          - generic [ref=e27]:
+            - generic [ref=e28]: Contraseña
+            - link "¿Olvidaste tu contraseña?" [ref=e29] [cursor=pointer]:
+              - /url: /forgot-password
+          - generic [ref=e30]:
+            - textbox "Contraseña" [ref=e31]: password
+            - button "Show password" [ref=e32]
+        - generic [ref=e36]:
+          - checkbox "Recordarme" [ref=e37]
+          - checkbox
+          - generic [ref=e38]: Recordarme
+        - button "Loading Iniciar sesión" [disabled]:
+          - status "Loading"
+          - text: Iniciar sesión
+      - generic [ref=e40]:
+        - text: ¿No tienes cuenta?
+        - link "Regístrate" [ref=e41] [cursor=pointer]:
+          - /url: /register
+  - region "Notifications alt+T"

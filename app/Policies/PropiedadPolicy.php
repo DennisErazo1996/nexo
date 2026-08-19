@@ -38,4 +38,12 @@ class PropiedadPolicy
     {
         return $user->equipo_id === $propiedad->equipo_id;
     }
+
+    /**
+     * Determine whether the user can delete the propiedad.
+     */
+    public function delete(User $user, Propiedad $propiedad): bool
+    {
+        return $user->equipo_id === $propiedad->equipo_id;
+    }
 }

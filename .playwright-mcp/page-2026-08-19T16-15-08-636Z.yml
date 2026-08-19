@@ -1,0 +1,38 @@
+- generic [ref=f11e2]:
+  - generic [ref=f11e3]:
+    - generic [ref=f11e7]:
+      - list [ref=f11e9]:
+        - listitem [ref=f11e10]:
+          - link "nexo" [ref=f11e11] [cursor=pointer]:
+            - /url: /dashboard
+      - generic [ref=f11e18]:
+        - generic [ref=f11e19]: Platform
+        - list [ref=f11e20]:
+          - listitem [ref=f11e21]:
+            - link "Panel" [active] [ref=f11e22] [cursor=pointer]:
+              - /url: /dashboard
+          - listitem [ref=f11e29]:
+            - link "Clientes" [ref=f11e30] [cursor=pointer]:
+              - /url: /clientes
+          - listitem [ref=f11e35]:
+            - link "Propiedades" [ref=f11e36] [cursor=pointer]:
+              - /url: /propiedades
+          - listitem [ref=f11e42]:
+            - link "Coincidencias" [ref=f11e43] [cursor=pointer]:
+              - /url: /coincidencias
+          - listitem [ref=f11e47]:
+            - link "Equipo" [ref=f11e48] [cursor=pointer]:
+              - /url: /equipo
+      - list [ref=f11e56]:
+        - listitem [ref=f11e57]:
+          - button "AD Admin Debug" [ref=f11e58]:
+            - generic [ref=f11e59]: AD
+            - generic [ref=f11e61]: Admin Debug
+    - main [ref=f11e66]:
+      - generic [ref=f11e68]:
+        - button "Toggle sidebar" [ref=f11e69]
+        - navigation "breadcrumb" [ref=f11e71]:
+          - list [ref=f11e72]:
+            - listitem [ref=f11e73]:
+              - link "Dashboard" [disabled] [ref=f11e103]
+  - region "Notifications alt+T"

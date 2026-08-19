@@ -118,7 +118,7 @@ export default function ClientesIndex({ clientes, filters, estados }: Props) {
                                     </Badge>
                                 </TableCell>
                                 <TableCell>
-                                    {cliente.agenteRegistro?.name}
+                                    {cliente.agente_registro?.name}
                                 </TableCell>
                                 <TableCell>
                                     {cliente.notas_max_created_at

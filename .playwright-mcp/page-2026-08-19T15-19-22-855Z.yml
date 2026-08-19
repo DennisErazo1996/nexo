@@ -1,0 +1,63 @@
+- generic:
+  - generic:
+    - generic:
+      - generic:
+        - generic:
+          - generic:
+            - generic:
+              - list:
+                - listitem:
+                  - link:
+                    - /url: /dashboard
+                    - generic: nexo
+            - generic:
+              - generic:
+                - generic: Platform
+                - list:
+                  - listitem:
+                    - link:
+                      - /url: /dashboard
+                      - generic: Panel
+                  - listitem:
+                    - link:
+                      - /url: /clientes
+                      - generic: Clientes
+                  - listitem:
+                    - link:
+                      - /url: /propiedades
+                      - generic: Propiedades
+                  - listitem:
+                    - link:
+                      - /url: /coincidencias
+                      - generic: Coincidencias
+                  - listitem:
+                    - link:
+                      - /url: /equipo
+                      - generic: Equipo
+            - generic:
+              - list:
+                - listitem:
+                  - button [expanded]:
+                    - generic: TU
+                    - generic: Test User
+      - main:
+        - generic:
+          - generic:
+            - button:
+              - generic: Toggle sidebar
+            - navigation:
+              - list:
+                - listitem:
+                  - link [disabled]: Dashboard
+    - region "Notifications alt+T"
+  - menu "TU Test User" [active] [ref=f4e89]:
+    - generic [ref=f4e91]:
+      - generic [ref=f4e92]: TU
+      - generic [ref=f4e94]:
+        - generic [ref=f4e95]: Test User
+        - generic [ref=f4e96]: test@example.com
+    - separator [ref=f4e97]
+    - group [ref=f4e98]:
+      - menuitem "Configuración" [ref=f4e99] [cursor=pointer]
+    - separator [ref=f4e100]
+    - menuitem "Cerrar sesión" [ref=f4e101] [cursor=pointer]

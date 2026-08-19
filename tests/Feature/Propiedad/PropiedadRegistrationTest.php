@@ -58,6 +58,20 @@ class PropiedadRegistrationTest extends TestCase
         $response->assertRedirect(route('propiedades.show', $propiedad));
     }
 
+    public function test_create_page_excludes_the_logged_in_agente_from_co_agentes_options()
+    {
+        $agente = User::factory()->create();
+        $otroAgente = User::factory()->forEquipo($agente->equipo)->create();
+
+        $response = $this->actingAs($agente)->get(route('propiedades.create'));
+
+        $response->assertInertia(fn ($page) => $page
+            ->component('propiedades/create')
+            ->has('agentes', 1)
+            ->where('agentes.0.id', $otroAgente->id)
+        );
+    }
+
     public function test_creator_becomes_co_lister_even_without_selecting_agentes()
     {
         $agente = User::factory()->create();

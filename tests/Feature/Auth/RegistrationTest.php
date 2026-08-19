@@ -33,6 +33,7 @@ class RegistrationTest extends TestCase
             'email' => 'test@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
+            'telefono' => '99887766',
             'equipo_action' => 'create',
             'equipo' => ['nombre' => 'Grupo Test'],
         ]);
@@ -44,6 +45,7 @@ class RegistrationTest extends TestCase
 
         $this->assertSame('Grupo Test', $user->equipo->nombre);
         $this->assertTrue($user->rol === Rol::Admin);
+        $this->assertSame('99887766', $user->telefono);
     }
 
     public function test_equipo_nombre_is_required_to_register()
@@ -53,10 +55,26 @@ class RegistrationTest extends TestCase
             'email' => 'test@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
+            'telefono' => '99887766',
             'equipo_action' => 'create',
         ]);
 
         $response->assertSessionHasErrors('equipo.nombre');
+        $this->assertGuest();
+    }
+
+    public function test_telefono_is_required_to_register()
+    {
+        $response = $this->post(route('register.store'), [
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'equipo_action' => 'create',
+            'equipo' => ['nombre' => 'Grupo Test'],
+        ]);
+
+        $response->assertSessionHasErrors('telefono');
         $this->assertGuest();
     }
 }

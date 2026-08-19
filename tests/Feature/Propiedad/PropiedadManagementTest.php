@@ -68,6 +68,42 @@ class PropiedadManagementTest extends TestCase
         Storage::disk('public')->assertMissing('propiedades/1/marca-agua/foto.jpg');
     }
 
+    public function test_agente_can_delete_a_propiedad_and_its_foto_files()
+    {
+        Storage::fake('public');
+
+        $agente = User::factory()->create();
+        $propiedad = Propiedad::factory()->forEquipo($agente->equipo)->create();
+
+        Storage::disk('public')->put('propiedades/1/original/foto.jpg', 'contenido');
+        Storage::disk('public')->put('propiedades/1/marca-agua/foto.jpg', 'contenido');
+
+        PropiedadFoto::factory()->create([
+            'propiedad_id' => $propiedad->id,
+            'url' => Storage::disk('public')->url('propiedades/1/original/foto.jpg'),
+            'url_con_marca_agua' => Storage::disk('public')->url('propiedades/1/marca-agua/foto.jpg'),
+        ]);
+
+        $response = $this->actingAs($agente)->delete(route('propiedades.destroy', $propiedad));
+
+        $response->assertRedirect(route('propiedades.index'));
+        $this->assertModelMissing($propiedad);
+        Storage::disk('public')->assertMissing('propiedades/1/original/foto.jpg');
+        Storage::disk('public')->assertMissing('propiedades/1/marca-agua/foto.jpg');
+    }
+
+    public function test_agente_de_otro_equipo_no_puede_eliminar_propiedad()
+    {
+        $agente = User::factory()->create();
+        $otroAgente = User::factory()->create();
+        $propiedad = Propiedad::factory()->forEquipo($otroAgente->equipo)->create();
+
+        $response = $this->actingAs($agente)->delete(route('propiedades.destroy', $propiedad));
+
+        $response->assertNotFound();
+        $this->assertModelExists($propiedad);
+    }
+
     public function test_index_filters_by_estado_and_tipo()
     {
         $agente = User::factory()->create();

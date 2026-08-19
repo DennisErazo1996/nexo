@@ -13,6 +13,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('propiedades', [PropiedadController::class, 'store'])->name('propiedades.store');
     Route::get('propiedades/{propiedad}', [PropiedadController::class, 'show'])->name('propiedades.show');
     Route::patch('propiedades/{propiedad}/estado', [PropiedadController::class, 'updateEstado'])->name('propiedades.estado.update');
+    Route::delete('propiedades/{propiedad}', [PropiedadController::class, 'destroy'])->name('propiedades.destroy');
 
     Route::post('propiedades/{propiedad}/fotos', [PropiedadFotoController::class, 'store'])->name('propiedades.fotos.store');
     Route::delete('propiedades/{propiedad}/fotos/{foto}', [PropiedadFotoController::class, 'destroy'])->name('propiedades.fotos.destroy');

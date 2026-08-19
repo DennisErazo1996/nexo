@@ -46,6 +46,7 @@ class EquipoInvitationTest extends TestCase
             'email' => 'agente@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
+            'telefono' => '99887766',
             'equipo_action' => 'join',
             'equipo_id' => $equipo->id,
             'expires' => $query['expires'],
@@ -59,6 +60,7 @@ class EquipoInvitationTest extends TestCase
 
         $this->assertSame($equipo->id, $user->equipo_id);
         $this->assertTrue($user->rol === Rol::Agente);
+        $this->assertSame('99887766', $user->telefono);
     }
 
     public function test_tampered_invite_link_is_rejected()
@@ -70,6 +72,7 @@ class EquipoInvitationTest extends TestCase
             'email' => 'agente@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
+            'telefono' => '99887766',
             'equipo_action' => 'join',
             'equipo_id' => $equipo->id,
             'expires' => now()->addDays(7)->timestamp,
@@ -92,6 +95,7 @@ class EquipoInvitationTest extends TestCase
             'email' => 'agente@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
+            'telefono' => '99887766',
             'equipo_action' => 'join',
             'equipo_id' => $equipo->id,
             'expires' => $query['expires'],

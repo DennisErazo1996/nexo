@@ -1,0 +1,38 @@
+- generic [ref=f4e2]:
+  - generic [ref=f4e3]:
+    - generic [ref=f4e7]:
+      - list [ref=f4e9]:
+        - listitem [ref=f4e10]:
+          - link "nexo" [ref=f4e11] [cursor=pointer]:
+            - /url: /dashboard
+      - generic [ref=f4e18]:
+        - generic [ref=f4e19]: Platform
+        - list [ref=f4e20]:
+          - listitem [ref=f4e21]:
+            - link "Panel" [ref=f4e22] [cursor=pointer]:
+              - /url: /dashboard
+          - listitem [ref=f4e29]:
+            - link "Clientes" [ref=f4e30] [cursor=pointer]:
+              - /url: /clientes
+          - listitem [ref=f4e35]:
+            - link "Propiedades" [ref=f4e36] [cursor=pointer]:
+              - /url: /propiedades
+          - listitem [ref=f4e42]:
+            - link "Coincidencias" [ref=f4e43] [cursor=pointer]:
+              - /url: /coincidencias
+          - listitem [ref=f4e47]:
+            - link "Equipo" [ref=f4e48] [cursor=pointer]:
+              - /url: /equipo
+      - list [ref=f4e56]:
+        - listitem [ref=f4e57]:
+          - button "TU Test User" [ref=f4e58]:
+            - generic [ref=f4e59]: TU
+            - generic [ref=f4e61]: Test User
+    - main [ref=f4e66]:
+      - generic [ref=f4e68]:
+        - button "Toggle sidebar" [ref=f4e69]
+        - navigation "breadcrumb" [ref=f4e71]:
+          - list [ref=f4e72]:
+            - listitem [ref=f4e73]:
+              - link "Dashboard" [disabled] [ref=f4e74]
+  - region "Notifications alt+T"

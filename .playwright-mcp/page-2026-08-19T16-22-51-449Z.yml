@@ -1,0 +1,80 @@
+- generic [ref=f13e2]:
+  - generic [ref=f13e3]:
+    - generic [ref=f13e7]:
+      - list [ref=f13e9]:
+        - listitem [ref=f13e10]:
+          - link "nexo" [ref=f13e11] [cursor=pointer]:
+            - /url: /dashboard
+      - generic [ref=f13e18]:
+        - generic [ref=f13e19]: Platform
+        - list [ref=f13e20]:
+          - listitem [ref=f13e21]:
+            - link "Panel" [ref=f13e22] [cursor=pointer]:
+              - /url: /dashboard
+          - listitem [ref=f13e29]:
+            - link "Clientes" [ref=f13e30] [cursor=pointer]:
+              - /url: /clientes
+          - listitem [ref=f13e35]:
+            - link "Propiedades" [ref=f13e36] [cursor=pointer]:
+              - /url: /propiedades
+          - listitem [ref=f13e42]:
+            - link "Coincidencias" [ref=f13e43] [cursor=pointer]:
+              - /url: /coincidencias
+          - listitem [ref=f13e47]:
+            - link "Equipo" [ref=f13e48] [cursor=pointer]:
+              - /url: /equipo
+      - list [ref=f13e56]:
+        - listitem [ref=f13e57]:
+          - button "AD Admin Debug" [ref=f13e58]:
+            - generic [ref=f13e59]: AD
+            - generic [ref=f13e61]: Admin Debug
+    - main [ref=f13e66]:
+      - generic [ref=f13e68]:
+        - button "Toggle sidebar" [ref=f13e69]
+        - navigation "breadcrumb" [ref=f13e71]:
+          - list [ref=f13e72]:
+            - listitem [ref=f13e73]:
+              - link "Propiedades" [ref=f13e74] [cursor=pointer]:
+                - /url: /propiedades
+            - listitem [ref=f13e75]
+            - listitem [ref=f13e78]:
+              - link "terreno en Danli" [disabled] [ref=f13e142]
+      - generic [ref=f13e143]:
+        - generic [ref=f13e144]:
+          - generic [ref=f13e145]:
+            - heading "terreno en Danli" [level=2] [ref=f13e146]
+            - paragraph [ref=f13e147]: HNL 100000.00
+          - combobox [ref=f13e149]:
+            - option "Disponible" [selected]
+            - option "Reservada"
+            - option "Vendida"
+            - option "Retirada"
+        - generic [ref=f13e150]:
+          - generic [ref=f13e151]:
+            - paragraph [ref=f13e152]: Tamaño
+            - paragraph [ref=f13e153]: 10.00 manzana
+          - generic [ref=f13e154]:
+            - paragraph [ref=f13e155]: Forma de pago
+            - paragraph [ref=f13e156]: contado
+        - generic [ref=f13e157]: agricola
+        - generic [ref=f13e159]:
+          - heading "Co-listers" [level=3] [ref=f13e160]
+          - list [ref=f13e161]:
+            - listitem [ref=f13e162]: Admin Debug
+        - generic [ref=f13e163]:
+          - heading "Clientes potenciales" [level=3] [ref=f13e164]
+          - list [ref=f13e165]:
+            - listitem [ref=f13e166]:
+              - generic [ref=f13e167]: Cliente Prueba
+              - generic [ref=f13e168]: pendiente
+        - button "Generar texto para compartir" [ref=f13e170]
+        - generic [ref=f13e171]:
+          - heading "Fotos" [level=3] [ref=f13e172]
+          - paragraph [ref=f13e174]: Sin fotos.
+          - generic [ref=f13e176]:
+            - button "Choose File" [ref=f13e177]
+            - button "Agregar fotos" [ref=f13e178]
+  - region "Notifications alt+T":
+    - list:
+      - listitem [ref=f13e179]:
+        - generic [ref=f13e183]: Propiedad creada.

@@ -20,7 +20,6 @@ type Agente = {
 
 type PageProps = {
     auth: Auth;
-    inviteUrl?: string;
 };
 
 export default function EquipoEdit({
@@ -30,7 +29,10 @@ export default function EquipoEdit({
     equipo: { id: number; nombre: string };
     agentes: Agente[];
 }) {
-    const { auth, inviteUrl } = usePage<PageProps>().props;
+    const page = usePage<PageProps>();
+    const { auth } = page.props;
+    const inviteUrl = (page.flash as { inviteUrl?: string } | undefined)
+        ?.inviteUrl;
 
     return (
         <>

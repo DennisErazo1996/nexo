@@ -1,0 +1,65 @@
+- generic [ref=f8e2]:
+  - generic [ref=f8e3]:
+    - generic [ref=f8e7]:
+      - list [ref=f8e9]:
+        - listitem [ref=f8e10]:
+          - link "nexo" [ref=f8e11] [cursor=pointer]:
+            - /url: /dashboard
+      - generic [ref=f8e18]:
+        - generic [ref=f8e19]: Platform
+        - list [ref=f8e20]:
+          - listitem [ref=f8e21]:
+            - link "Panel" [ref=f8e22] [cursor=pointer]:
+              - /url: /dashboard
+          - listitem [ref=f8e29]:
+            - link "Clientes" [ref=f8e30] [cursor=pointer]:
+              - /url: /clientes
+          - listitem [ref=f8e35]:
+            - link "Propiedades" [ref=f8e36] [cursor=pointer]:
+              - /url: /propiedades
+          - listitem [ref=f8e42]:
+            - link "Coincidencias" [ref=f8e43] [cursor=pointer]:
+              - /url: /coincidencias
+          - listitem [ref=f8e47]:
+            - link "Equipo" [ref=f8e48] [cursor=pointer]:
+              - /url: /equipo
+      - list [ref=f8e56]:
+        - listitem [ref=f8e57]:
+          - button "AD Admin Debug" [ref=f8e58]:
+            - generic [ref=f8e59]: AD
+            - generic [ref=f8e61]: Admin Debug
+    - main [ref=f8e66]:
+      - generic [ref=f8e68]:
+        - button "Toggle sidebar" [ref=f8e69]
+        - navigation "breadcrumb" [ref=f8e71]:
+          - list [ref=f8e72]:
+            - listitem [ref=f8e73]:
+              - link "Equipo" [disabled] [ref=f8e74]
+      - generic [ref=f8e75]:
+        - generic [ref=f8e76]:
+          - heading "Equipo" [level=2] [ref=f8e77]
+          - paragraph [ref=f8e78]: Gestiona el nombre de tu equipo y sus agentes
+        - generic [ref=f8e79]:
+          - generic [ref=f8e80]:
+            - generic [ref=f8e81]: Nombre del equipo
+            - textbox "Nombre del equipo" [ref=f8e82]: Equipo Debug
+          - button "Guardar" [ref=f8e83]
+        - generic [ref=f8e84]:
+          - heading "Agentes" [level=3] [ref=f8e85]
+          - generic [ref=f8e87]:
+            - generic [ref=f8e88]:
+              - paragraph [ref=f8e89]: Admin Debug
+              - paragraph [ref=f8e90]: admin-debug@example.com
+            - combobox [ref=f8e93]:
+              - option "Agente"
+              - option "Admin" [selected]
+        - generic [ref=f8e94]:
+          - heading "Invitar agente" [level=3] [ref=f8e95]
+          - button "Generar link de invitación" [ref=f8e97]
+          - generic [ref=f8e98]:
+            - generic [ref=f8e99]: Link de invitación (válido 7 días)
+            - textbox "Link de invitación (válido 7 días)" [ref=f8e100]: http://localhost:8000/equipo/3/invitacion?expires=1787757753&signature=b991e8dcfa13d3e480fe06f9cdfc3242e5788c9c9c602e1bdc1ed51892684b26
+  - region "Notifications alt+T":
+    - list:
+      - listitem [ref=f8e101]:
+        - generic [ref=f8e105]: Link de invitación generado.

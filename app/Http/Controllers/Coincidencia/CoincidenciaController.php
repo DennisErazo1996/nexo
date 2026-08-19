@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Coincidencia;
 
 use App\Enums\EstadoCoincidencia;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Coincidencia\DestroyCoincidenciaRequest;
 use App\Http\Requests\Coincidencia\UpdateEstadoCoincidenciaRequest;
 use App\Models\Coincidencia;
 use Illuminate\Http\RedirectResponse;
@@ -50,5 +51,19 @@ class CoincidenciaController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Coincidencia actualizada.')]);
 
         return to_route('coincidencias.index');
+    }
+
+    /**
+     * Remove a coincidencia between a cliente and a propiedad.
+     */
+    public function destroy(DestroyCoincidenciaRequest $request, Coincidencia $coincidencia): RedirectResponse
+    {
+        $clienteId = $coincidencia->cliente_id;
+
+        $coincidencia->delete();
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Propiedad potencial eliminada.')]);
+
+        return to_route('clientes.show', $clienteId);
     }
 }

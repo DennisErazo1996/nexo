@@ -40,7 +40,7 @@ export type Cliente = {
     agente_registro_id: number;
     created_at: string;
     updated_at: string;
-    agenteRegistro?: { id: number; name: string };
+    agente_registro?: { id: number; name: string };
     intereses?: ClienteInteres[];
     notas?: NotaSeguimiento[];
     notas_max_created_at?: string | null;

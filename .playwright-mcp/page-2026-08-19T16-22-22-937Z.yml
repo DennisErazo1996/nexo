@@ -1,0 +1,139 @@
+- generic [ref=f13e2]:
+  - generic [ref=f13e3]:
+    - generic [ref=f13e7]:
+      - list [ref=f13e9]:
+        - listitem [ref=f13e10]:
+          - link "nexo" [ref=f13e11] [cursor=pointer]:
+            - /url: /dashboard
+      - generic [ref=f13e18]:
+        - generic [ref=f13e19]: Platform
+        - list [ref=f13e20]:
+          - listitem [ref=f13e21]:
+            - link "Panel" [ref=f13e22] [cursor=pointer]:
+              - /url: /dashboard
+          - listitem [ref=f13e29]:
+            - link "Clientes" [ref=f13e30] [cursor=pointer]:
+              - /url: /clientes
+          - listitem [ref=f13e35]:
+            - link "Propiedades" [ref=f13e36] [cursor=pointer]:
+              - /url: /propiedades
+          - listitem [ref=f13e42]:
+            - link "Coincidencias" [ref=f13e43] [cursor=pointer]:
+              - /url: /coincidencias
+          - listitem [ref=f13e47]:
+            - link "Equipo" [ref=f13e48] [cursor=pointer]:
+              - /url: /equipo
+      - list [ref=f13e56]:
+        - listitem [ref=f13e57]:
+          - button "AD Admin Debug" [ref=f13e58]:
+            - generic [ref=f13e59]: AD
+            - generic [ref=f13e61]: Admin Debug
+    - main [ref=f13e66]:
+      - generic [ref=f13e68]:
+        - button "Toggle sidebar" [ref=f13e69]
+        - navigation "breadcrumb" [ref=f13e71]:
+          - list [ref=f13e72]:
+            - listitem [ref=f13e73]:
+              - link "Propiedades" [ref=f13e74] [cursor=pointer]:
+                - /url: /propiedades
+            - listitem [ref=f13e75]
+            - listitem [ref=f13e78]:
+              - link "Nueva" [disabled] [ref=f13e79]
+      - generic [ref=f13e80]:
+        - generic [ref=f13e81]:
+          - generic [ref=f13e82]:
+            - generic [ref=f13e83]: Tipo
+            - combobox "Tipo" [ref=f13e84]:
+              - option "Terreno" [selected]
+              - option "Casa"
+              - option "Apartamento"
+              - option "Local comercial"
+              - option "Bodega"
+          - generic [ref=f13e85]:
+            - generic [ref=f13e86]: Zona
+            - textbox "Zona" [ref=f13e87]
+        - generic [ref=f13e88]:
+          - generic [ref=f13e89]:
+            - generic [ref=f13e90]: Tamaño
+            - spinbutton "Tamaño" [ref=f13e91]
+          - generic [ref=f13e92]:
+            - generic [ref=f13e93]: Unidad de medida
+            - combobox "Unidad de medida" [ref=f13e94]:
+              - option "Manzana" [selected]
+              - option "m²"
+              - option "vara²"
+        - generic [ref=f13e95]:
+          - generic [ref=f13e96]:
+            - generic [ref=f13e97]: Precio
+            - spinbutton "Precio" [ref=f13e98]
+          - generic [ref=f13e99]:
+            - generic [ref=f13e100]: Moneda
+            - combobox "Moneda" [ref=f13e101]:
+              - option "Lempiras (HNL)" [selected]
+              - option "Dólares (USD)"
+          - generic [ref=f13e102]:
+            - generic [ref=f13e103]: Forma de pago
+            - combobox "Forma de pago" [ref=f13e104]:
+              - option "Contado" [selected]
+              - option "Financiable"
+              - option "Negociable"
+        - generic [ref=f13e105]:
+          - generic [ref=f13e106]: Condición legal
+          - combobox "Condición legal" [ref=f13e107]:
+            - option "Sin especificar" [selected]
+            - option "Escritura pública"
+            - option "En trámite"
+            - option "Hipotecada"
+        - generic [ref=f13e108]:
+          - generic [ref=f13e109]: Acceso
+          - textbox "Acceso" [ref=f13e110]:
+            - /placeholder: Distancia a pavimento, tiempo desde la ciudad, tipo de vía...
+        - generic [ref=f13e111]:
+          - generic [ref=f13e112]: Descripción
+          - textbox "Descripción" [ref=f13e113]
+        - generic [ref=f13e114]:
+          - generic [ref=f13e115]: Etiquetas de uso
+          - generic [ref=f13e116]:
+            - generic [ref=f13e117]:
+              - checkbox "agricola" [ref=f13e118]
+              - checkbox
+              - text: agricola
+            - generic [ref=f13e119]:
+              - checkbox "apartamento" [ref=f13e120]
+              - checkbox
+              - text: apartamento
+            - generic [ref=f13e121]:
+              - checkbox "bodega" [ref=f13e122]
+              - checkbox
+              - text: bodega
+            - generic [ref=f13e123]:
+              - checkbox "casa" [ref=f13e124]
+              - checkbox
+              - text: casa
+            - generic [ref=f13e125]:
+              - checkbox "ganadero" [ref=f13e126]
+              - checkbox
+              - text: ganadero
+            - generic [ref=f13e127]:
+              - checkbox "local_comercial" [ref=f13e128]
+              - checkbox
+              - text: local_comercial
+            - generic [ref=f13e129]:
+              - checkbox "lotificacion" [ref=f13e130]
+              - checkbox
+              - text: lotificacion
+            - generic [ref=f13e131]:
+              - checkbox "terreno" [ref=f13e132]
+              - checkbox
+              - text: terreno
+        - generic [ref=f13e133]:
+          - generic [ref=f13e134]: Co-listers
+          - generic [ref=f13e136]:
+            - checkbox "Admin Debug" [ref=f13e137]
+            - checkbox
+            - text: Admin Debug
+        - generic [ref=f13e138]:
+          - generic [ref=f13e139]: Fotos
+          - button "Fotos" [ref=f13e140]
+        - button "Crear propiedad" [ref=f13e141]
+  - region "Notifications alt+T"

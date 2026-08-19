@@ -6,6 +6,7 @@ use App\Http\Controllers\NotaSeguimiento\NotaSeguimientoController;
 use Illuminate\Support\Facades\Route;
 
 Route::pattern('cliente', '[0-9]+');
+Route::pattern('interes', '[0-9]+');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('clientes', [ClienteController::class, 'index'])->name('clientes.index');
@@ -17,5 +18,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('clientes/{cliente}/estado', [ClienteController::class, 'updateEstado'])->name('clientes.estado.update');
 
     Route::post('clientes/{cliente}/intereses', [ClienteInteresController::class, 'store'])->name('clientes.intereses.store');
+    Route::delete('clientes/{cliente}/intereses/{interes}', [ClienteInteresController::class, 'destroy'])->name('clientes.intereses.destroy');
     Route::post('clientes/{cliente}/notas', [NotaSeguimientoController::class, 'store'])->name('clientes.notas.store');
 });

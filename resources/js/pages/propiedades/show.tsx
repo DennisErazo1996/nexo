@@ -137,7 +137,7 @@ export default function PropiedadShow({
 
                 {propiedad.agentes && propiedad.agentes.length > 0 && (
                     <div className="space-y-2">
-                        <h3 className="text-base font-medium">Co-listers</h3>
+                        <h3 className="text-base font-medium">Co-agentes</h3>
                         <ul className="text-sm text-muted-foreground">
                             {propiedad.agentes.map((agente) => (
                                 <li key={agente.id}>{agente.agente?.name}</li>

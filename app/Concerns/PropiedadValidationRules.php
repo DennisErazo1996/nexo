@@ -144,7 +144,7 @@ trait PropiedadValidationRules
     }
 
     /**
-     * Get the validation rules used to validate a propiedad's agentes (co-listers).
+     * Get the validation rules used to validate a propiedad's agentes (co-agentes).
      *
      * @return array<int, ValidationRule|array<mixed>|string>
      */

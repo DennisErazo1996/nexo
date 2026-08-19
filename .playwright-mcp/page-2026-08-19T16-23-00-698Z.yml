@@ -1,0 +1,60 @@
+- generic [ref=f14e2]:
+  - generic [ref=f14e3]:
+    - generic [ref=f14e7]:
+      - list [ref=f14e9]:
+        - listitem [ref=f14e10]:
+          - link "nexo" [ref=f14e11] [cursor=pointer]:
+            - /url: /dashboard
+      - generic [ref=f14e18]:
+        - generic [ref=f14e19]: Platform
+        - list [ref=f14e20]:
+          - listitem [ref=f14e21]:
+            - link "Panel" [ref=f14e22] [cursor=pointer]:
+              - /url: /dashboard
+          - listitem [ref=f14e29]:
+            - link "Clientes" [ref=f14e30] [cursor=pointer]:
+              - /url: /clientes
+          - listitem [ref=f14e35]:
+            - link "Propiedades" [ref=f14e36] [cursor=pointer]:
+              - /url: /propiedades
+          - listitem [ref=f14e42]:
+            - link "Coincidencias" [ref=f14e43] [cursor=pointer]:
+              - /url: /coincidencias
+          - listitem [ref=f14e47]:
+            - link "Equipo" [ref=f14e48] [cursor=pointer]:
+              - /url: /equipo
+      - list [ref=f14e56]:
+        - listitem [ref=f14e57]:
+          - button "AD Admin Debug" [ref=f14e58]:
+            - generic [ref=f14e59]: AD
+            - generic [ref=f14e61]: Admin Debug
+    - main [ref=f14e66]:
+      - generic [ref=f14e68]:
+        - button "Toggle sidebar" [ref=f14e69]
+        - navigation "breadcrumb" [ref=f14e71]:
+          - list [ref=f14e72]:
+            - listitem [ref=f14e73]:
+              - link "Coincidencias" [disabled] [ref=f14e74]
+      - generic [ref=f14e75]:
+        - generic [ref=f14e76]:
+          - heading "Coincidencias" [level=2] [ref=f14e77]
+          - paragraph [ref=f14e78]: Clientes potenciales pendientes de contactar
+        - table [ref=f14e80]:
+          - rowgroup [ref=f14e81]:
+            - row [ref=f14e82]:
+              - columnheader "Cliente" [ref=f14e83]
+              - columnheader "Propiedad" [ref=f14e84]
+              - columnheader "Acciones" [ref=f14e85]
+          - rowgroup [ref=f14e86]:
+            - row [ref=f14e87]:
+              - cell [ref=f14e88]:
+                - paragraph [ref=f14e89]: Cliente Prueba
+                - paragraph [ref=f14e90]: "+50499887766"
+              - cell [ref=f14e91]:
+                - link "terreno en Danli — HNL 100000.00" [ref=f14e92] [cursor=pointer]:
+                  - /url: /propiedades/3
+              - cell [ref=f14e93]:
+                - generic [ref=f14e94]:
+                  - button "Notificado" [ref=f14e96]
+                  - button "Descartar" [ref=f14e98]
+  - region "Notifications alt+T"

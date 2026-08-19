@@ -235,7 +235,7 @@ export default function PropiedadCreate({
                         </div>
 
                         <div className="grid gap-2">
-                            <Label>Co-listers</Label>
+                            <Label>Co-agentes</Label>
                             <div className="flex flex-wrap gap-4">
                                 {agentes.map((agente) => (
                                     <label

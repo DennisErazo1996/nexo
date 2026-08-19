@@ -1,4 +1,4 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Form, Head, Link, router } from '@inertiajs/react';
 import PropiedadController from '@/actions/App/Http/Controllers/Propiedad/PropiedadController';
 import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
@@ -100,6 +100,7 @@ export default function PropiedadesIndex({
                             <TableHead>Zona</TableHead>
                             <TableHead>Precio</TableHead>
                             <TableHead>Estado</TableHead>
+                            <TableHead>Acciones</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -141,6 +142,25 @@ export default function PropiedadesIndex({
                                             (e) => e.value === propiedad.estado,
                                         )?.label ?? propiedad.estado}
                                     </Badge>
+                                </TableCell>
+                                <TableCell>
+                                    <Form
+                                        {...PropiedadController.destroy.form(
+                                            propiedad.id,
+                                        )}
+                                        options={{ preserveScroll: true }}
+                                    >
+                                        {({ processing }) => (
+                                            <Button
+                                                type="submit"
+                                                variant="destructive"
+                                                size="sm"
+                                                disabled={processing}
+                                            >
+                                                Eliminar
+                                            </Button>
+                                        )}
+                                    </Form>
                                 </TableCell>
                             </TableRow>
                         ))}

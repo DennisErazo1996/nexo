@@ -1,0 +1,75 @@
+- generic [ref=f17e2]:
+  - generic [ref=f17e3]:
+    - generic [ref=f17e7]:
+      - list [ref=f17e9]:
+        - listitem [ref=f17e10]:
+          - link "nexo" [ref=f17e11] [cursor=pointer]:
+            - /url: /dashboard
+      - generic [ref=f17e18]:
+        - generic [ref=f17e19]: Platform
+        - list [ref=f17e20]:
+          - listitem [ref=f17e21]:
+            - link "Panel" [ref=f17e22] [cursor=pointer]:
+              - /url: /dashboard
+          - listitem [ref=f17e29]:
+            - link "Clientes" [ref=f17e30] [cursor=pointer]:
+              - /url: /clientes
+          - listitem [ref=f17e35]:
+            - link "Propiedades" [ref=f17e36] [cursor=pointer]:
+              - /url: /propiedades
+          - listitem [ref=f17e42]:
+            - link "Coincidencias" [ref=f17e43] [cursor=pointer]:
+              - /url: /coincidencias
+          - listitem [ref=f17e47]:
+            - link "Equipo" [ref=f17e48] [cursor=pointer]:
+              - /url: /equipo
+      - list [ref=f17e56]:
+        - listitem [ref=f17e57]:
+          - button "AD Admin Debug" [ref=f17e58]:
+            - generic [ref=f17e59]: AD
+            - generic [ref=f17e61]: Admin Debug
+    - main [ref=f17e66]:
+      - generic [ref=f17e68]:
+        - button "Toggle sidebar" [ref=f17e69]
+        - navigation "breadcrumb" [ref=f17e71]:
+          - list [ref=f17e72]:
+            - listitem [ref=f17e73]:
+              - link "Clientes" [ref=f17e74] [cursor=pointer]:
+                - /url: /clientes
+            - listitem [ref=f17e75]
+            - listitem [ref=f17e78]:
+              - link "Cliente Interes Test" [disabled] [ref=f17e79]
+      - generic [ref=f17e80]:
+        - generic [ref=f17e81]:
+          - generic [ref=f17e82]:
+            - heading "Cliente Interes Test" [level=2] [ref=f17e83]
+            - paragraph [ref=f17e84]: "+50499112233"
+          - combobox [ref=f17e86]:
+            - option "Nuevo" [selected]
+            - option "Contactado"
+            - option "Visitando"
+            - option "Negociando"
+            - option "Cerrado"
+            - option "Perdido"
+        - generic [ref=f17e87]:
+          - generic [ref=f17e88]:
+            - heading "Intereses" [level=3] [ref=f17e89]
+            - button "Agregar interés" [ref=f17e90]
+          - generic [ref=f17e91]:
+            - generic [ref=f17e92]: agricola
+            - generic [ref=f17e94]:
+              - generic [ref=f17e95]: agricola
+              - generic [ref=f17e96]: Danli
+        - generic [ref=f17e97]:
+          - heading "Propiedades potenciales" [level=3] [ref=f17e98]
+          - list [ref=f17e99]:
+            - listitem [ref=f17e100]:
+              - generic [ref=f17e101]: terreno en Danli — HNL 100000.00
+              - generic [ref=f17e102]: pendiente
+        - generic [ref=f17e103]:
+          - heading "Notas de seguimiento" [level=3] [ref=f17e104]
+          - generic [ref=f17e105]:
+            - textbox "Nueva nota..." [ref=f17e106]
+            - button "Agregar nota" [ref=f17e107]
+          - paragraph [ref=f17e109]: Sin notas de seguimiento.
+  - region "Notifications alt+T"

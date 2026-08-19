@@ -40,6 +40,7 @@ class CreateNewUser implements CreatesNewUsers
         Validator::make($input, [
             ...$this->profileRules(),
             'password' => $this->passwordRules(),
+            'telefono' => $this->telefonoRules(),
             'equipo.nombre' => ['required', 'string', 'max:255'],
         ])->validate();
 
@@ -50,6 +51,7 @@ class CreateNewUser implements CreatesNewUsers
                 'name' => $input['name'],
                 'email' => $input['email'],
                 'password' => $input['password'],
+                'telefono' => $input['telefono'],
                 'equipo_id' => $equipo->id,
                 'rol' => Rol::Admin,
             ]);
@@ -66,6 +68,7 @@ class CreateNewUser implements CreatesNewUsers
         Validator::make($input, [
             ...$this->profileRules(),
             'password' => $this->passwordRules(),
+            'telefono' => $this->telefonoRules(),
             'equipo_id' => ['required', 'integer', 'exists:equipos,id'],
             'expires' => ['required'],
             'signature' => ['required', 'string'],
@@ -81,6 +84,7 @@ class CreateNewUser implements CreatesNewUsers
             'name' => $input['name'],
             'email' => $input['email'],
             'password' => $input['password'],
+            'telefono' => $input['telefono'],
             'equipo_id' => $input['equipo_id'],
             'rol' => Rol::Agente,
         ]);

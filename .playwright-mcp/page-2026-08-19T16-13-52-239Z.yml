@@ -1,0 +1,67 @@
+- generic [ref=f10e2]:
+  - generic [ref=f10e3]:
+    - generic [ref=f10e7]:
+      - list [ref=f10e9]:
+        - listitem [ref=f10e10]:
+          - link "nexo" [ref=f10e11] [cursor=pointer]:
+            - /url: /dashboard
+      - generic [ref=f10e18]:
+        - generic [ref=f10e19]: Platform
+        - list [ref=f10e20]:
+          - listitem [ref=f10e21]:
+            - link "Panel" [ref=f10e22] [cursor=pointer]:
+              - /url: /dashboard
+          - listitem [ref=f10e29]:
+            - link "Clientes" [ref=f10e30] [cursor=pointer]:
+              - /url: /clientes
+          - listitem [ref=f10e35]:
+            - link "Propiedades" [ref=f10e36] [cursor=pointer]:
+              - /url: /propiedades
+          - listitem [ref=f10e42]:
+            - link "Coincidencias" [ref=f10e43] [cursor=pointer]:
+              - /url: /coincidencias
+          - listitem [ref=f10e47]:
+            - link "Equipo" [ref=f10e48] [cursor=pointer]:
+              - /url: /equipo
+      - list [ref=f10e56]:
+        - listitem [ref=f10e57]:
+          - button "AD Admin Debug" [ref=f10e58]:
+            - generic [ref=f10e59]: AD
+            - generic [ref=f10e61]: Admin Debug
+    - main [ref=f10e66]:
+      - generic [ref=f10e68]:
+        - button "Toggle sidebar" [ref=f10e69]
+        - navigation "breadcrumb" [ref=f10e71]:
+          - list [ref=f10e72]:
+            - listitem [ref=f10e73]:
+              - link "Clientes" [disabled] [ref=f10e74]
+      - generic [ref=f10e75]:
+        - generic [ref=f10e76]:
+          - generic [ref=f10e77]:
+            - heading "Clientes" [level=2] [ref=f10e78]
+            - paragraph [ref=f10e79]: Clientes potenciales del equipo
+          - link "Nuevo cliente" [ref=f10e80] [cursor=pointer]:
+            - /url: /clientes/nuevo
+        - generic [ref=f10e81]:
+          - combobox [ref=f10e82]:
+            - option "Todos los estados" [selected]
+            - option "Nuevo"
+            - option "Contactado"
+            - option "Visitando"
+            - option "Negociando"
+            - option "Cerrado"
+            - option "Perdido"
+          - generic [ref=f10e83]:
+            - checkbox "Sin seguimiento reciente" [ref=f10e84]
+            - text: Sin seguimiento reciente
+        - table [ref=f10e86]:
+          - rowgroup [ref=f10e87]:
+            - row [ref=f10e88]:
+              - columnheader "Nombre" [ref=f10e89]
+              - columnheader "Teléfono" [ref=f10e90]
+              - columnheader "Estado" [ref=f10e91]
+              - columnheader "Registrado por" [ref=f10e92]
+              - columnheader "Última nota" [ref=f10e93]
+          - rowgroup
+        - paragraph [ref=f10e94]: No hay clientes que coincidan con los filtros.
+  - region "Notifications alt+T"

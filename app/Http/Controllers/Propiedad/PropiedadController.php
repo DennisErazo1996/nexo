@@ -11,6 +11,7 @@ use App\Enums\Moneda;
 use App\Enums\TipoPropiedad;
 use App\Enums\UnidadMedida;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Propiedad\DestroyPropiedadRequest;
 use App\Http\Requests\Propiedad\StorePropiedadRequest;
 use App\Http\Requests\Propiedad\UpdateEstadoPropiedadRequest;
 use App\Models\Coincidencia;
@@ -19,6 +20,7 @@ use App\Models\Propiedad;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -52,7 +54,10 @@ class PropiedadController extends Controller
     {
         return Inertia::render('propiedades/create', [
             'etiquetas' => EtiquetaInteres::orderBy('nombre')->get(['id', 'nombre']),
-            'agentes' => $request->user()->equipo->agentes()->orderBy('name')->get(['id', 'name']),
+            'agentes' => $request->user()->equipo->agentes()
+                ->whereKeyNot($request->user()->id)
+                ->orderBy('name')
+                ->get(['id', 'name']),
             'tipos' => $this->options(TipoPropiedad::cases()),
             'unidadesMedida' => $this->options(UnidadMedida::cases()),
             'monedas' => $this->options(Moneda::cases()),
@@ -144,6 +149,27 @@ class PropiedadController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Estado actualizado.')]);
 
         return to_route('propiedades.show', $propiedad);
+    }
+
+    /**
+     * Delete a propiedad along with its fotos on disk.
+     */
+    public function destroy(DestroyPropiedadRequest $request, Propiedad $propiedad): RedirectResponse
+    {
+        $disk = Storage::disk('public');
+
+        foreach ($propiedad->fotos as $foto) {
+            $disk->delete([
+                str_replace($disk->url(''), '', $foto->url),
+                str_replace($disk->url(''), '', $foto->url_con_marca_agua),
+            ]);
+        }
+
+        $propiedad->delete();
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Propiedad eliminada.')]);
+
+        return to_route('propiedades.index');
     }
 
     /**

@@ -1,0 +1,48 @@
+- generic [ref=f10e2]:
+  - generic [ref=f10e3]:
+    - generic [ref=f10e7]:
+      - list [ref=f10e9]:
+        - listitem [ref=f10e10]:
+          - link "nexo" [ref=f10e11] [cursor=pointer]:
+            - /url: /dashboard
+      - generic [ref=f10e18]:
+        - generic [ref=f10e19]: Platform
+        - list [ref=f10e20]:
+          - listitem [ref=f10e21]:
+            - link "Panel" [ref=f10e22] [cursor=pointer]:
+              - /url: /dashboard
+          - listitem [ref=f10e29]:
+            - link "Clientes" [ref=f10e30] [cursor=pointer]:
+              - /url: /clientes
+          - listitem [ref=f10e35]:
+            - link "Propiedades" [ref=f10e36] [cursor=pointer]:
+              - /url: /propiedades
+          - listitem [ref=f10e42]:
+            - link "Coincidencias" [ref=f10e43] [cursor=pointer]:
+              - /url: /coincidencias
+          - listitem [ref=f10e47]:
+            - link "Equipo" [ref=f10e48] [cursor=pointer]:
+              - /url: /equipo
+      - list [ref=f10e56]:
+        - listitem [ref=f10e57]:
+          - button "AD Admin Debug" [ref=f10e58]:
+            - generic [ref=f10e59]: AD
+            - generic [ref=f10e61]: Admin Debug
+    - main [ref=f10e66]:
+      - generic [ref=f10e68]:
+        - button "Toggle sidebar" [ref=f10e69]
+        - navigation "breadcrumb" [ref=f10e71]:
+          - list [ref=f10e72]:
+            - listitem [ref=f10e73]:
+              - link "Clientes" [ref=f10e95] [cursor=pointer]:
+                - /url: /clientes
+            - listitem [ref=f10e96]
+            - listitem [ref=f10e99]:
+              - link "Nuevo" [disabled] [ref=f10e100]
+      - generic [ref=f10e102]:
+        - generic [ref=f10e103]:
+          - generic [ref=f10e104]: Teléfono
+          - textbox "Teléfono" [active] [ref=f10e105]:
+            - /placeholder: 9988-7766
+        - button "Buscar" [ref=f10e106]
+  - region "Notifications alt+T"
