@@ -204,9 +204,10 @@ export default function ClienteShow({
                                     </span>
                                 )}
                                 <Form
-                                    {...ClienteInteresController.destroy.form(
-                                        [cliente.id, interes.id],
-                                    )}
+                                    {...ClienteInteresController.destroy.form([
+                                        cliente.id,
+                                        interes.id,
+                                    ])}
                                     options={{ preserveScroll: true }}
                                     className="ml-auto"
                                 >

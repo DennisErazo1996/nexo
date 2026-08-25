@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -48,6 +49,36 @@ class User extends Authenticatable implements PasskeyUser
     public function equipo(): BelongsTo
     {
         return $this->belongsTo(Equipo::class);
+    }
+
+    /**
+     * Get the clientes registered by this user.
+     *
+     * @return HasMany<Cliente, $this>
+     */
+    public function clientesRegistrados(): HasMany
+    {
+        return $this->hasMany(Cliente::class, 'agente_registro_id');
+    }
+
+    /**
+     * Get the co-listing assignments for this user.
+     *
+     * @return HasMany<PropiedadAgente, $this>
+     */
+    public function propiedadAgentes(): HasMany
+    {
+        return $this->hasMany(PropiedadAgente::class, 'agente_id');
+    }
+
+    /**
+     * Get the follow-up notes written by this user.
+     *
+     * @return HasMany<NotaSeguimiento, $this>
+     */
+    public function notas(): HasMany
+    {
+        return $this->hasMany(NotaSeguimiento::class, 'agente_id');
     }
 
     /**
