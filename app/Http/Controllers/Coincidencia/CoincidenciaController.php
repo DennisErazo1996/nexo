@@ -30,6 +30,13 @@ class CoincidenciaController extends Controller
                     ->orWhereHas('intereses', fn ($query) => $query->where('agente_id', $agenteId)))
                 ->orWhereHas('propiedad', fn ($query) => $query
                     ->whereHas('agentes', fn ($query) => $query->where('agente_id', $agenteId))))
+            ->when($request->filled('search'), function ($query) use ($request): void {
+                $search = $request->string('search')->value();
+                $query->where(function ($q) use ($search): void {
+                    $q->whereHas('cliente', fn ($c) => $c->where('nombre', 'like', "%{$search}%")->orWhere('telefono', 'like', "%{$search}%"))
+                        ->orWhereHas('propiedad', fn ($p) => $p->where('zona', 'like', "%{$search}%")->orWhere('tipo', 'like', "%{$search}%"));
+                });
+            })
             ->with([
                 'cliente:id,nombre,telefono,agente_registro_id',
                 'cliente.agenteRegistro:id,name',
@@ -37,10 +44,12 @@ class CoincidenciaController extends Controller
                 'propiedad.agentes.agente:id,name',
             ])
             ->orderByDesc('created_at')
-            ->paginate(20);
+            ->paginate(20)
+            ->withQueryString();
 
         return Inertia::render('coincidencias/index', [
             'coincidencias' => $coincidencias,
+            'filters' => $request->only(['search']),
         ]);
     }
 

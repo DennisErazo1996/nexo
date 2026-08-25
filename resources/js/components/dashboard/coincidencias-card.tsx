@@ -99,7 +99,11 @@ export function CoincidenciasCard({
                                         )}
                                         {item.cliente?.agente_registro && (
                                             <span className="rounded bg-muted px-1.5 py-0.5 text-[11px] text-muted-foreground">
-                                                Agente: {item.cliente.agente_registro.name}
+                                                Agente:{' '}
+                                                {
+                                                    item.cliente.agente_registro
+                                                        .name
+                                                }
                                             </span>
                                         )}
                                     </div>
@@ -123,18 +127,28 @@ export function CoincidenciasCard({
                                                 {item.propiedad.moneda}{' '}
                                                 {item.propiedad.precio}
                                             </span>
-                                            {item.propiedad.agentes && item.propiedad.agentes.length > 0 && (
-                                                <>
-                                                    <span>•</span>
-                                                    <span>
-                                                        {item.propiedad.agentes.length > 1 ? 'Agentes:' : 'Agente:'}{' '}
-                                                        {item.propiedad.agentes
-                                                            .map((a) => a.agente?.name)
-                                                            .filter(Boolean)
-                                                            .join(', ')}
-                                                    </span>
-                                                </>
-                                            )}
+                                            {item.propiedad.agentes &&
+                                                item.propiedad.agentes.length >
+                                                    0 && (
+                                                    <>
+                                                        <span>•</span>
+                                                        <span>
+                                                            {item.propiedad
+                                                                .agentes
+                                                                .length > 1
+                                                                ? 'Agentes:'
+                                                                : 'Agente:'}{' '}
+                                                            {item.propiedad.agentes
+                                                                .map(
+                                                                    (a) =>
+                                                                        a.agente
+                                                                            ?.name,
+                                                                )
+                                                                .filter(Boolean)
+                                                                .join(', ')}
+                                                        </span>
+                                                    </>
+                                                )}
                                         </div>
                                     )}
                                 </div>

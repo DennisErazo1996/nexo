@@ -33,15 +33,37 @@ class PropiedadController extends Controller
     {
         $propiedades = Propiedad::query()
             ->with(['fotos' => fn ($query) => $query->limit(1)])
+            ->when($request->filled('search'), function ($query) use ($request): void {
+                $search = $request->string('search')->value();
+                $query->where(function ($q) use ($search): void {
+                    $q->where('zona', 'like', "%{$search}%")
+                        ->orWhere('tipo', 'like', "%{$search}%")
+                        ->orWhere('descripcion', 'like', "%{$search}%");
+                });
+            })
             ->when($request->filled('estado'), fn ($query) => $query->where('estado', $request->string('estado')->value()))
             ->when($request->filled('tipo'), fn ($query) => $query->where('tipo', $request->string('tipo')->value()))
-            ->orderByDesc('created_at')
+            ->when($request->filled('sort'), function ($query) use ($request): void {
+                $direction = strtolower($request->string('direction')->value()) === 'asc' ? 'asc' : 'desc';
+                $field = match ($request->string('sort')->value()) {
+                    'precio' => 'precio',
+                    'tipo' => 'tipo',
+                    'zona' => 'zona',
+                    'estado' => 'estado',
+                    'tamano' => 'tamano',
+                    'created_at' => 'created_at',
+                    default => 'created_at',
+                };
+                $query->orderBy($field, $direction);
+            }, function ($query): void {
+                $query->orderByDesc('created_at');
+            })
             ->paginate(20)
             ->withQueryString();
 
         return Inertia::render('propiedades/index', [
             'propiedades' => $propiedades,
-            'filters' => $request->only(['estado', 'tipo']),
+            'filters' => $request->only(['search', 'estado', 'tipo', 'sort', 'direction']),
             'estados' => $this->options(EstadoPropiedad::cases()),
             'tipos' => $this->options(TipoPropiedad::cases()),
         ]);

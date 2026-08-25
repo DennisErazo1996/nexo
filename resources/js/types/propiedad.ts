@@ -50,5 +50,7 @@ export type PropiedadPaginado = {
     last_page: number;
     per_page: number;
     total: number;
+    from?: number | null;
+    to?: number | null;
     links: { url: string | null; label: string; active: boolean }[];
 };

@@ -34,19 +34,39 @@ class ClienteController extends Controller
         $clientes = Cliente::query()
             ->with('agenteRegistro:id,name')
             ->withMax('notas', 'created_at')
+            ->when($request->filled('search'), function ($query) use ($request): void {
+                $search = $request->string('search')->value();
+                $query->where(function ($q) use ($search): void {
+                    $q->where('nombre', 'like', "%{$search}%")
+                        ->orWhere('telefono', 'like', "%{$search}%");
+                });
+            })
             ->when($request->filled('estado'), fn ($query) => $query->where('estado', $request->string('estado')->value()))
             ->when($request->boolean('sin_seguimiento'), function ($query): void {
                 $query->whereDoesntHave('notas', function ($query): void {
                     $query->where('created_at', '>=', now()->subDays(self::DIAS_SIN_SEGUIMIENTO));
                 });
             })
-            ->orderBy('nombre')
+            ->when($request->filled('sort'), function ($query) use ($request): void {
+                $direction = strtolower($request->string('direction')->value()) === 'desc' ? 'desc' : 'asc';
+                $field = match ($request->string('sort')->value()) {
+                    'nombre' => 'nombre',
+                    'telefono' => 'telefono',
+                    'estado' => 'estado',
+                    'created_at' => 'created_at',
+                    'notas_max_created_at' => 'notas_max_created_at',
+                    default => 'nombre',
+                };
+                $query->orderBy($field, $direction);
+            }, function ($query): void {
+                $query->orderBy('nombre');
+            })
             ->paginate(20)
             ->withQueryString();
 
         return Inertia::render('clientes/index', [
             'clientes' => $clientes,
-            'filters' => $request->only(['estado', 'sin_seguimiento']),
+            'filters' => $request->only(['search', 'estado', 'sin_seguimiento', 'sort', 'direction']),
             'estados' => $this->estadosOptions(),
         ]);
     }
