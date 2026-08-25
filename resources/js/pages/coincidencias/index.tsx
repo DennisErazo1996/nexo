@@ -48,20 +48,73 @@ export default function CoincidenciasIndex({ coincidencias }: Props) {
                                         <p className="text-sm text-muted-foreground">
                                             {coincidencia.cliente?.telefono}
                                         </p>
+                                        {coincidencia.cliente
+                                            ?.agente_registro && (
+                                            <p className="mt-1 text-xs text-muted-foreground">
+                                                <span className="font-medium text-foreground/80">
+                                                    Agente:
+                                                </span>{' '}
+                                                {
+                                                    coincidencia.cliente
+                                                        .agente_registro.name
+                                                }
+                                            </p>
+                                        )}
                                     </TableCell>
                                     <TableCell>
                                         {coincidencia.propiedad && (
-                                            <Link
-                                                href={PropiedadController.show(
-                                                    coincidencia.propiedad.id,
-                                                )}
-                                                className="hover:underline"
-                                            >
-                                                {coincidencia.propiedad.tipo} en{' '}
-                                                {coincidencia.propiedad.zona} —{' '}
-                                                {coincidencia.propiedad.moneda}{' '}
-                                                {coincidencia.propiedad.precio}
-                                            </Link>
+                                            <>
+                                                <Link
+                                                    href={PropiedadController.show(
+                                                        coincidencia.propiedad
+                                                            .id,
+                                                    )}
+                                                    className="font-medium hover:underline"
+                                                >
+                                                    {
+                                                        coincidencia.propiedad
+                                                            .tipo
+                                                    }{' '}
+                                                    en{' '}
+                                                    {
+                                                        coincidencia.propiedad
+                                                            .zona
+                                                    }{' '}
+                                                    —{' '}
+                                                    {
+                                                        coincidencia.propiedad
+                                                            .moneda
+                                                    }{' '}
+                                                    {
+                                                        coincidencia.propiedad
+                                                            .precio
+                                                    }
+                                                </Link>
+                                                {coincidencia.propiedad
+                                                    .agentes &&
+                                                    coincidencia.propiedad
+                                                        .agentes.length >
+                                                        0 && (
+                                                        <p className="mt-1 text-xs text-muted-foreground">
+                                                            <span className="font-medium text-foreground/80">
+                                                                {coincidencia
+                                                                    .propiedad
+                                                                    .agentes
+                                                                    .length > 1
+                                                                    ? 'Agentes:'
+                                                                    : 'Agente:'}
+                                                            </span>{' '}
+                                                            {coincidencia.propiedad.agentes
+                                                                .map(
+                                                                    (a) =>
+                                                                        a.agente
+                                                                            ?.name,
+                                                                )
+                                                                .filter(Boolean)
+                                                                .join(', ')}
+                                                        </p>
+                                                    )}
+                                            </>
                                         )}
                                     </TableCell>
                                     <TableCell>

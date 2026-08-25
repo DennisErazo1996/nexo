@@ -6,6 +6,9 @@ enum EstadoCoincidencia: string
 {
     case Pendiente = 'pendiente';
     case Notificado = 'notificado';
+    case Visitando = 'visitando';
+    case Negociando = 'negociando';
+    case Cerrado = 'cerrado';
     case Descartado = 'descartado';
 
     /**
@@ -16,6 +19,9 @@ enum EstadoCoincidencia: string
         return match ($this) {
             self::Pendiente => 'Pendiente',
             self::Notificado => 'Notificado',
+            self::Visitando => 'Visitando',
+            self::Negociando => 'Negociando',
+            self::Cerrado => 'Cerrado',
             self::Descartado => 'Descartado',
         };
     }

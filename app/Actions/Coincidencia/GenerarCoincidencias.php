@@ -2,10 +2,12 @@
 
 namespace App\Actions\Coincidencia;
 
+use App\Enums\EstadoCoincidencia;
 use App\Enums\EstadoPropiedad;
 use App\Models\Cliente;
 use App\Models\ClienteInteres;
 use App\Models\Coincidencia;
+use App\Models\EtiquetaInteres;
 use App\Models\Propiedad;
 
 class GenerarCoincidencias
@@ -16,7 +18,13 @@ class GenerarCoincidencias
      */
     public function paraPropiedad(Propiedad $propiedad): void
     {
+        $tipoEtiquetaId = EtiquetaInteres::where('nombre', $propiedad->tipo->value)->value('id');
         $etiquetaIds = $propiedad->etiquetas()->pluck('etiqueta_id');
+
+        if ($tipoEtiquetaId && ! $etiquetaIds->contains($tipoEtiquetaId)) {
+            $etiquetaIds->push($tipoEtiquetaId);
+        }
+
         $zona = mb_strtolower(trim($propiedad->zona));
 
         $intereses = ClienteInteres::query()
@@ -41,11 +49,18 @@ class GenerarCoincidencias
     {
         $cliente = $interes->cliente;
         $zona = $interes->zona ? mb_strtolower(trim($interes->zona)) : null;
+        $interes->loadMissing('etiqueta');
+        $nombreEtiqueta = $interes->etiqueta?->nombre;
 
         $propiedades = Propiedad::query()
             ->where('equipo_id', $cliente->equipo_id)
             ->where('estado', EstadoPropiedad::Disponible)
-            ->whereHas('etiquetas', fn ($query) => $query->where('etiqueta_id', $interes->etiqueta_id))
+            ->where(function ($query) use ($interes, $nombreEtiqueta) {
+                $query->whereHas('etiquetas', fn ($q) => $q->where('etiqueta_id', $interes->etiqueta_id));
+                if ($nombreEtiqueta) {
+                    $query->orWhere('tipo', $nombreEtiqueta);
+                }
+            })
             ->when($zona, fn ($query, $zona) => $query->whereRaw('LOWER(TRIM(zona)) = ?', [$zona]))
             ->when($interes->presupuesto_min, fn ($query, $min) => $query->where('precio', '>=', $min))
             ->when($interes->presupuesto_max, fn ($query, $max) => $query->where('precio', '<=', $max))
@@ -65,6 +80,9 @@ class GenerarCoincidencias
         Coincidencia::firstOrCreate([
             'cliente_id' => $cliente->id,
             'propiedad_id' => $propiedad->id,
+        ], [
+            'equipo_id' => $propiedad->equipo_id,
+            'estado' => EstadoCoincidencia::Pendiente,
         ]);
     }
 }

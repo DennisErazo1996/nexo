@@ -27,6 +27,7 @@ class StoreNotaRequest extends FormRequest
     {
         return [
             'texto' => $this->textoRules(),
+            'propiedad_id' => $this->propiedadIdRules(),
         ];
     }
 }

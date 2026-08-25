@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Coincidencia;
 
 use App\Enums\EstadoCoincidencia;
+use App\Enums\EstadoPropiedad;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Coincidencia\DestroyCoincidenciaRequest;
 use App\Http\Requests\Coincidencia\UpdateEstadoCoincidenciaRequest;
@@ -30,8 +31,10 @@ class CoincidenciaController extends Controller
                 ->orWhereHas('propiedad', fn ($query) => $query
                     ->whereHas('agentes', fn ($query) => $query->where('agente_id', $agenteId))))
             ->with([
-                'cliente:id,nombre,telefono',
+                'cliente:id,nombre,telefono,agente_registro_id',
+                'cliente.agenteRegistro:id,name',
                 'propiedad:id,tipo,zona,precio,moneda',
+                'propiedad.agentes.agente:id,name',
             ])
             ->orderByDesc('created_at')
             ->paginate(20);
@@ -42,15 +45,20 @@ class CoincidenciaController extends Controller
     }
 
     /**
-     * Update a coincidencia's estado (notificado or descartado).
+     * Update a coincidencia's estado.
      */
     public function updateEstado(UpdateEstadoCoincidenciaRequest $request, Coincidencia $coincidencia): RedirectResponse
     {
-        $coincidencia->update($request->validated());
+        $nuevoEstado = EstadoCoincidencia::from($request->validated('estado'));
+        $coincidencia->update(['estado' => $nuevoEstado]);
+
+        if ($nuevoEstado === EstadoCoincidencia::Cerrado) {
+            $coincidencia->propiedad()->update(['estado' => EstadoPropiedad::Vendida]);
+        }
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Coincidencia actualizada.')]);
 
-        return to_route('coincidencias.index');
+        return back();
     }
 
     /**

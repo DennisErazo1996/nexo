@@ -74,7 +74,14 @@ class PropiedadController extends Controller
         $propiedad = DB::transaction(function () use ($request, $procesarFoto) {
             $propiedad = Propiedad::create($request->safe()->except(['etiquetas', 'agentes', 'fotos']));
 
-            foreach ($request->validated('etiquetas', []) as $etiquetaId) {
+            $tipoEtiquetaId = EtiquetaInteres::where('nombre', $propiedad->tipo->value)->value('id');
+            $etiquetas = collect($request->validated('etiquetas', []));
+
+            if ($tipoEtiquetaId && ! $etiquetas->contains($tipoEtiquetaId)) {
+                $etiquetas->push($tipoEtiquetaId);
+            }
+
+            foreach ($etiquetas as $etiquetaId) {
                 $propiedad->etiquetas()->create(['etiqueta_id' => $etiquetaId]);
             }
 
@@ -116,7 +123,10 @@ class PropiedadController extends Controller
             'agentes.agente:id,name,telefono',
         ]);
 
-        $coincidencias = Coincidencia::with('cliente:id,nombre,telefono')
+        $coincidencias = Coincidencia::with([
+            'cliente:id,nombre,telefono,agente_registro_id',
+            'cliente.agenteRegistro:id,name',
+        ])
             ->where('propiedad_id', $propiedad->id)
             ->get();
 

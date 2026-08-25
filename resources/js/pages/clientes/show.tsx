@@ -1,5 +1,5 @@
 import { Form, Head } from '@inertiajs/react';
-import ClienteController from '@/actions/App/Http/Controllers/Cliente/ClienteController';
+import { useState } from 'react';
 import ClienteInteresController from '@/actions/App/Http/Controllers/ClienteInteres/ClienteInteresController';
 import CoincidenciaController from '@/actions/App/Http/Controllers/Coincidencia/CoincidenciaController';
 import NotaSeguimientoController from '@/actions/App/Http/Controllers/NotaSeguimiento/NotaSeguimientoController';
@@ -19,22 +19,26 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { index } from '@/routes/clientes';
+import { Check, X } from 'lucide-react';
 import type { Cliente, EstadoOption, EtiquetaInteres } from '@/types/cliente';
-import type { Coincidencia } from '@/types/coincidencia';
+import type { Coincidencia, EstadoCoincidencia } from '@/types/coincidencia';
 
 type Props = {
     cliente: Cliente;
     coincidencias: Coincidencia[];
     etiquetas: EtiquetaInteres[];
     estados: EstadoOption[];
+    estadosCoincidencia: { value: EstadoCoincidencia; label: string }[];
 };
 
 export default function ClienteShow({
     cliente,
     coincidencias,
     etiquetas,
-    estados,
+    estadosCoincidencia,
 }: Props) {
+    const [isInteresDialogOpen, setIsInteresDialogOpen] = useState(false);
+
     return (
         <>
             <Head title={cliente.nombre} />
@@ -45,38 +49,15 @@ export default function ClienteShow({
                         title={cliente.nombre}
                         description={cliente.telefono}
                     />
-
-                    <Form
-                        {...ClienteController.updateEstado.form(cliente.id)}
-                        options={{ preserveScroll: true }}
-                    >
-                        {({ processing }) => (
-                            <select
-                                name="estado"
-                                defaultValue={cliente.estado}
-                                disabled={processing}
-                                onChange={(event) =>
-                                    event.target.form?.requestSubmit()
-                                }
-                                className="h-9 rounded-md border border-input bg-background px-3 text-sm"
-                            >
-                                {estados.map((estado) => (
-                                    <option
-                                        key={estado.value}
-                                        value={estado.value}
-                                    >
-                                        {estado.label}
-                                    </option>
-                                ))}
-                            </select>
-                        )}
-                    </Form>
                 </div>
 
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
                         <h3 className="text-base font-medium">Intereses</h3>
-                        <Dialog>
+                        <Dialog
+                            open={isInteresDialogOpen}
+                            onOpenChange={setIsInteresDialogOpen}
+                        >
                             <DialogTrigger asChild>
                                 <Button size="sm" variant="outline">
                                     Agregar interés
@@ -90,6 +71,10 @@ export default function ClienteShow({
                                     {...ClienteInteresController.store.form(
                                         cliente.id,
                                     )}
+                                    resetOnSuccess
+                                    onSuccess={() =>
+                                        setIsInteresDialogOpen(false)
+                                    }
                                     className="space-y-4"
                                 >
                                     {({ processing, errors }) => (
@@ -233,43 +218,173 @@ export default function ClienteShow({
                 </div>
 
                 {coincidencias.length > 0 && (
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                         <h3 className="text-base font-medium">
                             Propiedades potenciales
                         </h3>
-                        <ul className="text-sm">
+                        <ul className="space-y-2">
                             {coincidencias.map((coincidencia) => (
                                 <li
                                     key={coincidencia.id}
-                                    className="flex items-center gap-2"
+                                    className="flex flex-col justify-between gap-3 rounded-lg border p-3 sm:flex-row sm:items-center"
                                 >
-                                    <span>
-                                        {coincidencia.propiedad?.tipo} en{' '}
-                                        {coincidencia.propiedad?.zona} —{' '}
-                                        {coincidencia.propiedad?.moneda}{' '}
-                                        {coincidencia.propiedad?.precio}
-                                    </span>
-                                    <Badge variant="secondary">
-                                        {coincidencia.estado}
-                                    </Badge>
-                                    <Form
-                                        {...CoincidenciaController.destroy.form(
-                                            coincidencia.id,
-                                        )}
-                                        options={{ preserveScroll: true }}
-                                        className="ml-auto"
-                                    >
-                                        {({ processing }) => (
-                                            <Button
-                                                type="submit"
-                                                size="sm"
-                                                variant="ghost"
-                                                disabled={processing}
+                                    <div>
+                                        <p className="font-medium text-sm">
+                                            {coincidencia.propiedad?.tipo} en{' '}
+                                            {coincidencia.propiedad?.zona} —{' '}
+                                            {coincidencia.propiedad?.moneda}{' '}
+                                            {coincidencia.propiedad?.precio}
+                                        </p>
+                                        {coincidencia.propiedad?.agentes &&
+                                            coincidencia.propiedad.agentes
+                                                .length > 0 && (
+                                                <p className="text-xs text-muted-foreground">
+                                                    {coincidencia.propiedad
+                                                        .agentes.length > 1
+                                                        ? 'Agentes:'
+                                                        : 'Agente:'}{' '}
+                                                    {coincidencia.propiedad.agentes
+                                                        .map(
+                                                            (a) =>
+                                                                a.agente?.name,
+                                                        )
+                                                        .filter(Boolean)
+                                                        .join(', ')}
+                                                </p>
+                                            )}
+                                    </div>
+
+                                    <div className="flex flex-wrap items-center gap-2">
+                                        {coincidencia.estado === 'pendiente' ? (
+                                            <>
+                                                <Badge variant="secondary">
+                                                    Pendiente
+                                                </Badge>
+                                                <Form
+                                                    {...CoincidenciaController.updateEstado.form(
+                                                        coincidencia.id,
+                                                    )}
+                                                    options={{
+                                                        preserveScroll: true,
+                                                    }}
+                                                >
+                                                    {({ processing }) => (
+                                                        <>
+                                                            <input
+                                                                type="hidden"
+                                                                name="estado"
+                                                                value="notificado"
+                                                            />
+                                                            <Button
+                                                                type="submit"
+                                                                size="sm"
+                                                                disabled={
+                                                                    processing
+                                                                }
+                                                                className="h-8 gap-1 px-2.5 text-xs"
+                                                            >
+                                                                <Check className="size-3.5" />
+                                                                Notificado
+                                                            </Button>
+                                                        </>
+                                                    )}
+                                                </Form>
+                                                <Form
+                                                    {...CoincidenciaController.updateEstado.form(
+                                                        coincidencia.id,
+                                                    )}
+                                                    options={{
+                                                        preserveScroll: true,
+                                                    }}
+                                                >
+                                                    {({ processing }) => (
+                                                        <>
+                                                            <input
+                                                                type="hidden"
+                                                                name="estado"
+                                                                value="descartado"
+                                                            />
+                                                            <Button
+                                                                type="submit"
+                                                                variant="outline"
+                                                                size="sm"
+                                                                disabled={
+                                                                    processing
+                                                                }
+                                                                className="h-8 gap-1 px-2 text-xs text-muted-foreground hover:text-destructive"
+                                                                title="Descartar"
+                                                            >
+                                                                <X className="size-3.5" />
+                                                            </Button>
+                                                        </>
+                                                    )}
+                                                </Form>
+                                            </>
+                                        ) : (
+                                            <Form
+                                                {...CoincidenciaController.updateEstado.form(
+                                                    coincidencia.id,
+                                                )}
+                                                options={{
+                                                    preserveScroll: true,
+                                                }}
                                             >
-                                                Eliminar
-                                            </Button>
+                                                {({ processing }) => (
+                                                    <select
+                                                        name="estado"
+                                                        defaultValue={
+                                                            coincidencia.estado
+                                                        }
+                                                        disabled={processing}
+                                                        onChange={(event) =>
+                                                            event.target.form?.requestSubmit()
+                                                        }
+                                                        className="h-8 rounded-md border border-input bg-background px-2.5 text-xs font-medium"
+                                                    >
+                                                        {estadosCoincidencia
+                                                            .filter(
+                                                                (e) =>
+                                                                    e.value !==
+                                                                    'pendiente',
+                                                            )
+                                                            .map((estado) => (
+                                                                <option
+                                                                    key={
+                                                                        estado.value
+                                                                    }
+                                                                    value={
+                                                                        estado.value
+                                                                    }
+                                                                >
+                                                                    {
+                                                                        estado.label
+                                                                    }
+                                                                </option>
+                                                            ))}
+                                                    </select>
+                                                )}
+                                            </Form>
                                         )}
-                                    </Form>
+
+                                        <Form
+                                            {...CoincidenciaController.destroy.form(
+                                                coincidencia.id,
+                                            )}
+                                            options={{ preserveScroll: true }}
+                                        >
+                                            {({ processing }) => (
+                                                <Button
+                                                    type="submit"
+                                                    size="sm"
+                                                    variant="ghost"
+                                                    disabled={processing}
+                                                    className="h-8 text-xs text-muted-foreground hover:text-destructive"
+                                                >
+                                                    Eliminar
+                                                </Button>
+                                            )}
+                                        </Form>
+                                    </div>
                                 </li>
                             ))}
                         </ul>
@@ -284,10 +399,54 @@ export default function ClienteShow({
                     <Form
                         {...NotaSeguimientoController.store.form(cliente.id)}
                         resetOnSuccess
-                        className="space-y-2"
+                        className="space-y-3"
                     >
                         {({ processing, errors }) => (
-                            <>
+                            <div className="grid gap-2">
+                                {coincidencias.length > 0 && (
+                                    <div className="grid gap-1">
+                                        <Label
+                                            htmlFor="propiedad_id"
+                                            className="text-xs text-muted-foreground"
+                                        >
+                                            Propiedad relacionada (opcional)
+                                        </Label>
+                                        <select
+                                            id="propiedad_id"
+                                            name="propiedad_id"
+                                            className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+                                        >
+                                            <option value="">
+                                                General (sin propiedad
+                                                específica)
+                                            </option>
+                                            {coincidencias.map(
+                                                (c) =>
+                                                    c.propiedad && (
+                                                        <option
+                                                            key={c.propiedad.id}
+                                                            value={
+                                                                c.propiedad.id
+                                                            }
+                                                        >
+                                                            {c.propiedad.tipo}{' '}
+                                                            en{' '}
+                                                            {c.propiedad.zona} (
+                                                            {
+                                                                c.propiedad
+                                                                    .moneda
+                                                            }{' '}
+                                                            {
+                                                                c.propiedad
+                                                                    .precio
+                                                            }
+                                                            )
+                                                        </option>
+                                                    ),
+                                            )}
+                                        </select>
+                                    </div>
+                                )}
                                 <Textarea
                                     name="texto"
                                     placeholder="Nueva nota..."
@@ -298,10 +457,11 @@ export default function ClienteShow({
                                     type="submit"
                                     size="sm"
                                     disabled={processing}
+                                    className="w-fit"
                                 >
                                     Agregar nota
                                 </Button>
-                            </>
+                            </div>
                         )}
                     </Form>
 
@@ -309,10 +469,19 @@ export default function ClienteShow({
                         {cliente.notas?.map((nota) => (
                             <div
                                 key={nota.id}
-                                className="rounded-lg border p-3"
+                                className="space-y-1.5 rounded-lg border p-3"
                             >
+                                {nota.propiedad && (
+                                    <Badge
+                                        variant="outline"
+                                        className="text-xs font-normal"
+                                    >
+                                        {nota.propiedad.tipo} en{' '}
+                                        {nota.propiedad.zona}
+                                    </Badge>
+                                )}
                                 <p className="text-sm">{nota.texto}</p>
-                                <p className="mt-1 text-xs text-muted-foreground">
+                                <p className="text-xs text-muted-foreground">
                                     {nota.agente?.name} ·{' '}
                                     {new Date(
                                         nota.created_at,

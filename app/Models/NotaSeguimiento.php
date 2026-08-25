@@ -13,13 +13,15 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property int $cliente_id
  * @property int $agente_id
+ * @property int|null $propiedad_id
  * @property string $texto
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Cliente $cliente
  * @property-read User $agente
+ * @property-read Propiedad|null $propiedad
  */
-#[Fillable(['cliente_id', 'agente_id', 'texto'])]
+#[Fillable(['cliente_id', 'agente_id', 'propiedad_id', 'texto'])]
 class NotaSeguimiento extends Model
 {
     /** @use HasFactory<NotaSeguimientoFactory> */
@@ -48,5 +50,15 @@ class NotaSeguimiento extends Model
     public function agente(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the propiedad this nota is related to, if any.
+     *
+     * @return BelongsTo<Propiedad, $this>
+     */
+    public function propiedad(): BelongsTo
+    {
+        return $this->belongsTo(Propiedad::class);
     }
 }

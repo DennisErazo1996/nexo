@@ -27,8 +27,16 @@ export type NotaSeguimiento = {
     id: number;
     texto: string;
     agente_id: number;
+    propiedad_id?: number | null;
     created_at: string;
     agente?: { id: number; name: string };
+    propiedad?: {
+        id: number;
+        tipo: string;
+        zona: string;
+        precio?: string;
+        moneda?: string;
+    } | null;
 };
 
 export type Cliente = {

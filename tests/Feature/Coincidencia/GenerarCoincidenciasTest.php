@@ -169,4 +169,82 @@ class GenerarCoincidenciasTest extends TestCase
 
         $this->assertSame(1, Coincidencia::count());
     }
+
+    public function test_client_with_existing_match_receives_new_match_when_second_compatible_propiedad_is_created()
+    {
+        $agente = User::factory()->create();
+        $etiqueta = EtiquetaInteres::factory()->create(['nombre' => 'terreno']);
+        $cliente = Cliente::factory()->forEquipo($agente->equipo)->create();
+        ClienteInteres::factory()->create([
+            'cliente_id' => $cliente->id,
+            'etiqueta_id' => $etiqueta->id,
+            'zona' => 'Laguna Seca',
+            'presupuesto_min' => 100000,
+            'presupuesto_max' => 2000000,
+        ]);
+
+        // First propiedad created
+        $this->actingAs($agente)->post(route('propiedades.store'), [
+            'tipo' => 'terreno',
+            'zona' => 'Laguna Seca',
+            'tamano' => 10,
+            'unidad_medida' => 'manzana',
+            'precio' => 500000,
+            'moneda' => 'HNL',
+            'forma_pago' => 'contado',
+            'etiquetas' => [$etiqueta->id],
+        ]);
+
+        $this->assertDatabaseCount('matches', 1);
+
+        // Second propiedad created with same interest
+        $this->actingAs($agente)->post(route('propiedades.store'), [
+            'tipo' => 'terreno',
+            'zona' => 'Laguna Seca',
+            'tamano' => 20,
+            'unidad_medida' => 'manzana',
+            'precio' => 800000,
+            'moneda' => 'HNL',
+            'forma_pago' => 'contado',
+            'etiquetas' => [$etiqueta->id],
+        ]);
+
+        $this->assertDatabaseCount('matches', 2);
+        $this->assertSame(2, Coincidencia::where('cliente_id', $cliente->id)->count());
+    }
+
+    public function test_creating_propiedad_matches_interest_by_tipo_without_explicit_etiquetas()
+    {
+        $agente = User::factory()->create();
+        $etiquetaTerreno = EtiquetaInteres::factory()->create(['nombre' => 'terreno']);
+        $etiquetaAgricola = EtiquetaInteres::factory()->create(['nombre' => 'agricola']);
+
+        $cliente = Cliente::factory()->forEquipo($agente->equipo)->create();
+        ClienteInteres::factory()->create([
+            'cliente_id' => $cliente->id,
+            'etiqueta_id' => $etiquetaTerreno->id,
+            'zona' => 'Danli',
+            'presupuesto_min' => 100000,
+            'presupuesto_max' => 500000,
+        ]);
+
+        // Propiedad has tipo 'terreno' and only 'agricola' in submitted etiquetas
+        $this->actingAs($agente)->post(route('propiedades.store'), [
+            'tipo' => 'terreno',
+            'zona' => 'Danli',
+            'tamano' => 5,
+            'unidad_medida' => 'manzana',
+            'precio' => 200000,
+            'moneda' => 'HNL',
+            'forma_pago' => 'contado',
+            'etiquetas' => [$etiquetaAgricola->id],
+        ]);
+
+        $propiedad = Propiedad::firstOrFail();
+
+        $this->assertDatabaseHas('matches', [
+            'cliente_id' => $cliente->id,
+            'propiedad_id' => $propiedad->id,
+        ]);
+    }
 }

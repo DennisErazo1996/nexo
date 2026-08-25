@@ -148,6 +148,23 @@ class ClienteManagementTest extends TestCase
         $this->assertSame($agente->id, $cliente->notas()->first()->agente_id);
     }
 
+    public function test_agente_can_add_nota_de_seguimiento_with_associated_propiedad()
+    {
+        $agente = User::factory()->create();
+        $cliente = Cliente::factory()->registradoPor($agente)->create();
+        $propiedad = Propiedad::factory()->forEquipo($agente->equipo)->create();
+
+        $response = $this->actingAs($agente)->post(route('clientes.notas.store', $cliente), [
+            'texto' => 'Mostré la propiedad, le gustó mucho.',
+            'propiedad_id' => $propiedad->id,
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertSame(1, $cliente->notas()->count());
+        $this->assertSame($propiedad->id, $cliente->notas()->first()->propiedad_id);
+        $this->assertSame($propiedad->id, $cliente->notas()->first()->propiedad->id);
+    }
+
     public function test_index_filters_by_estado()
     {
         $agente = User::factory()->create();

@@ -23,7 +23,7 @@ use Illuminate\Support\Carbon;
  * @property-read Cliente $cliente
  * @property-read Propiedad $propiedad
  */
-#[Fillable(['cliente_id', 'propiedad_id', 'estado'])]
+#[Fillable(['equipo_id', 'cliente_id', 'propiedad_id', 'estado'])]
 class Coincidencia extends Model
 {
     use BelongsToEquipo;

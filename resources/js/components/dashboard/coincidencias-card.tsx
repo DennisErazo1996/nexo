@@ -77,7 +77,7 @@ export function CoincidenciasCard({
                                 className="flex flex-col justify-between gap-3 rounded-lg border bg-card/60 p-3 transition-colors hover:bg-muted/40 sm:flex-row sm:items-center"
                             >
                                 <div className="space-y-1">
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex flex-wrap items-center gap-2">
                                         {item.cliente ? (
                                             <Link
                                                 href={ClienteController.show(
@@ -97,10 +97,15 @@ export function CoincidenciasCard({
                                                 ({item.cliente.telefono})
                                             </span>
                                         )}
+                                        {item.cliente?.agente_registro && (
+                                            <span className="rounded bg-muted px-1.5 py-0.5 text-[11px] text-muted-foreground">
+                                                Agente: {item.cliente.agente_registro.name}
+                                            </span>
+                                        )}
                                     </div>
 
                                     {item.propiedad && (
-                                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                                             <Link
                                                 href={PropiedadController.show(
                                                     item.propiedad.id,
@@ -118,6 +123,18 @@ export function CoincidenciasCard({
                                                 {item.propiedad.moneda}{' '}
                                                 {item.propiedad.precio}
                                             </span>
+                                            {item.propiedad.agentes && item.propiedad.agentes.length > 0 && (
+                                                <>
+                                                    <span>•</span>
+                                                    <span>
+                                                        {item.propiedad.agentes.length > 1 ? 'Agentes:' : 'Agente:'}{' '}
+                                                        {item.propiedad.agentes
+                                                            .map((a) => a.agente?.name)
+                                                            .filter(Boolean)
+                                                            .join(', ')}
+                                                    </span>
+                                                </>
+                                            )}
                                         </div>
                                     )}
                                 </div>

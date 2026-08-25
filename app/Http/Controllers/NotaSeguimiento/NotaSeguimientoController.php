@@ -17,6 +17,7 @@ class NotaSeguimientoController extends Controller
     {
         $cliente->notas()->create([
             'texto' => $request->validated('texto'),
+            'propiedad_id' => $request->validated('propiedad_id'),
             'agente_id' => $request->user()->id,
         ]);
 

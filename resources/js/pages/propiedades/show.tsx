@@ -6,6 +6,16 @@ import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { buildTextoCompartir } from '@/lib/texto-compartir';
 import { index } from '@/routes/propiedades';
@@ -59,37 +69,96 @@ export default function PropiedadShow({
             <Head title={`${propiedad.tipo} — ${propiedad.zona}`} />
 
             <div className="max-w-2xl space-y-8 p-4">
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-wrap items-start justify-between gap-4">
                     <Heading
                         title={`${propiedad.tipo} en ${propiedad.zona}`}
                         description={`${propiedad.moneda} ${propiedad.precio}`}
                     />
 
-                    <Form
-                        {...PropiedadController.updateEstado.form(propiedad.id)}
-                        options={{ preserveScroll: true }}
-                    >
-                        {({ processing }) => (
-                            <select
-                                name="estado"
-                                defaultValue={propiedad.estado}
-                                disabled={processing}
-                                onChange={(event) =>
-                                    event.target.form?.requestSubmit()
-                                }
-                                className="h-9 rounded-md border border-input bg-background px-3 text-sm"
-                            >
-                                {estados.map((estado) => (
-                                    <option
-                                        key={estado.value}
-                                        value={estado.value}
+                    <div className="flex items-center gap-2">
+                        {propiedad.estado !== 'vendida' && (
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <Button
+                                        variant="default"
+                                        size="sm"
+                                        className="h-9 bg-emerald-600 text-xs text-white hover:bg-emerald-700"
                                     >
-                                        {estado.label}
-                                    </option>
-                                ))}
-                            </select>
+                                        Marcar como vendida
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>
+                                            ¿Marcar propiedad como vendida?
+                                        </DialogTitle>
+                                        <DialogDescription>
+                                            El estado de la propiedad cambiará a
+                                            "Vendida".
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <DialogFooter className="gap-2">
+                                        <DialogClose asChild>
+                                            <Button variant="secondary">
+                                                Cancelar
+                                            </Button>
+                                        </DialogClose>
+                                        <Form
+                                            {...PropiedadController.updateEstado.form(
+                                                propiedad.id,
+                                            )}
+                                            options={{ preserveScroll: true }}
+                                        >
+                                            {({ processing }) => (
+                                                <>
+                                                    <input
+                                                        type="hidden"
+                                                        name="estado"
+                                                        value="vendida"
+                                                    />
+                                                    <Button
+                                                        type="submit"
+                                                        className="bg-emerald-600 text-white hover:bg-emerald-700"
+                                                        disabled={processing}
+                                                    >
+                                                        Confirmar venta
+                                                    </Button>
+                                                </>
+                                            )}
+                                        </Form>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
                         )}
-                    </Form>
+
+                        <Form
+                            {...PropiedadController.updateEstado.form(
+                                propiedad.id,
+                            )}
+                            options={{ preserveScroll: true }}
+                        >
+                            {({ processing }) => (
+                                <select
+                                    name="estado"
+                                    defaultValue={propiedad.estado}
+                                    disabled={processing}
+                                    onChange={(event) =>
+                                        event.target.form?.requestSubmit()
+                                    }
+                                    className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+                                >
+                                    {estados.map((estado) => (
+                                        <option
+                                            key={estado.value}
+                                            value={estado.value}
+                                        >
+                                            {estado.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            )}
+                        </Form>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 text-sm">
@@ -157,7 +226,14 @@ export default function PropiedadShow({
                                     key={coincidencia.id}
                                     className="flex items-center gap-2"
                                 >
-                                    <span>{coincidencia.cliente?.nombre}</span>
+                                    <div>
+                                        <span>{coincidencia.cliente?.nombre}</span>
+                                        {coincidencia.cliente?.agente_registro && (
+                                            <p className="text-xs text-muted-foreground">
+                                                Agente: {coincidencia.cliente.agente_registro.name}
+                                            </p>
+                                        )}
+                                    </div>
                                     <Badge variant="secondary">
                                         {coincidencia.estado}
                                     </Badge>

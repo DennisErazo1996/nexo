@@ -1,4 +1,10 @@
-export type EstadoCoincidencia = 'pendiente' | 'notificado' | 'descartado';
+export type EstadoCoincidencia =
+    | 'pendiente'
+    | 'notificado'
+    | 'visitando'
+    | 'negociando'
+    | 'cerrado'
+    | 'descartado';
 
 export type Coincidencia = {
     id: number;
@@ -6,13 +12,30 @@ export type Coincidencia = {
     propiedad_id: number;
     estado: EstadoCoincidencia;
     created_at: string;
-    cliente?: { id: number; nombre: string; telefono: string };
+    cliente?: {
+        id: number;
+        nombre: string;
+        telefono: string;
+        agente_registro_id?: number;
+        agente_registro?: {
+            id: number;
+            name: string;
+        };
+    };
     propiedad?: {
         id: number;
         tipo: string;
         zona: string;
         precio: string;
         moneda: string;
+        agentes?: {
+            id: number;
+            agente_id: number;
+            agente?: {
+                id: number;
+                name: string;
+            };
+        }[];
     };
 };
 
@@ -24,3 +47,4 @@ export type CoincidenciaPaginado = {
     total: number;
     links: { url: string | null; label: string; active: boolean }[];
 };
+

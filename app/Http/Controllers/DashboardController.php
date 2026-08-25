@@ -128,8 +128,10 @@ class DashboardController extends Controller
         $coincidenciasRecientes = Coincidencia::query()
             ->where('estado', EstadoCoincidencia::Pendiente)
             ->with([
-                'cliente:id,nombre,telefono,estado',
+                'cliente:id,nombre,telefono,estado,agente_registro_id',
+                'cliente.agenteRegistro:id,name',
                 'propiedad:id,tipo,zona,precio,moneda,estado',
+                'propiedad.agentes.agente:id,name',
                 'propiedad.fotos' => fn ($query) => $query->limit(1),
             ])
             ->orderByDesc('created_at')

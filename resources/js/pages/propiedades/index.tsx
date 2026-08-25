@@ -4,6 +4,16 @@ import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
+import {
     Table,
     TableBody,
     TableCell,
@@ -144,23 +154,51 @@ export default function PropiedadesIndex({
                                     </Badge>
                                 </TableCell>
                                 <TableCell>
-                                    <Form
-                                        {...PropiedadController.destroy.form(
-                                            propiedad.id,
-                                        )}
-                                        options={{ preserveScroll: true }}
-                                    >
-                                        {({ processing }) => (
+                                    <Dialog>
+                                        <DialogTrigger asChild>
                                             <Button
-                                                type="submit"
                                                 variant="destructive"
                                                 size="sm"
-                                                disabled={processing}
                                             >
                                                 Eliminar
                                             </Button>
-                                        )}
-                                    </Form>
+                                        </DialogTrigger>
+                                        <DialogContent>
+                                            <DialogHeader>
+                                                <DialogTitle>
+                                                    ¿Eliminar propiedad?
+                                                </DialogTitle>
+                                                <DialogDescription>
+                                                    Esta acción no se puede deshacer. Se eliminarán permanentemente la propiedad, sus fotos y las coincidencias asociadas.
+                                                </DialogDescription>
+                                            </DialogHeader>
+                                            <DialogFooter className="gap-2">
+                                                <DialogClose asChild>
+                                                    <Button variant="secondary">
+                                                        Cancelar
+                                                    </Button>
+                                                </DialogClose>
+                                                <Form
+                                                    {...PropiedadController.destroy.form(
+                                                        propiedad.id,
+                                                    )}
+                                                    options={{
+                                                        preserveScroll: true,
+                                                    }}
+                                                >
+                                                    {({ processing }) => (
+                                                        <Button
+                                                            type="submit"
+                                                            variant="destructive"
+                                                            disabled={processing}
+                                                        >
+                                                            Confirmar eliminación
+                                                        </Button>
+                                                    )}
+                                                </Form>
+                                            </DialogFooter>
+                                        </DialogContent>
+                                    </Dialog>
                                 </TableCell>
                             </TableRow>
                         ))}

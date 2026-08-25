@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Cliente;
 
 use App\Actions\Coincidencia\GenerarCoincidencias;
 use App\Enums\EstadoCliente;
+use App\Enums\EstadoCoincidencia;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Cliente\BuscarClienteRequest;
 use App\Http\Requests\Cliente\StoreClienteRequest;
@@ -130,10 +131,14 @@ class ClienteController extends Controller
             'intereses.etiqueta:id,nombre',
             'intereses.agente:id,name',
             'notas.agente:id,name',
+            'notas.propiedad:id,tipo,zona,precio,moneda',
         ]);
         $cliente->setRelation('notas', $cliente->notas->sortByDesc('created_at')->values());
 
-        $coincidencias = Coincidencia::with('propiedad:id,tipo,zona,precio,moneda')
+        $coincidencias = Coincidencia::with([
+            'propiedad:id,tipo,zona,precio,moneda',
+            'propiedad.agentes.agente:id,name',
+        ])
             ->where('cliente_id', $cliente->id)
             ->get();
 
@@ -142,7 +147,24 @@ class ClienteController extends Controller
             'coincidencias' => $coincidencias,
             'etiquetas' => EtiquetaInteres::orderBy('nombre')->get(['id', 'nombre']),
             'estados' => $this->estadosOptions(),
+            'estadosCoincidencia' => $this->estadosCoincidenciaOptions(),
         ]);
+    }
+
+    /**
+     * Get the list of estado coincidencia options with their Spanish labels.
+     *
+     * @return array<int, array{value: string, label: string}>
+     */
+    private function estadosCoincidenciaOptions(): array
+    {
+        return array_map(
+            fn (EstadoCoincidencia $estado) => [
+                'value' => $estado->value,
+                'label' => $estado->label(),
+            ],
+            EstadoCoincidencia::cases(),
+        );
     }
 
     /**

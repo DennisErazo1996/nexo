@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Coincidencia;
 
+use App\Enums\EstadoCoincidencia;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -24,7 +25,7 @@ class UpdateEstadoCoincidenciaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'estado' => ['required', 'string', Rule::in(['notificado', 'descartado'])],
+            'estado' => ['required', 'string', Rule::in(array_column(EstadoCoincidencia::cases(), 'value'))],
         ];
     }
 }
