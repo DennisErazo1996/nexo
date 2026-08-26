@@ -11,8 +11,9 @@ import {
     Tag,
     Upload,
     Users,
+    X,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import PropiedadController from '@/actions/App/Http/Controllers/Propiedad/PropiedadController';
 import InputError from '@/components/input-error';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -75,14 +76,31 @@ export default function PropiedadCreate({
     formasPago,
     condicionesLegales,
 }: Props) {
+    const fotosInputRef = useRef<HTMLInputElement>(null);
+    const [fotos, setFotos] = useState<File[]>([]);
     const [previews, setPreviews] = useState<string[]>([]);
-    const [selectedFilesCount, setSelectedFilesCount] = useState<number>(0);
     const [tieneConstruccion, setTieneConstruccion] = useState(false);
 
     function onFotosChange(event: React.ChangeEvent<HTMLInputElement>) {
         const files = event.target.files ? Array.from(event.target.files) : [];
-        setSelectedFilesCount(files.length);
+        previews.forEach((src) => URL.revokeObjectURL(src));
+        setFotos(files);
         setPreviews(files.map((file) => URL.createObjectURL(file)));
+    }
+
+    function removeFoto(index: number) {
+        const nextFotos = fotos.filter((_, i) => i !== index);
+        URL.revokeObjectURL(previews[index]);
+        const nextPreviews = previews.filter((_, i) => i !== index);
+
+        const dataTransfer = new DataTransfer();
+        nextFotos.forEach((file) => dataTransfer.items.add(file));
+        if (fotosInputRef.current) {
+            fotosInputRef.current.files = dataTransfer.files;
+        }
+
+        setFotos(nextFotos);
+        setPreviews(nextPreviews);
     }
 
     return (
@@ -546,12 +564,12 @@ export default function PropiedadCreate({
                                             </div>
                                         </div>
 
-                                        {selectedFilesCount > 0 && (
+                                        {fotos.length > 0 && (
                                             <Badge
                                                 variant="secondary"
                                                 className="text-xs font-semibold"
                                             >
-                                                {selectedFilesCount} foto(s)
+                                                {fotos.length} foto(s)
                                                 seleccionada(s)
                                             </Badge>
                                         )}
@@ -575,6 +593,7 @@ export default function PropiedadCreate({
                                             </p>
                                         </div>
                                         <input
+                                            ref={fotosInputRef}
                                             id="fotos"
                                             name="fotos[]"
                                             type="file"
@@ -615,6 +634,18 @@ export default function PropiedadCreate({
                                                             alt={`Preview ${index + 1}`}
                                                             className="size-full object-cover"
                                                         />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                removeFoto(
+                                                                    index,
+                                                                )
+                                                            }
+                                                            aria-label="Eliminar foto"
+                                                            className="absolute top-1.5 right-1.5 flex size-6 items-center justify-center rounded-full bg-red-600 text-white shadow-sm transition-colors hover:bg-red-700"
+                                                        >
+                                                            <X className="size-3.5" />
+                                                        </button>
                                                     </div>
                                                 ))}
                                             </div>

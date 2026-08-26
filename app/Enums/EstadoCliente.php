@@ -6,10 +6,6 @@ enum EstadoCliente: string
 {
     case Nuevo = 'nuevo';
     case Contactado = 'contactado';
-    case Visitando = 'visitando';
-    case Negociando = 'negociando';
-    case Cerrado = 'cerrado';
-    case Perdido = 'perdido';
 
     /**
      * Get the human-readable label for the estado.
@@ -19,10 +15,6 @@ enum EstadoCliente: string
         return match ($this) {
             self::Nuevo => 'Nuevo',
             self::Contactado => 'Contactado',
-            self::Visitando => 'Visitando',
-            self::Negociando => 'Negociando',
-            self::Cerrado => 'Cerrado',
-            self::Perdido => 'Perdido',
         };
     }
 }

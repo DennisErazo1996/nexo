@@ -86,6 +86,16 @@ class Cliente extends Model
     }
 
     /**
+     * Get the propiedad matches recorded for this cliente.
+     *
+     * @return HasMany<Coincidencia, $this>
+     */
+    public function coincidencias(): HasMany
+    {
+        return $this->hasMany(Coincidencia::class);
+    }
+
+    /**
      * Normalize the telefono before it is stored.
      *
      * @return Attribute<string, string>

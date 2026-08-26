@@ -77,26 +77,6 @@ const ESTADO_CLIENTE_STYLES: Record<
         text: 'text-amber-700 dark:text-amber-300',
         border: 'border-amber-200 dark:border-amber-800/60',
     },
-    visitando: {
-        bg: 'bg-purple-500/10 dark:bg-purple-500/20',
-        text: 'text-purple-700 dark:text-purple-300',
-        border: 'border-purple-200 dark:border-purple-800/60',
-    },
-    negociando: {
-        bg: 'bg-indigo-500/10 dark:bg-indigo-500/20',
-        text: 'text-indigo-700 dark:text-indigo-300',
-        border: 'border-indigo-200 dark:border-indigo-800/60',
-    },
-    cerrado: {
-        bg: 'bg-emerald-500/10 dark:bg-emerald-500/20',
-        text: 'text-emerald-700 dark:text-emerald-300',
-        border: 'border-emerald-200 dark:border-emerald-800/60',
-    },
-    perdido: {
-        bg: 'bg-zinc-500/10 dark:bg-zinc-500/20',
-        text: 'text-zinc-700 dark:text-zinc-300',
-        border: 'border-zinc-200 dark:border-zinc-800/60',
-    },
 };
 
 function getInitials(name: string): string {

@@ -22,14 +22,14 @@ class ClienteScopingTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function test_agente_cannot_change_estado_of_cliente_from_another_equipo()
+    public function test_agente_cannot_add_nota_to_cliente_from_another_equipo()
     {
         $agenteA = User::factory()->create();
         $agenteB = User::factory()->create();
         $clienteB = Cliente::factory()->registradoPor($agenteB)->create();
 
-        $response = $this->actingAs($agenteA)->patch(route('clientes.estado.update', $clienteB), [
-            'estado' => 'cerrado',
+        $response = $this->actingAs($agenteA)->post(route('clientes.notas.store', $clienteB), [
+            'texto' => 'Nota no autorizada.',
         ]);
 
         $response->assertNotFound();

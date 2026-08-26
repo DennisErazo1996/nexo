@@ -16,17 +16,32 @@ class ClienteManagementTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_agente_can_change_cliente_estado()
+    public function test_cliente_pasa_a_contactado_al_recibir_primera_nota_con_propiedad()
     {
         $agente = User::factory()->create();
-        $cliente = Cliente::factory()->registradoPor($agente)->create();
+        $cliente = Cliente::factory()->registradoPor($agente)->create(['estado' => EstadoCliente::Nuevo]);
+        $propiedad = Propiedad::factory()->forEquipo($agente->equipo)->create();
 
-        $response = $this->actingAs($agente)->patch(route('clientes.estado.update', $cliente), [
-            'estado' => 'contactado',
+        $response = $this->actingAs($agente)->post(route('clientes.notas.store', $cliente), [
+            'texto' => 'Le mostré una propiedad.',
+            'propiedad_id' => $propiedad->id,
         ]);
 
         $response->assertSessionHasNoErrors();
         $this->assertSame(EstadoCliente::Contactado, $cliente->fresh()->estado);
+    }
+
+    public function test_nota_sin_propiedad_no_cambia_el_estado()
+    {
+        $agente = User::factory()->create();
+        $cliente = Cliente::factory()->registradoPor($agente)->create(['estado' => EstadoCliente::Nuevo]);
+
+        $response = $this->actingAs($agente)->post(route('clientes.notas.store', $cliente), [
+            'texto' => 'Llamada de seguimiento sin propiedad.',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertSame(EstadoCliente::Nuevo, $cliente->fresh()->estado);
     }
 
     public function test_agente_can_add_additional_interes()
@@ -169,14 +184,14 @@ class ClienteManagementTest extends TestCase
     {
         $agente = User::factory()->create();
         Cliente::factory()->registradoPor($agente)->create(['estado' => EstadoCliente::Nuevo]);
-        Cliente::factory()->registradoPor($agente)->create(['estado' => EstadoCliente::Cerrado]);
+        Cliente::factory()->registradoPor($agente)->create(['estado' => EstadoCliente::Contactado]);
 
-        $response = $this->actingAs($agente)->get(route('clientes.index', ['estado' => 'cerrado']));
+        $response = $this->actingAs($agente)->get(route('clientes.index', ['estado' => 'contactado']));
 
         $response->assertInertia(fn ($page) => $page
             ->component('clientes/index')
             ->has('clientes.data', 1)
-            ->where('clientes.data.0.estado', 'cerrado')
+            ->where('clientes.data.0.estado', 'contactado')
         );
     }
 

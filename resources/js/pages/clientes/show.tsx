@@ -49,19 +49,13 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { index } from '@/routes/clientes';
-import type {
-    Cliente,
-    EstadoCliente,
-    EstadoOption,
-    EtiquetaInteres,
-} from '@/types/cliente';
+import type { Cliente, EstadoCliente, EtiquetaInteres } from '@/types/cliente';
 import type { Coincidencia, EstadoCoincidencia } from '@/types/coincidencia';
 
 type Props = {
     cliente: Cliente;
     coincidencias: Coincidencia[];
     etiquetas: EtiquetaInteres[];
-    estados: EstadoOption[];
     estadosCoincidencia: { value: EstadoCoincidencia; label: string }[];
 };
 
@@ -78,26 +72,6 @@ const ESTADO_CLIENTE_STYLES: Record<
         bg: 'bg-amber-500/10 dark:bg-amber-500/20',
         text: 'text-amber-700 dark:text-amber-300',
         border: 'border-amber-200 dark:border-amber-800/60',
-    },
-    visitando: {
-        bg: 'bg-purple-500/10 dark:bg-purple-500/20',
-        text: 'text-purple-700 dark:text-purple-300',
-        border: 'border-purple-200 dark:border-purple-800/60',
-    },
-    negociando: {
-        bg: 'bg-indigo-500/10 dark:bg-indigo-500/20',
-        text: 'text-indigo-700 dark:text-indigo-300',
-        border: 'border-indigo-200 dark:border-indigo-800/60',
-    },
-    cerrado: {
-        bg: 'bg-emerald-500/10 dark:bg-emerald-500/20',
-        text: 'text-emerald-700 dark:text-emerald-300',
-        border: 'border-emerald-200 dark:border-emerald-800/60',
-    },
-    perdido: {
-        bg: 'bg-zinc-500/10 dark:bg-zinc-500/20',
-        text: 'text-zinc-700 dark:text-zinc-300',
-        border: 'border-zinc-200 dark:border-zinc-800/60',
     },
 };
 
@@ -141,7 +115,6 @@ export default function ClienteShow({
     cliente,
     coincidencias,
     etiquetas,
-    estados,
     estadosCoincidencia,
 }: Props) {
     const { auth } = usePage().props;
@@ -194,42 +167,19 @@ return;
                                     {cliente.nombre}
                                 </h1>
 
-                                <Form
-                                    {...ClienteController.updateEstado.form(
-                                        cliente.id,
+                                <span
+                                    className={cn(
+                                        'inline-flex h-7 items-center rounded-full border px-3 text-xs font-semibold tracking-wider uppercase',
+                                        currentEstadoStyle.bg,
+                                        currentEstadoStyle.text,
+                                        currentEstadoStyle.border,
                                     )}
-                                    options={{ preserveScroll: true }}
+                                    title="Nuevo hasta la primera notificación de propiedad; luego pasa a contactado automáticamente"
                                 >
-                                    {({ processing }) => (
-                                        <div className="relative inline-flex items-center">
-                                            <select
-                                                name="estado"
-                                                defaultValue={cliente.estado}
-                                                disabled={processing}
-                                                onChange={(event) =>
-                                                    event.target.form?.requestSubmit()
-                                                }
-                                                className={cn(
-                                                    'h-7 cursor-pointer rounded-full border px-3 text-xs font-semibold tracking-wider uppercase transition-colors focus:ring-2 focus:ring-ring/40 focus:outline-hidden',
-                                                    currentEstadoStyle.bg,
-                                                    currentEstadoStyle.text,
-                                                    currentEstadoStyle.border,
-                                                )}
-                                                title="Cambiar estado del pipeline"
-                                            >
-                                                {estados.map((estado) => (
-                                                    <option
-                                                        key={estado.value}
-                                                        value={estado.value}
-                                                        className="bg-popover text-xs text-popover-foreground"
-                                                    >
-                                                        {estado.label}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                    )}
-                                </Form>
+                                    {cliente.estado === 'contactado'
+                                        ? 'Contactado'
+                                        : 'Nuevo'}
+                                </span>
                             </div>
 
                             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">

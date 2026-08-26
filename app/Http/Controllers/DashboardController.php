@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\EstadoCliente;
 use App\Enums\EstadoCoincidencia;
 use App\Enums\EstadoPropiedad;
 use App\Enums\Moneda;
@@ -41,22 +40,16 @@ class DashboardController extends Controller
 
         // 2. Estadísticas de Clientes
         $clientesTotales = Cliente::count();
-        $clientesActivos = Cliente::whereIn('estado', [
-            EstadoCliente::Nuevo,
-            EstadoCliente::Contactado,
-            EstadoCliente::Visitando,
-            EstadoCliente::Negociando,
-        ])->count();
+        $clientesActivos = $clientesTotales;
         $clientesNuevosMes = Cliente::where('created_at', '>=', now()->startOfMonth())->count();
-        $clientesCerrados = Cliente::where('estado', EstadoCliente::Cerrado)->count();
-        $clientesPerdidos = Cliente::where('estado', EstadoCliente::Perdido)->count();
+        $clientesCerrados = Cliente::whereHas('coincidencias', function ($query): void {
+            $query->where('estado', EstadoCoincidencia::Cerrado);
+        })->count();
+        $clientesPerdidos = Cliente::whereHas('coincidencias', function ($query): void {
+            $query->where('estado', EstadoCoincidencia::Descartado);
+        })->count();
 
-        $clientesSinSeguimientoCount = Cliente::whereIn('estado', [
-            EstadoCliente::Nuevo,
-            EstadoCliente::Contactado,
-            EstadoCliente::Visitando,
-            EstadoCliente::Negociando,
-        ])->whereDoesntHave('notas', function ($query): void {
+        $clientesSinSeguimientoCount = Cliente::whereDoesntHave('notas', function ($query): void {
             $query->where('created_at', '>=', now()->subDays(self::DIAS_SIN_SEGUIMIENTO));
         })->count();
 
@@ -81,21 +74,23 @@ class DashboardController extends Controller
             }
         }
 
-        // 5. Funnel / Pipeline de Clientes
-        $clientesPorEstadoCounts = Cliente::query()
+        // 5. Funnel / Pipeline de Seguimiento (por coincidencia cliente-propiedad)
+        $coincidenciasTotales = Coincidencia::count();
+
+        $coincidenciasPorEstadoCounts = Coincidencia::query()
             ->select('estado', DB::raw('count(*) as count'))
             ->groupBy('estado')
             ->get()
             ->mapWithKeys(function ($item) {
-                $estadoKey = $item->estado instanceof EstadoCliente ? $item->estado->value : (string) $item->estado;
+                $estadoKey = $item->estado instanceof EstadoCoincidencia ? $item->estado->value : (string) $item->estado;
 
                 return [$estadoKey => (int) $item->count];
             })
             ->all();
 
-        $pipelineClientes = array_map(function (EstadoCliente $estado) use ($clientesPorEstadoCounts, $clientesTotales) {
-            $count = $clientesPorEstadoCounts[$estado->value] ?? 0;
-            $porcentaje = $clientesTotales > 0 ? (int) round(($count / $clientesTotales) * 100) : 0;
+        $pipelineClientes = array_map(function (EstadoCoincidencia $estado) use ($coincidenciasPorEstadoCounts, $coincidenciasTotales) {
+            $count = $coincidenciasPorEstadoCounts[$estado->value] ?? 0;
+            $porcentaje = $coincidenciasTotales > 0 ? (int) round(($count / $coincidenciasTotales) * 100) : 0;
 
             return [
                 'estado' => $estado->value,
@@ -103,7 +98,7 @@ class DashboardController extends Controller
                 'count' => $count,
                 'porcentaje' => $porcentaje,
             ];
-        }, EstadoCliente::cases());
+        }, EstadoCoincidencia::cases());
 
         // 6. Distribución de Propiedades por Tipo
         $propiedadesPorTipo = Propiedad::query()
@@ -142,12 +137,6 @@ class DashboardController extends Controller
         $clientesAtencion = Cliente::query()
             ->with('agenteRegistro:id,name')
             ->withMax('notas', 'created_at')
-            ->whereIn('estado', [
-                EstadoCliente::Nuevo,
-                EstadoCliente::Contactado,
-                EstadoCliente::Visitando,
-                EstadoCliente::Negociando,
-            ])
             ->whereDoesntHave('notas', function ($query): void {
                 $query->where('created_at', '>=', now()->subDays(self::DIAS_SIN_SEGUIMIENTO));
             })

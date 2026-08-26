@@ -1,5 +1,4 @@
-export type EstadoCliente =
-    'nuevo' | 'contactado' | 'visitando' | 'negociando' | 'cerrado' | 'perdido';
+export type EstadoCliente = 'nuevo' | 'contactado';
 
 export type EstadoOption = {
     value: EstadoCliente;

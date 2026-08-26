@@ -15,20 +15,21 @@ type PipelineCardProps = {
     pipeline: PipelineStage[];
     totalClientes: number;
     clientesActivos: number;
+    clientesCerrados: number;
 };
 
 const STAGE_CONFIG: Record<
     string,
     { color: string; bg: string; dot: string; border: string; bar: string }
 > = {
-    nuevo: {
+    pendiente: {
         color: 'text-blue-600 dark:text-blue-400',
         bg: 'bg-blue-500/10 dark:bg-blue-500/15',
         dot: 'bg-blue-500',
         border: 'border-blue-200/60 dark:border-blue-900/40',
         bar: 'bg-blue-500',
     },
-    contactado: {
+    notificado: {
         color: 'text-indigo-600 dark:text-indigo-400',
         bg: 'bg-indigo-500/10 dark:bg-indigo-500/15',
         dot: 'bg-indigo-500',
@@ -56,7 +57,7 @@ const STAGE_CONFIG: Record<
         border: 'border-emerald-200/60 dark:border-emerald-900/40',
         bar: 'bg-emerald-500',
     },
-    perdido: {
+    descartado: {
         color: 'text-rose-600 dark:text-rose-400',
         bg: 'bg-rose-500/10 dark:bg-rose-500/15',
         dot: 'bg-rose-500',
@@ -69,12 +70,11 @@ export function PipelineCard({
     pipeline,
     totalClientes,
     clientesActivos,
+    clientesCerrados,
 }: PipelineCardProps) {
-    const cerradosCount =
-        pipeline.find((p) => p.estado === 'cerrado')?.count ?? 0;
     const tasaCierre =
         totalClientes > 0
-            ? Math.round((cerradosCount / totalClientes) * 100)
+            ? Math.round((clientesCerrados / totalClientes) * 100)
             : 0;
 
     return (

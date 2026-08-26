@@ -1,5 +1,5 @@
-import type { Cliente, EstadoCliente } from './cliente';
-import type { Coincidencia } from './coincidencia';
+import type { Cliente } from './cliente';
+import type { Coincidencia, EstadoCoincidencia } from './coincidencia';
 import type { Propiedad } from './propiedad';
 
 export type DashboardStats = {
@@ -29,7 +29,7 @@ export type DashboardStats = {
 };
 
 export type PipelineStage = {
-    estado: EstadoCliente;
+    estado: EstadoCoincidencia;
     label: string;
     count: number;
     porcentaje: number;

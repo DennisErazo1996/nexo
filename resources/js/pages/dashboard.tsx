@@ -232,6 +232,7 @@ export default function Dashboard({
                     pipeline={pipeline_clientes}
                     totalClientes={stats.clientes.totales}
                     clientesActivos={stats.clientes.activos}
+                    clientesCerrados={stats.clientes.cerrados}
                 />
 
                 {/* Two Columns: Portfolio Breakdown & Pending Matches */}

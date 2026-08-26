@@ -9,7 +9,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Cliente\BuscarClienteRequest;
 use App\Http\Requests\Cliente\DestroyClienteRequest;
 use App\Http\Requests\Cliente\StoreClienteRequest;
-use App\Http\Requests\Cliente\UpdateEstadoClienteRequest;
 use App\Models\Cliente;
 use App\Models\Coincidencia;
 use App\Models\EtiquetaInteres;
@@ -182,7 +181,6 @@ class ClienteController extends Controller
             'cliente' => $cliente,
             'coincidencias' => $coincidencias,
             'etiquetas' => EtiquetaInteres::orderBy('nombre')->get(['id', 'nombre']),
-            'estados' => $this->estadosOptions(),
             'estadosCoincidencia' => $this->estadosCoincidenciaOptions(),
         ]);
     }
@@ -214,18 +212,6 @@ class ClienteController extends Controller
             fn (EstadoCliente $estado) => ['value' => $estado->value, 'label' => $estado->label()],
             EstadoCliente::cases(),
         );
-    }
-
-    /**
-     * Update a cliente's estado in the pipeline.
-     */
-    public function updateEstado(UpdateEstadoClienteRequest $request, Cliente $cliente): RedirectResponse
-    {
-        $cliente->update($request->validated());
-
-        Inertia::flash('toast', ['type' => 'success', 'message' => __('Estado actualizado.')]);
-
-        return to_route('clientes.show', $cliente);
     }
 
     /**
