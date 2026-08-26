@@ -15,6 +15,46 @@ class PropiedadManagementTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_agente_can_update_propiedad_information()
+    {
+        $agente = User::factory()->create();
+        $coAgente = User::factory()->forEquipo($agente->equipo)->create();
+        $propiedad = Propiedad::factory()->forEquipo($agente->equipo)->create([
+            'tipo' => 'casa',
+            'zona' => 'Old Zone',
+            'precio' => 150000,
+        ]);
+
+        $propiedad->agentes()->create(['agente_id' => $agente->id]);
+
+        $response = $this->actingAs($agente)->put(route('propiedades.update', $propiedad), [
+            'tipo' => 'apartamento',
+            'zona' => 'New Zone, Tegucigalpa',
+            'area_terreno' => 250,
+            'area_construccion' => 180,
+            'unidad_medida' => 'm2',
+            'precio' => 220000,
+            'moneda' => 'USD',
+            'forma_pago' => 'contado',
+            'condicion_legal' => 'escritura_publica',
+            'acceso' => 'Calle principal pavimentada',
+            'descripcion' => 'Hermoso apartamento remodelado',
+            'agentes' => [$coAgente->id],
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect(route('propiedades.show', $propiedad));
+
+        $fresh = $propiedad->fresh();
+        $this->assertSame('apartamento', $fresh->tipo->value);
+        $this->assertSame('New Zone, Tegucigalpa', $fresh->zona);
+        $this->assertEquals(220000, $fresh->precio);
+        $this->assertSame('Calle principal pavimentada', $fresh->acceso);
+        $this->assertSame('Hermoso apartamento remodelado', $fresh->descripcion);
+        $this->assertTrue($fresh->agentes()->where('agente_id', $coAgente->id)->exists());
+        $this->assertTrue($fresh->agentes()->where('agente_id', $agente->id)->exists());
+    }
+
     public function test_agente_can_change_propiedad_estado()
     {
         $agente = User::factory()->create();

@@ -12,6 +12,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('propiedades/nueva', [PropiedadController::class, 'create'])->name('propiedades.create');
     Route::post('propiedades', [PropiedadController::class, 'store'])->name('propiedades.store');
     Route::get('propiedades/{propiedad}', [PropiedadController::class, 'show'])->name('propiedades.show');
+    Route::put('propiedades/{propiedad}', [PropiedadController::class, 'update'])->name('propiedades.update');
     Route::patch('propiedades/{propiedad}/estado', [PropiedadController::class, 'updateEstado'])->name('propiedades.estado.update');
     Route::delete('propiedades/{propiedad}', [PropiedadController::class, 'destroy'])->name('propiedades.destroy');
 

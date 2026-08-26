@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Propiedad\DestroyPropiedadRequest;
 use App\Http\Requests\Propiedad\StorePropiedadRequest;
 use App\Http\Requests\Propiedad\UpdateEstadoPropiedadRequest;
+use App\Http\Requests\Propiedad\UpdatePropiedadRequest;
 use App\Models\Coincidencia;
 use App\Models\EtiquetaInteres;
 use App\Models\Propiedad;
@@ -162,7 +163,7 @@ class PropiedadController extends Controller
     /**
      * Show a propiedad's detail: fotos, etiquetas, co-listers, and matched clientes.
      */
-    public function show(Propiedad $propiedad): Response
+    public function show(Request $request, Propiedad $propiedad): Response
     {
         $propiedad->load([
             'fotos',
@@ -177,9 +178,17 @@ class PropiedadController extends Controller
             ->where('propiedad_id', $propiedad->id)
             ->get();
 
+        $creadorId = $propiedad->agentes()->orderBy('id')->value('agente_id');
+
         return Inertia::render('propiedades/show', [
             'propiedad' => $propiedad,
             'coincidencias' => $coincidencias,
+            'creadorId' => $creadorId,
+            'etiquetas' => EtiquetaInteres::orderBy('nombre')->get(['id', 'nombre']),
+            'agentes' => $request->user()->equipo->agentes()
+                ->when($creadorId, fn ($query) => $query->whereKeyNot($creadorId))
+                ->orderBy('name')
+                ->get(['id', 'name']),
             'estados' => $this->options(EstadoPropiedad::cases()),
             'tipos' => $this->options(TipoPropiedad::cases()),
             'unidadesMedida' => $this->options(UnidadMedida::cases()),
@@ -187,6 +196,52 @@ class PropiedadController extends Controller
             'formasPago' => $this->options(FormaPago::cases()),
             'condicionesLegales' => $this->options(CondicionLegal::cases()),
         ]);
+    }
+
+    /**
+     * Update a propiedad's general information, technical sheet, etiquetas, and co-listers.
+     */
+    public function update(UpdatePropiedadRequest $request, Propiedad $propiedad, GenerarCoincidencias $generarCoincidencias): RedirectResponse
+    {
+        DB::transaction(function () use ($request, $propiedad) {
+            $creadorId = $propiedad->agentes()->orderBy('id')->value('agente_id');
+
+            $propiedad->update($request->safe()->except(['etiquetas', 'agentes']));
+
+            $tipoEtiquetaId = EtiquetaInteres::where('nombre', $propiedad->tipo->value)->value('id');
+            $etiquetas = collect($request->validated('etiquetas', []));
+
+            if ($tipoEtiquetaId && ! $etiquetas->contains($tipoEtiquetaId)) {
+                $etiquetas->push($tipoEtiquetaId);
+            }
+
+            $propiedad->etiquetas()->delete();
+            foreach ($etiquetas as $etiquetaId) {
+                $propiedad->etiquetas()->create(['etiqueta_id' => $etiquetaId]);
+            }
+
+            /** @var array<int, int> $agentesSeleccionados */
+            $agentesSeleccionados = $request->validated('agentes', []);
+
+            $coListers = collect($agentesSeleccionados);
+            if ($creadorId) {
+                $coListers->push($creadorId);
+            }
+            $coListers = $coListers->unique();
+
+            $propiedad->agentes()->delete();
+            foreach ($coListers as $agenteId) {
+                $propiedad->agentes()->create(['agente_id' => $agenteId]);
+            }
+        });
+
+        if ($propiedad->estado === EstadoPropiedad::Disponible) {
+            $generarCoincidencias->paraPropiedad($propiedad);
+        }
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Propiedad actualizada.')]);
+
+        return to_route('propiedades.show', $propiedad);
     }
 
     /**

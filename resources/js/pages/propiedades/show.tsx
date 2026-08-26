@@ -11,6 +11,7 @@ import {
     Maximize2,
     MessageCircle,
     Navigation,
+    Pencil,
     Phone,
     Plus,
     Scale,
@@ -45,6 +46,8 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { buildTextoCompartir } from '@/lib/texto-compartir';
 import { cn } from '@/lib/utils';
@@ -52,9 +55,22 @@ import { index } from '@/routes/propiedades';
 import type { Coincidencia } from '@/types/coincidencia';
 import type { EnumOption, Propiedad } from '@/types/propiedad';
 
+type Agente = {
+    id: number;
+    name: string;
+};
+
+type EtiquetaInteres = {
+    id: number;
+    nombre: string;
+};
+
 type Props = {
     propiedad: Propiedad;
     coincidencias: Coincidencia[];
+    creadorId?: number;
+    etiquetas?: EtiquetaInteres[];
+    agentes?: Agente[];
     estados: EnumOption[];
     tipos: EnumOption[];
     unidadesMedida: EnumOption[];
@@ -104,22 +120,24 @@ function getInitials(name: string): string {
 }
 
 function cleanPhoneForWhatsApp(phone: string): string {
-    return phone.replace(/\D/g, '');
+    const cleaned = phone.replace(/[^0-9]/g, '');
+
+    if (cleaned.length === 8) {
+        return `504${cleaned}`;
+    }
+
+    return cleaned;
 }
 
 function cleanPhoneForTel(phone: string): string {
-    return phone.replace(/[^\d+]/g, '');
+    return phone.replace(/[^0-9+]/g, '');
 }
 
-function formatCurrency(amount: string | number | null | undefined): string {
-    if (!amount) {
-        return '';
-    }
-
-    const num = typeof amount === 'string' ? parseFloat(amount) : amount;
+function formatCurrency(amount: string | number): string {
+    const num = Number(amount);
 
     if (isNaN(num)) {
-        return String(amount);
+        return `${amount}`;
     }
 
     return num.toLocaleString('es-HN');
@@ -128,6 +146,9 @@ function formatCurrency(amount: string | number | null | undefined): string {
 export default function PropiedadShow({
     propiedad,
     coincidencias,
+    creadorId,
+    etiquetas = [],
+    agentes = [],
     estados,
     tipos,
     unidadesMedida,
@@ -137,8 +158,21 @@ export default function PropiedadShow({
 }: Props) {
     const [textoCompartir, setTextoCompartir] = useState<string | null>(null);
     const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [copiedShareText, setCopiedShareText] = useState(false);
     const [selectedFilesCount, setSelectedFilesCount] = useState<number>(0);
+
+    const resolvedCreadorId = creadorId ?? propiedad.agentes?.[0]?.agente_id;
+    const creadorAgente =
+        propiedad.agentes?.find((a) => a.agente_id === resolvedCreadorId)
+            ?.agente ?? propiedad.agentes?.[0]?.agente;
+
+    const initialEtiquetas =
+        propiedad.etiquetas?.map((e) => e.etiqueta_id) ?? [];
+    const initialAgentes =
+        propiedad.agentes
+            ?.filter((a) => a.agente_id !== resolvedCreadorId)
+            .map((a) => a.agente_id) ?? [];
 
     function generarTextoCompartir() {
         const texto = buildTextoCompartir(
@@ -248,6 +282,572 @@ export default function PropiedadShow({
 
                     {/* Quick Action Buttons */}
                     <div className="flex flex-wrap items-center gap-2">
+                        {/* Edit Property Modal Trigger */}
+                        <Dialog
+                            open={isEditDialogOpen}
+                            onOpenChange={setIsEditDialogOpen}
+                        >
+                            <DialogTrigger asChild>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-9 gap-1.5 border-border bg-background text-xs font-medium shadow-xs hover:bg-muted"
+                                >
+                                    <Pencil className="size-3.5 text-primary" />
+                                    <span>Editar propiedad</span>
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+                                <DialogHeader>
+                                    <DialogTitle>
+                                        Editar Ficha de la Propiedad
+                                    </DialogTitle>
+                                    <DialogDescription>
+                                        Modifica los datos principales,
+                                        especificaciones técnicas,
+                                        características y agentes responsables.
+                                    </DialogDescription>
+                                </DialogHeader>
+
+                                <Form
+                                    {...PropiedadController.update.form(
+                                        propiedad.id,
+                                    )}
+                                    options={{
+                                        preserveScroll: true,
+                                    }}
+                                    onSuccess={() => setIsEditDialogOpen(false)}
+                                    className="space-y-5 pt-2"
+                                >
+                                    {({ processing, errors }) => (
+                                        <>
+                                            {/* Section 1: Datos Principales */}
+                                            <div className="space-y-3">
+                                                <h3 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                                                    1. Datos Principales &
+                                                    Ubicación
+                                                </h3>
+                                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                                    <div className="grid gap-1.5">
+                                                        <Label
+                                                            htmlFor="edit-tipo"
+                                                            className="text-xs font-medium"
+                                                        >
+                                                            Tipo de Propiedad *
+                                                        </Label>
+                                                        <select
+                                                            id="edit-tipo"
+                                                            name="tipo"
+                                                            defaultValue={
+                                                                propiedad.tipo
+                                                            }
+                                                            className="h-9 rounded-md border border-input bg-card px-3 text-xs shadow-2xs focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
+                                                        >
+                                                            {tipos.map(
+                                                                (tipo) => (
+                                                                    <option
+                                                                        key={
+                                                                            tipo.value
+                                                                        }
+                                                                        value={
+                                                                            tipo.value
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            tipo.label
+                                                                        }
+                                                                    </option>
+                                                                ),
+                                                            )}
+                                                        </select>
+                                                        <InputError
+                                                            message={
+                                                                errors.tipo
+                                                            }
+                                                        />
+                                                    </div>
+
+                                                    <div className="grid gap-1.5">
+                                                        <Label
+                                                            htmlFor="edit-zona"
+                                                            className="text-xs font-medium"
+                                                        >
+                                                            Zona / Ubicación *
+                                                        </Label>
+                                                        <Input
+                                                            id="edit-zona"
+                                                            name="zona"
+                                                            defaultValue={
+                                                                propiedad.zona
+                                                            }
+                                                            placeholder="Ej: Col. Palmira, Tegucigalpa"
+                                                            className="h-9 text-xs shadow-2xs"
+                                                            required
+                                                        />
+                                                        <InputError
+                                                            message={
+                                                                errors.zona
+                                                            }
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                                    <div className="grid gap-1.5">
+                                                        <Label
+                                                            htmlFor="edit-precio"
+                                                            className="text-xs font-medium"
+                                                        >
+                                                            Precio *
+                                                        </Label>
+                                                        <Input
+                                                            id="edit-precio"
+                                                            name="precio"
+                                                            type="number"
+                                                            step="any"
+                                                            defaultValue={
+                                                                propiedad.precio
+                                                            }
+                                                            className="h-9 text-xs shadow-2xs"
+                                                            required
+                                                        />
+                                                        <InputError
+                                                            message={
+                                                                errors.precio
+                                                            }
+                                                        />
+                                                    </div>
+
+                                                    <div className="grid gap-1.5">
+                                                        <Label
+                                                            htmlFor="edit-moneda"
+                                                            className="text-xs font-medium"
+                                                        >
+                                                            Moneda *
+                                                        </Label>
+                                                        <select
+                                                            id="edit-moneda"
+                                                            name="moneda"
+                                                            defaultValue={
+                                                                propiedad.moneda
+                                                            }
+                                                            className="h-9 rounded-md border border-input bg-card px-3 text-xs shadow-2xs focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
+                                                        >
+                                                            {monedas.map(
+                                                                (moneda) => (
+                                                                    <option
+                                                                        key={
+                                                                            moneda.value
+                                                                        }
+                                                                        value={
+                                                                            moneda.value
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            moneda.label
+                                                                        }{' '}
+                                                                        (
+                                                                        {
+                                                                            moneda.value
+                                                                        }
+                                                                        )
+                                                                    </option>
+                                                                ),
+                                                            )}
+                                                        </select>
+                                                        <InputError
+                                                            message={
+                                                                errors.moneda
+                                                            }
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Section 2: Dimensiones & Ficha Técnica */}
+                                            <div className="space-y-3 border-t border-border/60 pt-3">
+                                                <h3 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                                                    2. Ficha Técnica &
+                                                    Dimensiones
+                                                </h3>
+                                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                                                    <div className="grid gap-1.5">
+                                                        <Label
+                                                            htmlFor="edit-area-terreno"
+                                                            className="text-xs font-medium"
+                                                        >
+                                                            Área de Terreno *
+                                                        </Label>
+                                                        <Input
+                                                            id="edit-area-terreno"
+                                                            name="area_terreno"
+                                                            type="number"
+                                                            step="any"
+                                                            defaultValue={
+                                                                propiedad.area_terreno ??
+                                                                propiedad.tamano
+                                                            }
+                                                            className="h-9 text-xs shadow-2xs"
+                                                            required
+                                                        />
+                                                        <InputError
+                                                            message={
+                                                                errors.area_terreno
+                                                            }
+                                                        />
+                                                    </div>
+
+                                                    <div className="grid gap-1.5">
+                                                        <Label
+                                                            htmlFor="edit-area-construccion"
+                                                            className="text-xs font-medium"
+                                                        >
+                                                            Área de Construcción
+                                                        </Label>
+                                                        <Input
+                                                            id="edit-area-construccion"
+                                                            name="area_construccion"
+                                                            type="number"
+                                                            step="any"
+                                                            defaultValue={
+                                                                propiedad.area_construccion ??
+                                                                ''
+                                                            }
+                                                            placeholder="Opcional"
+                                                            className="h-9 text-xs shadow-2xs"
+                                                        />
+                                                        <InputError
+                                                            message={
+                                                                errors.area_construccion
+                                                            }
+                                                        />
+                                                    </div>
+
+                                                    <div className="grid gap-1.5">
+                                                        <Label
+                                                            htmlFor="edit-unidad"
+                                                            className="text-xs font-medium"
+                                                        >
+                                                            Unidad de Medida *
+                                                        </Label>
+                                                        <select
+                                                            id="edit-unidad"
+                                                            name="unidad_medida"
+                                                            defaultValue={
+                                                                propiedad.unidad_medida
+                                                            }
+                                                            className="h-9 rounded-md border border-input bg-card px-3 text-xs shadow-2xs focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
+                                                        >
+                                                            {unidadesMedida.map(
+                                                                (u) => (
+                                                                    <option
+                                                                        key={
+                                                                            u.value
+                                                                        }
+                                                                        value={
+                                                                            u.value
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            u.label
+                                                                        }
+                                                                    </option>
+                                                                ),
+                                                            )}
+                                                        </select>
+                                                        <InputError
+                                                            message={
+                                                                errors.unidad_medida
+                                                            }
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                                    <div className="grid gap-1.5">
+                                                        <Label
+                                                            htmlFor="edit-forma-pago"
+                                                            className="text-xs font-medium"
+                                                        >
+                                                            Forma de Pago *
+                                                        </Label>
+                                                        <select
+                                                            id="edit-forma-pago"
+                                                            name="forma_pago"
+                                                            defaultValue={
+                                                                propiedad.forma_pago
+                                                            }
+                                                            className="h-9 rounded-md border border-input bg-card px-3 text-xs shadow-2xs focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
+                                                        >
+                                                            {formasPago.map(
+                                                                (fp) => (
+                                                                    <option
+                                                                        key={
+                                                                            fp.value
+                                                                        }
+                                                                        value={
+                                                                            fp.value
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            fp.label
+                                                                        }
+                                                                    </option>
+                                                                ),
+                                                            )}
+                                                        </select>
+                                                        <InputError
+                                                            message={
+                                                                errors.forma_pago
+                                                            }
+                                                        />
+                                                    </div>
+
+                                                    <div className="grid gap-1.5">
+                                                        <Label
+                                                            htmlFor="edit-condicion-legal"
+                                                            className="text-xs font-medium"
+                                                        >
+                                                            Condición Legal
+                                                        </Label>
+                                                        <select
+                                                            id="edit-condicion-legal"
+                                                            name="condicion_legal"
+                                                            defaultValue={
+                                                                propiedad.condicion_legal ??
+                                                                ''
+                                                            }
+                                                            className="h-9 rounded-md border border-input bg-card px-3 text-xs shadow-2xs focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
+                                                        >
+                                                            <option value="">
+                                                                No especificada
+                                                            </option>
+                                                            {condicionesLegales.map(
+                                                                (cl) => (
+                                                                    <option
+                                                                        key={
+                                                                            cl.value
+                                                                        }
+                                                                        value={
+                                                                            cl.value
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            cl.label
+                                                                        }
+                                                                    </option>
+                                                                ),
+                                                            )}
+                                                        </select>
+                                                        <InputError
+                                                            message={
+                                                                errors.condicion_legal
+                                                            }
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid gap-1.5">
+                                                    <Label
+                                                        htmlFor="edit-acceso"
+                                                        className="text-xs font-medium"
+                                                    >
+                                                        Tipo de Acceso
+                                                    </Label>
+                                                    <Input
+                                                        id="edit-acceso"
+                                                        name="acceso"
+                                                        defaultValue={
+                                                            propiedad.acceso ??
+                                                            ''
+                                                        }
+                                                        placeholder="Ej: Calle pavimentada principal, calle de tierra 200m..."
+                                                        className="h-9 text-xs shadow-2xs"
+                                                    />
+                                                    <InputError
+                                                        message={errors.acceso}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* Section 3: Descripción */}
+                                            <div className="space-y-3 border-t border-border/60 pt-3">
+                                                <h3 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                                                    3. Descripción del Inmueble
+                                                </h3>
+                                                <div className="grid gap-1.5">
+                                                    <Textarea
+                                                        id="edit-descripcion"
+                                                        name="descripcion"
+                                                        rows={3}
+                                                        defaultValue={
+                                                            propiedad.descripcion ??
+                                                            ''
+                                                        }
+                                                        placeholder="Detalles adicionales, distribución de espacios, cercanías..."
+                                                        className="text-xs leading-relaxed"
+                                                    />
+                                                    <InputError
+                                                        message={
+                                                            errors.descripcion
+                                                        }
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* Section 4: Etiquetas / Características */}
+                                            {etiquetas &&
+                                                etiquetas.length > 0 && (
+                                                    <div className="space-y-3 border-t border-border/60 pt-3">
+                                                        <h3 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                                                            4. Etiquetas &
+                                                            Amenidades
+                                                        </h3>
+                                                        <div className="grid max-h-36 grid-cols-2 gap-2 overflow-y-auto rounded-lg border bg-muted/20 p-2.5 sm:grid-cols-3">
+                                                            {etiquetas.map(
+                                                                (etiqueta) => (
+                                                                    <label
+                                                                        key={
+                                                                            etiqueta.id
+                                                                        }
+                                                                        className="flex cursor-pointer items-center gap-2 text-xs font-medium text-foreground"
+                                                                    >
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            name="etiquetas[]"
+                                                                            value={
+                                                                                etiqueta.id
+                                                                            }
+                                                                            defaultChecked={initialEtiquetas.includes(
+                                                                                etiqueta.id,
+                                                                            )}
+                                                                            className="size-3.5 rounded-sm border-input text-primary focus:ring-primary"
+                                                                        />
+                                                                        <span>
+                                                                            {
+                                                                                etiqueta.nombre
+                                                                            }
+                                                                        </span>
+                                                                    </label>
+                                                                ),
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                            {/* Section 5: Agentes Responsables */}
+                                            <div className="space-y-3 border-t border-border/60 pt-3">
+                                                <div className="flex items-center justify-between">
+                                                    <h3 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                                                        5. Agentes Responsables
+                                                    </h3>
+                                                </div>
+
+                                                {creadorAgente && (
+                                                    <div className="flex items-center justify-between gap-3 rounded-lg border border-primary/20 bg-primary/5 p-2.5">
+                                                        <div className="flex items-center gap-2.5">
+                                                            <Avatar className="size-7 text-[10px]">
+                                                                <AvatarFallback className="bg-primary font-bold text-primary-foreground">
+                                                                    {getInitials(
+                                                                        creadorAgente.name,
+                                                                    )}
+                                                                </AvatarFallback>
+                                                            </Avatar>
+                                                            <div>
+                                                                <p className="text-xs font-semibold text-foreground">
+                                                                    {
+                                                                        creadorAgente.name
+                                                                    }
+                                                                </p>
+                                                                <p className="text-[10px] text-muted-foreground">
+                                                                    Agente
+                                                                    creador
+                                                                    (permanente)
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <Badge
+                                                            variant="outline"
+                                                            className="border-primary/30 bg-background text-[10px] font-medium text-primary"
+                                                        >
+                                                            Creador
+                                                        </Badge>
+                                                    </div>
+                                                )}
+
+                                                {agentes &&
+                                                    agentes.length > 0 && (
+                                                        <div className="space-y-1.5 pt-1">
+                                                            <p className="text-[11px] font-medium text-muted-foreground">
+                                                                Co-agentes
+                                                                adicionales
+                                                                (opcional):
+                                                            </p>
+                                                            <div className="grid max-h-40 grid-cols-1 gap-2 overflow-y-auto rounded-lg border bg-muted/20 p-2.5 sm:grid-cols-2">
+                                                                {agentes.map(
+                                                                    (
+                                                                        agente,
+                                                                    ) => (
+                                                                        <label
+                                                                            key={
+                                                                                agente.id
+                                                                            }
+                                                                            className="flex cursor-pointer items-center gap-2.5 rounded-md p-1.5 hover:bg-background/80"
+                                                                        >
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                name="agentes[]"
+                                                                                value={
+                                                                                    agente.id
+                                                                                }
+                                                                                defaultChecked={initialAgentes.includes(
+                                                                                    agente.id,
+                                                                                )}
+                                                                                className="size-4 rounded-sm border-input text-primary focus:ring-primary"
+                                                                            />
+                                                                            <Avatar className="size-6 text-[10px]">
+                                                                                <AvatarFallback className="bg-primary/10 font-bold text-primary">
+                                                                                    {getInitials(
+                                                                                        agente.name,
+                                                                                    )}
+                                                                                </AvatarFallback>
+                                                                            </Avatar>
+                                                                            <span className="text-xs font-medium text-foreground">
+                                                                                {
+                                                                                    agente.name
+                                                                                }
+                                                                            </span>
+                                                                        </label>
+                                                                    ),
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                            </div>
+
+                                            <DialogFooter className="gap-2 border-t border-border/60 pt-3">
+                                                <DialogClose asChild>
+                                                    <Button
+                                                        variant="secondary"
+                                                        type="button"
+                                                    >
+                                                        Cancelar
+                                                    </Button>
+                                                </DialogClose>
+                                                <Button
+                                                    type="submit"
+                                                    disabled={processing}
+                                                >
+                                                    Guardar cambios
+                                                </Button>
+                                            </DialogFooter>
+                                        </>
+                                    )}
+                                </Form>
+                            </DialogContent>
+                        </Dialog>
+
                         {propiedad.estado !== 'vendida' && (
                             <Dialog>
                                 <DialogTrigger asChild>
@@ -619,9 +1219,27 @@ export default function PropiedadShow({
                                                 </Avatar>
 
                                                 <div>
-                                                    <p className="text-sm font-semibold text-foreground">
-                                                        {coAgente.agente?.name}
-                                                    </p>
+                                                    <div className="flex items-center gap-2">
+                                                        <p className="text-sm font-semibold text-foreground">
+                                                            {
+                                                                coAgente.agente
+                                                                    ?.name
+                                                            }
+                                                        </p>
+                                                        {coAgente.agente_id ===
+                                                        resolvedCreadorId ? (
+                                                            <Badge className="border-primary/20 bg-primary/10 text-[10px] text-primary hover:bg-primary/20">
+                                                                Creador
+                                                            </Badge>
+                                                        ) : (
+                                                            <Badge
+                                                                variant="outline"
+                                                                className="text-[10px] text-muted-foreground"
+                                                            >
+                                                                Co-agente
+                                                            </Badge>
+                                                        )}
+                                                    </div>
                                                     {coAgente.porcentaje_comision && (
                                                         <p className="text-xs text-muted-foreground">
                                                             Comisión:{' '}
