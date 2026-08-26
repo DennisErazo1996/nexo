@@ -8,13 +8,13 @@ export default function Welcome() {
     return (
         <>
             <Head title="Bienvenido" />
-            <div className="flex min-h-screen flex-col items-center bg-[#FDFDFC] p-6 text-[#1b1b18] lg:justify-center lg:p-8 dark:bg-[#0a0a0a]">
+            <div className="flex min-h-screen flex-col items-center bg-background p-6 text-foreground lg:justify-center lg:p-8">
                 <header className="mb-6 w-full max-w-[335px] text-sm not-has-[nav]:hidden lg:max-w-4xl">
                     <nav className="flex items-center justify-end gap-4">
                         {auth.user ? (
                             <Link
                                 href={dashboard()}
-                                className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                                className="inline-block rounded-md border border-border px-5 py-1.5 text-sm font-medium transition-colors hover:border-primary hover:text-primary"
                             >
                                 Panel
                             </Link>
@@ -22,13 +22,13 @@ export default function Welcome() {
                             <>
                                 <Link
                                     href={login()}
-                                    className="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
+                                    className="inline-block rounded-md border border-transparent px-5 py-1.5 text-sm font-medium transition-colors hover:text-primary"
                                 >
                                     Iniciar sesión
                                 </Link>
                                 <Link
                                     href={register()}
-                                    className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                                    className="inline-block rounded-md border border-border px-5 py-1.5 text-sm font-medium transition-colors hover:border-primary hover:text-primary"
                                 >
                                     Registrarse
                                 </Link>
@@ -37,10 +37,10 @@ export default function Welcome() {
                     </nav>
                 </header>
                 <div className="flex w-full items-center justify-center opacity-100 transition-opacity duration-750 lg:grow starting:opacity-0">
-                    <main className="flex w-full max-w-[335px] flex-col-reverse lg:max-w-4xl lg:flex-row">
-                        <div className="flex-1 rounded-br-lg rounded-bl-lg bg-white p-6 pb-12 text-[13px] leading-[20px] shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] lg:rounded-tl-lg lg:rounded-br-none lg:p-20 dark:bg-[#161615] dark:text-[#EDEDEC] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]">
-                            <h1 className="mb-1 font-medium">Empecemos</h1>
-                            <p className="mb-2 text-[#706f6c] dark:text-[#A1A09A]">
+                    <main className="flex w-full max-w-[335px] flex-col-reverse shadow-xl rounded-lg border border-border/80 lg:max-w-4xl lg:flex-row">
+                        <div className="flex-1 rounded-br-lg rounded-bl-lg bg-card p-6 pb-12 text-[13px] leading-[20px] lg:rounded-tl-lg lg:rounded-br-none lg:p-16">
+                            <h1 className="mb-1 text-lg font-semibold text-foreground">Empecemos</h1>
+                            <p className="mb-4 text-muted-foreground">
                                 Nexo es tu bitácora compartida de clientes y
                                 propiedades.
                                 <br />
@@ -50,7 +50,7 @@ export default function Welcome() {
                                 <li>
                                     <Link
                                         href={auth.user ? dashboard() : login()}
-                                        className="inline-block rounded-sm border border-black bg-[#1b1b18] px-5 py-1.5 text-sm leading-normal text-white hover:border-black hover:bg-black dark:border-[#eeeeec] dark:bg-[#eeeeec] dark:text-[#1C1C1A] dark:hover:border-white dark:hover:bg-white"
+                                        className="inline-flex items-center justify-center rounded-md bg-primary px-5 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
                                     >
                                         {auth.user
                                             ? 'Ir al panel'
