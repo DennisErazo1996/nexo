@@ -32,6 +32,14 @@ class CoincidenciaPolicy
     }
 
     /**
+     * Determine whether the user can delete the coincidencia.
+     */
+    public function delete(User $user, Coincidencia $coincidencia): bool
+    {
+        return $user->isAdmin() && $user->equipo_id === $coincidencia->equipo_id;
+    }
+
+    /**
      * Determine whether the user belongs to the coincidencia's equipo and is
      * related to it: the cliente's registering agente, an agente who
      * captured one of the cliente's intereses, or a co-lister of the

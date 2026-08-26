@@ -1,4 +1,4 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Form, Head, Link, router } from '@inertiajs/react';
 import {
     
     getCoreRowModel,
@@ -13,6 +13,7 @@ import {
     Phone,
     Plus,
     Search,
+    Trash2,
     User,
     UserCheck,
     Users,
@@ -29,6 +30,16 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
 import { cn } from '@/lib/utils';
@@ -309,7 +320,7 @@ return <span className="text-muted-foreground">—</span>;
                     const cliente = row.original;
 
                     return (
-                        <div className="flex justify-end">
+                        <div className="flex items-center justify-end gap-1">
                             <Button
                                 asChild
                                 variant="ghost"
@@ -321,6 +332,51 @@ return <span className="text-muted-foreground">—</span>;
                                     <ArrowUpRight className="size-3.5" />
                                 </Link>
                             </Button>
+
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="size-8 text-muted-foreground opacity-60 hover:text-destructive hover:opacity-100"
+                                        title="Eliminar cliente"
+                                    >
+                                        <Trash2 className="size-3.5" />
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>
+                                            ¿Eliminar cliente?
+                                        </DialogTitle>
+                                        <DialogDescription>
+                                            Esta acción eliminará permanentemente al cliente "{cliente.nombre}", incluyendo sus intereses, notas de seguimiento y coincidencias asociadas.
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <DialogFooter className="gap-2 pt-2">
+                                        <DialogClose asChild>
+                                            <Button variant="secondary">
+                                                Cancelar
+                                            </Button>
+                                        </DialogClose>
+                                        <Form
+                                            {...ClienteController.destroy.form(
+                                                cliente.id,
+                                            )}
+                                        >
+                                            {({ processing }) => (
+                                                <Button
+                                                    type="submit"
+                                                    variant="destructive"
+                                                    disabled={processing}
+                                                >
+                                                    Eliminar cliente
+                                                </Button>
+                                            )}
+                                        </Form>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
                         </div>
                     );
                 },

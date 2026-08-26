@@ -17,9 +17,16 @@ export function buildTextoCompartir(
     condicionesLegales: EnumOption[],
 ): string {
     const puntos: string[] = [
-        `Tamaño: ${propiedad.tamano} ${labelFor(unidadesMedida, propiedad.unidad_medida)}`,
-        `Forma de pago: ${labelFor(formasPago, propiedad.forma_pago)}`,
+        `Área de terreno: ${propiedad.area_terreno ?? propiedad.tamano} ${labelFor(unidadesMedida, propiedad.unidad_medida)}`,
     ];
+
+    if (propiedad.area_construccion) {
+        puntos.push(
+            `Área de construcción: ${propiedad.area_construccion} ${labelFor(unidadesMedida, propiedad.unidad_medida)}`,
+        );
+    }
+
+    puntos.push(`Forma de pago: ${labelFor(formasPago, propiedad.forma_pago)}`);
 
     if (propiedad.condicion_legal) {
         puntos.push(

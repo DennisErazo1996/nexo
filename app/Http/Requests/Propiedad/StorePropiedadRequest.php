@@ -30,7 +30,8 @@ class StorePropiedadRequest extends FormRequest
         return [
             'tipo' => $this->tipoRules(),
             'zona' => $this->zonaRules(),
-            'tamano' => $this->tamanoRules(),
+            'area_terreno' => $this->areaTerrenoRules(),
+            'area_construccion' => $this->areaConstruccionRules(),
             'unidad_medida' => $this->unidadMedidaRules(),
             'precio' => $this->precioRules(),
             'moneda' => $this->monedaRules(),

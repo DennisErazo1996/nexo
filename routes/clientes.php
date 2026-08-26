@@ -16,6 +16,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('clientes', [ClienteController::class, 'store'])->name('clientes.store');
     Route::get('clientes/{cliente}', [ClienteController::class, 'show'])->name('clientes.show');
     Route::patch('clientes/{cliente}/estado', [ClienteController::class, 'updateEstado'])->name('clientes.estado.update');
+    Route::delete('clientes/{cliente}', [ClienteController::class, 'destroy'])->name('clientes.destroy');
 
     Route::post('clientes/{cliente}/intereses', [ClienteInteresController::class, 'store'])->name('clientes.intereses.store');
     Route::delete('clientes/{cliente}/intereses/{interes}', [ClienteInteresController::class, 'destroy'])->name('clientes.intereses.destroy');

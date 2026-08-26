@@ -22,7 +22,8 @@ use Illuminate\Support\Carbon;
  * @property int $equipo_id
  * @property TipoPropiedad $tipo
  * @property string $zona
- * @property string $tamano
+ * @property string $area_terreno
+ * @property string|null $area_construccion
  * @property UnidadMedida $unidad_medida
  * @property string $precio
  * @property Moneda $moneda
@@ -36,7 +37,7 @@ use Illuminate\Support\Carbon;
  * @property-read Equipo $equipo
  */
 #[Fillable([
-    'tipo', 'zona', 'tamano', 'unidad_medida', 'precio', 'moneda',
+    'tipo', 'zona', 'area_terreno', 'area_construccion', 'unidad_medida', 'precio', 'moneda',
     'forma_pago', 'condicion_legal', 'acceso', 'descripcion', 'estado',
 ])]
 class Propiedad extends Model
@@ -105,7 +106,8 @@ class Propiedad extends Model
             'forma_pago' => FormaPago::class,
             'condicion_legal' => CondicionLegal::class,
             'estado' => EstadoPropiedad::class,
-            'tamano' => 'decimal:2',
+            'area_terreno' => 'decimal:2',
+            'area_construccion' => 'decimal:2',
             'precio' => 'decimal:2',
         ];
     }

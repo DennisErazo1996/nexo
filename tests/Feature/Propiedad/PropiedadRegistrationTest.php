@@ -26,7 +26,8 @@ class PropiedadRegistrationTest extends TestCase
         $response = $this->actingAs($agente)->post(route('propiedades.store'), [
             'tipo' => 'casa',
             'zona' => 'Tegucigalpa',
-            'tamano' => 250,
+            'area_terreno' => 250,
+            'area_construccion' => 120,
             'unidad_medida' => 'm2',
             'precio' => 1500000,
             'moneda' => 'HNL',
@@ -43,6 +44,8 @@ class PropiedadRegistrationTest extends TestCase
 
         $propiedad = Propiedad::firstOrFail();
         $this->assertSame('Tegucigalpa', $propiedad->zona);
+        $this->assertEquals(250, (float) $propiedad->area_terreno);
+        $this->assertEquals(120, (float) $propiedad->area_construccion);
         $this->assertCount(1, $propiedad->etiquetas);
         $this->assertSame($etiqueta->id, $propiedad->etiquetas->first()->etiqueta_id);
 
@@ -79,7 +82,7 @@ class PropiedadRegistrationTest extends TestCase
         $this->actingAs($agente)->post(route('propiedades.store'), [
             'tipo' => 'terreno',
             'zona' => 'Choluteca',
-            'tamano' => 10,
+            'area_terreno' => 10,
             'unidad_medida' => 'manzana',
             'precio' => 500000,
             'moneda' => 'HNL',
@@ -89,5 +92,6 @@ class PropiedadRegistrationTest extends TestCase
         $propiedad = Propiedad::firstOrFail();
         $this->assertCount(1, $propiedad->agentes);
         $this->assertSame($agente->id, $propiedad->agentes->first()->agente_id);
+        $this->assertNull($propiedad->area_construccion);
     }
 }

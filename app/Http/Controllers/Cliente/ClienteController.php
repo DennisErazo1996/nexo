@@ -7,6 +7,7 @@ use App\Enums\EstadoCliente;
 use App\Enums\EstadoCoincidencia;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Cliente\BuscarClienteRequest;
+use App\Http\Requests\Cliente\DestroyClienteRequest;
 use App\Http\Requests\Cliente\StoreClienteRequest;
 use App\Http\Requests\Cliente\UpdateEstadoClienteRequest;
 use App\Models\Cliente;
@@ -35,10 +36,25 @@ class ClienteController extends Controller
             ->with('agenteRegistro:id,name')
             ->withMax('notas', 'created_at')
             ->when($request->filled('search'), function ($query) use ($request): void {
-                $search = $request->string('search')->value();
-                $query->where(function ($q) use ($search): void {
-                    $q->where('nombre', 'like', "%{$search}%")
-                        ->orWhere('telefono', 'like', "%{$search}%");
+                $rawSearch = trim($request->string('search')->value());
+                $terms = array_filter(explode(' ', $rawSearch));
+                $lowerFull = mb_strtolower($rawSearch);
+
+                $query->where(function ($q) use ($lowerFull, $terms): void {
+                    $q->whereRaw('LOWER(nombre) LIKE ?', ["%{$lowerFull}%"])
+                        ->orWhere('telefono', 'like', "%{$lowerFull}%");
+
+                    if (count($terms) > 1) {
+                        $q->orWhere(function ($wordQuery) use ($terms): void {
+                            foreach ($terms as $term) {
+                                $lowerTerm = mb_strtolower($term);
+                                $wordQuery->where(function ($sub) use ($lowerTerm): void {
+                                    $sub->whereRaw('LOWER(nombre) LIKE ?', ["%{$lowerTerm}%"])
+                                        ->orWhere('telefono', 'like', "%{$lowerTerm}%");
+                                });
+                            }
+                        });
+                    }
                 });
             })
             ->when($request->filled('estado'), fn ($query) => $query->where('estado', $request->string('estado')->value()))
@@ -210,5 +226,17 @@ class ClienteController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Estado actualizado.')]);
 
         return to_route('clientes.show', $cliente);
+    }
+
+    /**
+     * Delete a cliente and its related records.
+     */
+    public function destroy(DestroyClienteRequest $request, Cliente $cliente): RedirectResponse
+    {
+        $cliente->delete();
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => __('Cliente eliminado.')]);
+
+        return to_route('clientes.index');
     }
 }

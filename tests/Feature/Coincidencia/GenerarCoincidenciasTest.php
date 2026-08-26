@@ -32,7 +32,7 @@ class GenerarCoincidenciasTest extends TestCase
         $response = $this->actingAs($agente)->post(route('propiedades.store'), [
             'tipo' => 'casa',
             'zona' => 'tegucigalpa',
-            'tamano' => 250,
+            'area_terreno' => 250,
             'unidad_medida' => 'm2',
             'precio' => 1500000,
             'moneda' => 'HNL',
@@ -131,7 +131,7 @@ class GenerarCoincidenciasTest extends TestCase
         $this->actingAs($agente)->post(route('propiedades.store'), [
             'tipo' => 'casa',
             'zona' => 'San Pedro Sula',
-            'tamano' => 250,
+            'area_terreno' => 250,
             'unidad_medida' => 'm2',
             'precio' => 1500000,
             'moneda' => 'HNL',
@@ -187,7 +187,7 @@ class GenerarCoincidenciasTest extends TestCase
         $this->actingAs($agente)->post(route('propiedades.store'), [
             'tipo' => 'terreno',
             'zona' => 'Laguna Seca',
-            'tamano' => 10,
+            'area_terreno' => 10,
             'unidad_medida' => 'manzana',
             'precio' => 500000,
             'moneda' => 'HNL',
@@ -201,7 +201,7 @@ class GenerarCoincidenciasTest extends TestCase
         $this->actingAs($agente)->post(route('propiedades.store'), [
             'tipo' => 'terreno',
             'zona' => 'Laguna Seca',
-            'tamano' => 20,
+            'area_terreno' => 20,
             'unidad_medida' => 'manzana',
             'precio' => 800000,
             'moneda' => 'HNL',
@@ -232,7 +232,7 @@ class GenerarCoincidenciasTest extends TestCase
         $this->actingAs($agente)->post(route('propiedades.store'), [
             'tipo' => 'terreno',
             'zona' => 'Danli',
-            'tamano' => 5,
+            'area_terreno' => 5,
             'unidad_medida' => 'manzana',
             'precio' => 200000,
             'moneda' => 'HNL',

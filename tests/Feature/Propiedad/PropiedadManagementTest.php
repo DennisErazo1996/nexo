@@ -118,4 +118,48 @@ class PropiedadManagementTest extends TestCase
             ->where('propiedades.data.0.estado', 'vendida')
         );
     }
+
+    public function test_index_searches_by_zona_case_insensitively()
+    {
+        $agente = User::factory()->create();
+        $propiedadA = Propiedad::factory()->forEquipo($agente->equipo)->create(['zona' => 'Col. Palmira, Tegucigalpa']);
+        $propiedadB = Propiedad::factory()->forEquipo($agente->equipo)->create(['zona' => 'Santa Rosa de Copán']);
+
+        $response = $this->actingAs($agente)->get(route('propiedades.index', ['search' => 'palmira']));
+
+        $response->assertInertia(fn ($page) => $page
+            ->component('propiedades/index')
+            ->has('propiedades.data', 1)
+            ->where('propiedades.data.0.id', $propiedadA->id)
+        );
+
+        $responseCopan = $this->actingAs($agente)->get(route('propiedades.index', ['search' => 'santa rosa']));
+
+        $responseCopan->assertInertia(fn ($page) => $page
+            ->component('propiedades/index')
+            ->has('propiedades.data', 1)
+            ->where('propiedades.data.0.id', $propiedadB->id)
+        );
+    }
+
+    public function test_index_searches_by_acceso_and_etiquetas()
+    {
+        $agente = User::factory()->create();
+        $propiedad = Propiedad::factory()->forEquipo($agente->equipo)->create([
+            'zona' => 'El Hatillo',
+            'acceso' => 'Calle de tierra 500m',
+        ]);
+        Propiedad::factory()->forEquipo($agente->equipo)->create([
+            'zona' => 'Valle de Ángeles',
+            'acceso' => 'Pavimentado',
+        ]);
+
+        $response = $this->actingAs($agente)->get(route('propiedades.index', ['search' => 'tierra']));
+
+        $response->assertInertia(fn ($page) => $page
+            ->component('propiedades/index')
+            ->has('propiedades.data', 1)
+            ->where('propiedades.data.0.id', $propiedad->id)
+        );
+    }
 }

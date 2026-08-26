@@ -20,7 +20,10 @@ class EquipoController extends Controller
 
         return Inertia::render('equipo/edit', [
             'equipo' => $equipo->only(['id', 'nombre']),
-            'agentes' => $equipo->agentes()->orderBy('name')->get(['id', 'name', 'email', 'telefono', 'rol']),
+            'agentes' => $equipo->agentes()
+                ->withCount(['clientesRegistrados', 'propiedadAgentes'])
+                ->orderBy('name')
+                ->get(['id', 'name', 'email', 'telefono', 'rol', 'created_at']),
         ]);
     }
 

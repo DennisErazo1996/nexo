@@ -205,4 +205,38 @@ class ClienteManagementTest extends TestCase
         $this->assertTrue($ids->contains($notaVieja->id));
         $this->assertFalse($ids->contains($notaReciente->id));
     }
+
+    public function test_agente_can_delete_cliente()
+    {
+        $agente = User::factory()->create();
+        $cliente = Cliente::factory()->registradoPor($agente)->create();
+        $etiqueta = EtiquetaInteres::factory()->create();
+        $interes = $cliente->intereses()->create([
+            'etiqueta_id' => $etiqueta->id,
+            'agente_id' => $agente->id,
+        ]);
+        $nota = $cliente->notas()->create([
+            'texto' => 'Nota de prueba',
+            'agente_id' => $agente->id,
+        ]);
+
+        $response = $this->actingAs($agente)->delete(route('clientes.destroy', $cliente));
+
+        $response->assertRedirect(route('clientes.index'));
+        $this->assertModelMissing($cliente);
+        $this->assertModelMissing($interes);
+        $this->assertModelMissing($nota);
+    }
+
+    public function test_agente_de_otro_equipo_no_puede_eliminar_cliente()
+    {
+        $agente = User::factory()->create();
+        $otroAgente = User::factory()->create();
+        $cliente = Cliente::factory()->registradoPor($agente)->create();
+
+        $response = $this->actingAs($otroAgente)->delete(route('clientes.destroy', $cliente));
+
+        $response->assertNotFound();
+        $this->assertModelExists($cliente);
+    }
 }

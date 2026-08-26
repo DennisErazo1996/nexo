@@ -6,10 +6,8 @@ import {
     Check,
     Copy,
     CreditCard,
-    FileText,
     HeartHandshake,
     ImageIcon,
-    MapPin,
     Maximize2,
     MessageCircle,
     Navigation,
@@ -20,7 +18,6 @@ import {
     Tag,
     Trash2,
     Upload,
-    User,
     Users,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -116,14 +113,14 @@ function cleanPhoneForTel(phone: string): string {
 
 function formatCurrency(amount: string | number | null | undefined): string {
     if (!amount) {
-return '';
-}
+        return '';
+    }
 
     const num = typeof amount === 'string' ? parseFloat(amount) : amount;
 
     if (isNaN(num)) {
-return String(amount);
-}
+        return String(amount);
+    }
 
     return num.toLocaleString('es-HN');
 }
@@ -413,11 +410,18 @@ export default function PropiedadShow({
                         <CardContent className="flex items-center justify-between px-5 py-0">
                             <div>
                                 <p className="text-xs font-medium tracking-wider text-muted-foreground uppercase">
-                                    Superficie
+                                    Área de Terreno
                                 </p>
                                 <p className="text-xl font-bold tracking-tight">
-                                    {propiedad.tamano} {propiedad.unidad_medida}
+                                    {propiedad.area_terreno ?? propiedad.tamano}{' '}
+                                    {propiedad.unidad_medida}
                                 </p>
+                                {propiedad.area_construccion && (
+                                    <p className="text-xs text-muted-foreground">
+                                        + {propiedad.area_construccion}{' '}
+                                        {propiedad.unidad_medida} construcción
+                                    </p>
+                                )}
                             </div>
                             <div className="flex size-10 items-center justify-center rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400">
                                 <Maximize2 className="size-5" />
@@ -461,9 +465,9 @@ export default function PropiedadShow({
                 {/* 2-Column Main Layout */}
                 <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
                     {/* Left Column: Property Details, Amenities & Assigned Co-Agents */}
-                    <div className="space-y-6 lg:col-span-5">
+                    <div className="min-w-0 space-y-6 lg:col-span-5">
                         {/* Characteristics & Technical Sheet */}
-                        <Card className="shadow-2xs">
+                        <Card className="min-w-0 shadow-2xs">
                             <CardHeader className="pb-3">
                                 <CardTitle className="text-base font-semibold">
                                     Ficha Técnica & Atributos
@@ -473,48 +477,70 @@ export default function PropiedadShow({
                                 </CardDescription>
                             </CardHeader>
 
-                            <CardContent className="space-y-4 pt-0">
+                            <CardContent className="min-w-0 space-y-4 pt-0">
                                 <div className="grid grid-cols-2 gap-3">
-                                    <div className="rounded-xl border border-border/60 bg-muted/20 p-3">
+                                    <div className="min-w-0 rounded-xl border border-border/60 bg-muted/20 p-3">
                                         <span className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
-                                            <Maximize2 className="size-3" />
-                                            Dimensión
+                                            <Maximize2 className="size-3 shrink-0" />
+                                            <span className="truncate">
+                                                Área de Terreno
+                                            </span>
                                         </span>
-                                        <p className="mt-1 text-sm font-semibold text-foreground">
-                                            {propiedad.tamano}{' '}
+                                        <p className="mt-1 text-sm font-semibold break-words text-foreground">
+                                            {propiedad.area_terreno ??
+                                                propiedad.tamano}{' '}
                                             {propiedad.unidad_medida}
                                         </p>
                                     </div>
 
-                                    <div className="rounded-xl border border-border/60 bg-muted/20 p-3">
+                                    {propiedad.area_construccion && (
+                                        <div className="min-w-0 rounded-xl border border-border/60 bg-muted/20 p-3">
+                                            <span className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
+                                                <Building2 className="size-3 shrink-0" />
+                                                <span className="truncate">
+                                                    Área de Construcción
+                                                </span>
+                                            </span>
+                                            <p className="mt-1 text-sm font-semibold break-words text-foreground">
+                                                {propiedad.area_construccion}{' '}
+                                                {propiedad.unidad_medida}
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    <div className="min-w-0 rounded-xl border border-border/60 bg-muted/20 p-3">
                                         <span className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
-                                            <CreditCard className="size-3" />
-                                            Forma de Pago
+                                            <CreditCard className="size-3 shrink-0" />
+                                            <span className="truncate">
+                                                Forma de Pago
+                                            </span>
                                         </span>
-                                        <p className="mt-1 text-sm font-semibold text-foreground capitalize">
+                                        <p className="mt-1 text-sm font-semibold break-words text-foreground capitalize">
                                             {propiedad.forma_pago}
                                         </p>
                                     </div>
 
                                     {propiedad.condicion_legal && (
-                                        <div className="rounded-xl border border-border/60 bg-muted/20 p-3">
+                                        <div className="col-span-2 min-w-0 rounded-xl border border-border/60 bg-muted/20 p-3 sm:col-span-1">
                                             <span className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
-                                                <Scale className="size-3" />
-                                                Condición Legal
+                                                <Scale className="size-3 shrink-0" />
+                                                <span className="truncate">
+                                                    Condición Legal
+                                                </span>
                                             </span>
-                                            <p className="mt-1 text-sm font-semibold text-foreground">
+                                            <p className="mt-1 text-sm font-semibold [overflow-wrap:anywhere] break-words text-foreground">
                                                 {propiedad.condicion_legal}
                                             </p>
                                         </div>
                                     )}
 
                                     {propiedad.acceso && (
-                                        <div className="rounded-xl border border-border/60 bg-muted/20 p-3">
+                                        <div className="col-span-2 min-w-0 rounded-xl border border-border/60 bg-muted/20 p-3">
                                             <span className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
-                                                <Navigation className="size-3" />
-                                                Tipo de Acceso
+                                                <Navigation className="size-3 shrink-0" />
+                                                <span>Tipo de Acceso</span>
                                             </span>
-                                            <p className="mt-1 text-sm font-semibold text-foreground">
+                                            <p className="mt-1 text-sm font-semibold [overflow-wrap:anywhere] break-words text-foreground">
                                                 {propiedad.acceso}
                                             </p>
                                         </div>
@@ -550,11 +576,11 @@ export default function PropiedadShow({
 
                                 {/* Description */}
                                 {propiedad.descripcion && (
-                                    <div className="space-y-1.5 border-t border-border/60 pt-3">
+                                    <div className="min-w-0 space-y-1.5 border-t border-border/60 pt-3">
                                         <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                             Descripción del Inmueble
                                         </p>
-                                        <p className="text-sm leading-relaxed whitespace-pre-wrap text-foreground/90">
+                                        <p className="text-sm leading-relaxed [overflow-wrap:anywhere] break-words whitespace-pre-wrap text-foreground/90">
                                             {propiedad.descripcion}
                                         </p>
                                     </div>

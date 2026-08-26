@@ -34,11 +34,35 @@ class PropiedadController extends Controller
         $propiedades = Propiedad::query()
             ->with(['fotos' => fn ($query) => $query->limit(1)])
             ->when($request->filled('search'), function ($query) use ($request): void {
-                $search = $request->string('search')->value();
-                $query->where(function ($q) use ($search): void {
-                    $q->where('zona', 'like', "%{$search}%")
-                        ->orWhere('tipo', 'like', "%{$search}%")
-                        ->orWhere('descripcion', 'like', "%{$search}%");
+                $rawSearch = trim($request->string('search')->value());
+                $terms = array_filter(explode(' ', $rawSearch));
+                $lowerFull = mb_strtolower($rawSearch);
+
+                $query->where(function ($q) use ($lowerFull, $terms): void {
+                    $q->whereRaw('LOWER(zona) LIKE ?', ["%{$lowerFull}%"])
+                        ->orWhereRaw('LOWER(tipo) LIKE ?', ["%{$lowerFull}%"])
+                        ->orWhereRaw('LOWER(COALESCE(acceso, \'\')) LIKE ?', ["%{$lowerFull}%"])
+                        ->orWhereRaw('LOWER(COALESCE(descripcion, \'\')) LIKE ?', ["%{$lowerFull}%"])
+                        ->orWhereHas('etiquetas.etiqueta', function ($subQuery) use ($lowerFull): void {
+                            $subQuery->whereRaw('LOWER(nombre) LIKE ?', ["%{$lowerFull}%"]);
+                        });
+
+                    if (count($terms) > 1) {
+                        $q->orWhere(function ($wordQuery) use ($terms): void {
+                            foreach ($terms as $term) {
+                                $lowerTerm = mb_strtolower($term);
+                                $wordQuery->where(function ($sub) use ($lowerTerm): void {
+                                    $sub->whereRaw('LOWER(zona) LIKE ?', ["%{$lowerTerm}%"])
+                                        ->orWhereRaw('LOWER(tipo) LIKE ?', ["%{$lowerTerm}%"])
+                                        ->orWhereRaw('LOWER(COALESCE(acceso, \'\')) LIKE ?', ["%{$lowerTerm}%"])
+                                        ->orWhereRaw('LOWER(COALESCE(descripcion, \'\')) LIKE ?', ["%{$lowerTerm}%"])
+                                        ->orWhereHas('etiquetas.etiqueta', function ($tagQuery) use ($lowerTerm): void {
+                                            $tagQuery->whereRaw('LOWER(nombre) LIKE ?', ["%{$lowerTerm}%"]);
+                                        });
+                                });
+                            }
+                        });
+                    }
                 });
             })
             ->when($request->filled('estado'), fn ($query) => $query->where('estado', $request->string('estado')->value()))
@@ -50,7 +74,8 @@ class PropiedadController extends Controller
                     'tipo' => 'tipo',
                     'zona' => 'zona',
                     'estado' => 'estado',
-                    'tamano' => 'tamano',
+                    'area_terreno', 'tamano' => 'area_terreno',
+                    'area_construccion' => 'area_construccion',
                     'created_at' => 'created_at',
                     default => 'created_at',
                 };

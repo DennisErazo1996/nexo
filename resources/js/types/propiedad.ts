@@ -28,7 +28,9 @@ export type Propiedad = {
     equipo_id: number;
     tipo: string;
     zona: string;
-    tamano: string;
+    area_terreno: string;
+    area_construccion: string | null;
+    tamano?: string;
     unidad_medida: string;
     precio: string;
     moneda: string;

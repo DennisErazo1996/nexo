@@ -1,4 +1,4 @@
-import { Form, Head, Link } from '@inertiajs/react';
+import { Form, Head, Link, usePage } from '@inertiajs/react';
 import {
     ArrowUpRight,
     Building2,
@@ -36,6 +36,7 @@ import {
 } from '@/components/ui/card';
 import {
     Dialog,
+    DialogClose,
     DialogContent,
     DialogDescription,
     DialogFooter,
@@ -143,6 +144,7 @@ export default function ClienteShow({
     estados,
     estadosCoincidencia,
 }: Props) {
+    const { auth } = usePage().props;
     const [isInteresDialogOpen, setIsInteresDialogOpen] = useState(false);
     const [copiedPhone, setCopiedPhone] = useState(false);
 
@@ -308,6 +310,53 @@ return;
                                 </Button>
                             </>
                         )}
+
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-9 gap-1.5 border-destructive/30 text-xs font-medium text-destructive hover:bg-destructive/10 hover:text-destructive"
+                                    title="Eliminar cliente"
+                                >
+                                    <Trash2 className="size-4" />
+                                    <span>Eliminar</span>
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>
+                                        ¿Eliminar cliente?
+                                    </DialogTitle>
+                                    <DialogDescription>
+                                        Esta acción eliminará permanentemente al cliente "{cliente.nombre}", incluyendo todos sus intereses, notas de seguimiento y coincidencias asociadas.
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <DialogFooter className="gap-2 pt-2">
+                                    <DialogClose asChild>
+                                        <Button variant="secondary">
+                                            Cancelar
+                                        </Button>
+                                    </DialogClose>
+                                    <Form
+                                        {...ClienteController.destroy.form(
+                                            cliente.id,
+                                        )}
+                                    >
+                                        {({ processing }) => (
+                                            <Button
+                                                type="submit"
+                                                variant="destructive"
+                                                disabled={processing}
+                                            >
+                                                Eliminar cliente
+                                            </Button>
+                                        )}
+                                    </Form>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
                     </div>
                 </div>
 
@@ -884,29 +933,31 @@ return;
                                                         </Form>
                                                     )}
 
-                                                    <Form
-                                                        {...CoincidenciaController.destroy.form(
-                                                            coincidencia.id,
-                                                        )}
-                                                        options={{
-                                                            preserveScroll: true,
-                                                        }}
-                                                    >
-                                                        {({ processing }) => (
-                                                            <Button
-                                                                type="submit"
-                                                                size="icon"
-                                                                variant="ghost"
-                                                                disabled={
-                                                                    processing
-                                                                }
-                                                                className="size-8 text-muted-foreground opacity-60 hover:text-destructive hover:opacity-100"
-                                                                title="Eliminar coincidencia"
-                                                            >
-                                                                <Trash2 className="size-3.5" />
-                                                            </Button>
-                                                        )}
-                                                    </Form>
+                                                    {auth.isAdmin && (
+                                                        <Form
+                                                            {...CoincidenciaController.destroy.form(
+                                                                coincidencia.id,
+                                                            )}
+                                                            options={{
+                                                                preserveScroll: true,
+                                                            }}
+                                                        >
+                                                            {({ processing }) => (
+                                                                <Button
+                                                                    type="submit"
+                                                                    size="icon"
+                                                                    variant="ghost"
+                                                                    disabled={
+                                                                        processing
+                                                                    }
+                                                                    className="size-8 text-muted-foreground opacity-60 hover:text-destructive hover:opacity-100"
+                                                                    title="Eliminar coincidencia"
+                                                                >
+                                                                    <Trash2 className="size-3.5" />
+                                                                </Button>
+                                                            )}
+                                                        </Form>
+                                                    )}
                                                 </div>
                                             </div>
                                         ))}

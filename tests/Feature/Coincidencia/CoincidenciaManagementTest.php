@@ -82,7 +82,23 @@ class CoincidenciaManagementTest extends TestCase
         $this->assertSame(EstadoPropiedad::Vendida, $propiedad->refresh()->estado);
     }
 
-    public function test_agente_can_delete_coincidencia()
+    public function test_admin_can_delete_coincidencia()
+    {
+        $admin = User::factory()->admin()->create();
+        $cliente = Cliente::factory()->registradoPor($admin)->create();
+        $propiedad = Propiedad::factory()->forEquipo($admin->equipo)->create();
+        $coincidencia = Coincidencia::factory()->forEquipo($admin->equipo)->create([
+            'cliente_id' => $cliente->id,
+            'propiedad_id' => $propiedad->id,
+        ]);
+
+        $response = $this->actingAs($admin)->delete(route('coincidencias.destroy', $coincidencia));
+
+        $response->assertRedirect(route('clientes.show', $cliente));
+        $this->assertModelMissing($coincidencia);
+    }
+
+    public function test_non_admin_agente_cannot_delete_coincidencia()
     {
         $agente = User::factory()->create();
         $cliente = Cliente::factory()->registradoPor($agente)->create();
@@ -94,25 +110,25 @@ class CoincidenciaManagementTest extends TestCase
 
         $response = $this->actingAs($agente)->delete(route('coincidencias.destroy', $coincidencia));
 
-        $response->assertRedirect(route('clientes.show', $cliente));
-        $this->assertModelMissing($coincidencia);
+        $response->assertForbidden();
+        $this->assertModelExists($coincidencia);
     }
 
-    public function test_unrelated_agente_cannot_delete_coincidencia()
+    public function test_admin_from_another_equipo_cannot_delete_coincidencia()
     {
-        $agente = User::factory()->create();
-        $otroAgente = User::factory()->forEquipo($agente->equipo)->create();
+        $admin = User::factory()->admin()->create();
+        $otroAdmin = User::factory()->admin()->create();
 
-        $cliente = Cliente::factory()->registradoPor($otroAgente)->create();
-        $propiedad = Propiedad::factory()->forEquipo($agente->equipo)->create();
-        $coincidencia = Coincidencia::factory()->forEquipo($agente->equipo)->create([
+        $cliente = Cliente::factory()->registradoPor($admin)->create();
+        $propiedad = Propiedad::factory()->forEquipo($admin->equipo)->create();
+        $coincidencia = Coincidencia::factory()->forEquipo($admin->equipo)->create([
             'cliente_id' => $cliente->id,
             'propiedad_id' => $propiedad->id,
         ]);
 
-        $response = $this->actingAs($agente)->delete(route('coincidencias.destroy', $coincidencia));
+        $response = $this->actingAs($otroAdmin)->delete(route('coincidencias.destroy', $coincidencia));
 
-        $response->assertForbidden();
+        $response->assertNotFound();
         $this->assertModelExists($coincidencia);
     }
 

@@ -34,13 +34,33 @@ trait PropiedadValidationRules
     }
 
     /**
-     * Get the validation rules used to validate a propiedad's tamano.
+     * Get the validation rules used to validate a propiedad's area_terreno.
+     *
+     * @return array<int, ValidationRule|array<mixed>|string>
+     */
+    protected function areaTerrenoRules(): array
+    {
+        return ['required', 'numeric', 'min:0'];
+    }
+
+    /**
+     * Get the validation rules used to validate a propiedad's area_construccion.
+     *
+     * @return array<int, ValidationRule|array<mixed>|string>
+     */
+    protected function areaConstruccionRules(): array
+    {
+        return ['nullable', 'numeric', 'min:0'];
+    }
+
+    /**
+     * Get the validation rules used to validate a propiedad's tamano (alias).
      *
      * @return array<int, ValidationRule|array<mixed>|string>
      */
     protected function tamanoRules(): array
     {
-        return ['required', 'numeric', 'min:0'];
+        return $this->areaTerrenoRules();
     }
 
     /**

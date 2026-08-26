@@ -128,7 +128,8 @@ export function PropiedadesRecientesCard({
                                             </div>
                                             <p className="text-xs text-muted-foreground">
                                                 {propiedad.zona} •{' '}
-                                                {propiedad.tamano}{' '}
+                                                {propiedad.area_terreno ??
+                                                    propiedad.tamano}{' '}
                                                 {propiedad.unidad_medida}
                                             </p>
                                         </div>

@@ -222,19 +222,27 @@ export default function PropiedadesIndex({
                 },
             },
             {
-                accessorKey: 'tamano',
+                accessorKey: 'area_terreno',
                 header: ({ column }) => (
                     <DataTableColumnHeader column={column} title="Dimensión" />
                 ),
                 cell: ({ row }) => {
                     const propiedad = row.original;
+                    const terreno = propiedad.area_terreno ?? propiedad.tamano;
 
                     return (
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                            <Maximize2 className="size-3 text-muted-foreground/70" />
-                            <span>
-                                {propiedad.tamano} {propiedad.unidad_medida}
-                            </span>
+                        <div className="flex flex-col gap-0.5 text-xs text-muted-foreground">
+                            <div className="flex items-center gap-1">
+                                <Maximize2 className="size-3 text-muted-foreground/70" />
+                                <span>
+                                    {terreno} {propiedad.unidad_medida}
+                                </span>
+                            </div>
+                            {propiedad.area_construccion && (
+                                <span className="text-[11px] text-muted-foreground/80 pl-4">
+                                    {propiedad.area_construccion} {propiedad.unidad_medida} constr.
+                                </span>
+                            )}
                         </div>
                     );
                 },

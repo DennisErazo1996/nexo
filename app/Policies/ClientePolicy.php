@@ -38,4 +38,12 @@ class ClientePolicy
     {
         return $user->equipo_id === $cliente->equipo_id;
     }
+
+    /**
+     * Determine whether the user can delete the cliente.
+     */
+    public function delete(User $user, Cliente $cliente): bool
+    {
+        return $user->equipo_id === $cliente->equipo_id;
+    }
 }

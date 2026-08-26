@@ -31,10 +31,25 @@ class CoincidenciaController extends Controller
                 ->orWhereHas('propiedad', fn ($query) => $query
                     ->whereHas('agentes', fn ($query) => $query->where('agente_id', $agenteId))))
             ->when($request->filled('search'), function ($query) use ($request): void {
-                $search = $request->string('search')->value();
-                $query->where(function ($q) use ($search): void {
-                    $q->whereHas('cliente', fn ($c) => $c->where('nombre', 'like', "%{$search}%")->orWhere('telefono', 'like', "%{$search}%"))
-                        ->orWhereHas('propiedad', fn ($p) => $p->where('zona', 'like', "%{$search}%")->orWhere('tipo', 'like', "%{$search}%"));
+                $rawSearch = trim($request->string('search')->value());
+                $lowerFull = mb_strtolower($rawSearch);
+                $terms = array_filter(explode(' ', $rawSearch));
+
+                $query->where(function ($q) use ($lowerFull, $terms): void {
+                    $q->whereHas('cliente', fn ($c) => $c->whereRaw('LOWER(nombre) LIKE ?', ["%{$lowerFull}%"])->orWhere('telefono', 'like', "%{$lowerFull}%"))
+                        ->orWhereHas('propiedad', fn ($p) => $p->whereRaw('LOWER(zona) LIKE ?', ["%{$lowerFull}%"])->orWhereRaw('LOWER(tipo) LIKE ?', ["%{$lowerFull}%"]));
+
+                    if (count($terms) > 1) {
+                        $q->orWhere(function ($wordQuery) use ($terms): void {
+                            foreach ($terms as $term) {
+                                $lowerTerm = mb_strtolower($term);
+                                $wordQuery->where(function ($sub) use ($lowerTerm): void {
+                                    $sub->whereHas('cliente', fn ($c) => $c->whereRaw('LOWER(nombre) LIKE ?', ["%{$lowerTerm}%"])->orWhere('telefono', 'like', "%{$lowerTerm}%"))
+                                        ->orWhereHas('propiedad', fn ($p) => $p->whereRaw('LOWER(zona) LIKE ?', ["%{$lowerTerm}%"])->orWhereRaw('LOWER(tipo) LIKE ?', ["%{$lowerTerm}%"]));
+                                });
+                            }
+                        });
+                    }
                 });
             })
             ->with([

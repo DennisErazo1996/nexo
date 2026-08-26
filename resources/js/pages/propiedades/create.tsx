@@ -77,6 +77,7 @@ export default function PropiedadCreate({
 }: Props) {
     const [previews, setPreviews] = useState<string[]>([]);
     const [selectedFilesCount, setSelectedFilesCount] = useState<number>(0);
+    const [tieneConstruccion, setTieneConstruccion] = useState(false);
 
     function onFotosChange(event: React.ChangeEvent<HTMLInputElement>) {
         const files = event.target.files ? Array.from(event.target.files) : [];
@@ -179,19 +180,19 @@ export default function PropiedadCreate({
 
                                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="tamano">
-                                                Tamaño / Dimensión *
+                                            <Label htmlFor="area_terreno">
+                                                Área de Terreno *
                                             </Label>
                                             <Input
-                                                id="tamano"
-                                                name="tamano"
+                                                id="area_terreno"
+                                                name="area_terreno"
                                                 type="number"
                                                 step="0.01"
                                                 required
                                                 placeholder="Ej. 250.00"
                                             />
                                             <InputError
-                                                message={errors.tamano}
+                                                message={errors.area_terreno}
                                             />
                                         </div>
 
@@ -220,6 +221,45 @@ export default function PropiedadCreate({
                                                 message={errors.unidad_medida}
                                             />
                                         </div>
+                                    </div>
+
+                                    {/* Optional Construction Area Toggle */}
+                                    <div className="rounded-xl border border-border/70 bg-muted/20 p-3.5 transition-colors hover:bg-muted/30">
+                                        <div className="flex items-center gap-3">
+                                            <Checkbox
+                                                id="tiene_construccion"
+                                                checked={tieneConstruccion}
+                                                onCheckedChange={(checked) =>
+                                                    setTieneConstruccion(
+                                                        Boolean(checked),
+                                                    )
+                                                }
+                                            />
+                                            <Label
+                                                htmlFor="tiene_construccion"
+                                                className="cursor-pointer text-xs font-medium leading-none text-foreground"
+                                            >
+                                                Incluye construcción / casa dentro de la propiedad
+                                            </Label>
+                                        </div>
+
+                                        {tieneConstruccion && (
+                                            <div className="mt-3.5 pt-3.5 border-t border-border/50 grid gap-2">
+                                                <Label htmlFor="area_construccion">
+                                                    Área de Construcción
+                                                </Label>
+                                                <Input
+                                                    id="area_construccion"
+                                                    name="area_construccion"
+                                                    type="number"
+                                                    step="0.01"
+                                                    placeholder="Ej. 120.00"
+                                                />
+                                                <InputError
+                                                    message={errors.area_construccion}
+                                                />
+                                            </div>
+                                        )}
                                     </div>
                                 </CardContent>
                             </Card>

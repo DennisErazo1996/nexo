@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Requests\Coincidencia;
+namespace App\Http\Requests\Cliente;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DestroyCoincidenciaRequest extends FormRequest
+class DestroyClienteRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return $this->user()->can('delete', $this->route('coincidencia'));
+        return $this->user()->can('delete', $this->route('cliente'));
     }
 
     /**
