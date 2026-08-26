@@ -1,10 +1,23 @@
 import { Head, Link, router } from '@inertiajs/react';
 import {
-    type ColumnDef,
+    
     getCoreRowModel,
-    useReactTable,
-    type VisibilityState,
+    useReactTable
+    
 } from '@tanstack/react-table';
+import type {ColumnDef, VisibilityState} from '@tanstack/react-table';
+import {
+    ArrowUpRight,
+    Calendar,
+    MessageCircle,
+    Phone,
+    Plus,
+    Search,
+    User,
+    UserCheck,
+    Users,
+    X,
+} from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import ClienteController from '@/actions/App/Http/Controllers/Cliente/ClienteController';
 import { DataTable } from '@/components/data-table/data-table';
@@ -20,18 +33,6 @@ import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
 import { cn } from '@/lib/utils';
 import { index } from '@/routes/clientes';
-import {
-    ArrowUpRight,
-    Calendar,
-    MessageCircle,
-    Phone,
-    Plus,
-    Search,
-    User,
-    UserCheck,
-    Users,
-    X,
-} from 'lucide-react';
 import type {
     Cliente,
     ClientePaginado,
@@ -89,8 +90,15 @@ const ESTADO_CLIENTE_STYLES: Record<
 
 function getInitials(name: string): string {
     const parts = name.trim().split(/\s+/);
-    if (parts.length === 0 || !parts[0]) return 'CL';
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+
+    if (parts.length === 0 || !parts[0]) {
+return 'CL';
+}
+
+    if (parts.length === 1) {
+return parts[0].slice(0, 2).toUpperCase();
+}
+
     return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
 }
 
@@ -135,6 +143,7 @@ export default function ClientesIndex({ clientes, filters, estados }: Props) {
                 ),
                 cell: ({ row }) => {
                     const cliente = row.original;
+
                     return (
                         <div className="flex items-center gap-3">
                             <Avatar className="size-8 border border-primary/20 bg-primary/10 text-primary">
@@ -168,8 +177,10 @@ export default function ClientesIndex({ clientes, filters, estados }: Props) {
                 ),
                 cell: ({ row }) => {
                     const telefono = row.original.telefono;
-                    if (!telefono)
-                        return <span className="text-muted-foreground">—</span>;
+
+                    if (!telefono) {
+return <span className="text-muted-foreground">—</span>;
+}
 
                     return (
                         <div className="flex items-center gap-2">
@@ -249,6 +260,7 @@ export default function ClientesIndex({ clientes, filters, estados }: Props) {
                 ),
                 cell: ({ row }) => {
                     const agente = row.original.agente_registro;
+
                     return (
                         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                             <User className="size-3.5 text-muted-foreground/70" />
@@ -267,6 +279,7 @@ export default function ClientesIndex({ clientes, filters, estados }: Props) {
                 ),
                 cell: ({ row }) => {
                     const fecha = row.original.notas_max_created_at;
+
                     if (!fecha) {
                         return (
                             <span className="inline-flex items-center rounded-md bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:text-amber-400">
@@ -294,6 +307,7 @@ export default function ClientesIndex({ clientes, filters, estados }: Props) {
                 header: '',
                 cell: ({ row }) => {
                     const cliente = row.original;
+
                     return (
                         <div className="flex justify-end">
                             <Button
@@ -317,7 +331,10 @@ export default function ClientesIndex({ clientes, filters, estados }: Props) {
 
     // Sorting state handler connected to server-side query
     const sorting = useMemo(() => {
-        if (!filters.sort) return [];
+        if (!filters.sort) {
+return [];
+}
+
         return [
             {
                 id: filters.sort,
@@ -337,6 +354,7 @@ export default function ClientesIndex({ clientes, filters, estados }: Props) {
         onSortingChange: (updater) => {
             const nextSorting =
                 typeof updater === 'function' ? updater(sorting) : updater;
+
             if (nextSorting.length > 0 && nextSorting[0]) {
                 actualizarFiltros({
                     sort: nextSorting[0].id,

@@ -3,6 +3,7 @@
 namespace App\Concerns;
 
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Validation\Rule;
 
 trait InteresValidationRules
 {
@@ -33,7 +34,12 @@ trait InteresValidationRules
      */
     protected function presupuestoMinRules(): array
     {
-        return ['nullable', 'numeric', 'min:0', 'lte:presupuesto_max'];
+        return [
+            'nullable',
+            'numeric',
+            'min:0',
+            Rule::when(request()->filled('presupuesto_max'), ['lte:presupuesto_max']),
+        ];
     }
 
     /**
@@ -43,6 +49,11 @@ trait InteresValidationRules
      */
     protected function presupuestoMaxRules(): array
     {
-        return ['nullable', 'numeric', 'min:0'];
+        return [
+            'nullable',
+            'numeric',
+            'min:0',
+            Rule::when(request()->filled('presupuesto_min'), ['gte:presupuesto_min']),
+        ];
     }
 }

@@ -103,4 +103,68 @@ class ClienteRegistrationTest extends TestCase
         $response->assertSessionHasNoErrors();
         $this->assertSame(2, Cliente::withoutGlobalScopes()->where('telefono', '+50499887766')->count());
     }
+
+    public function test_store_with_only_presupuesto_min()
+    {
+        $agente = User::factory()->create();
+        $etiqueta = EtiquetaInteres::factory()->create();
+
+        $response = $this->actingAs($agente)->post(route('clientes.store'), [
+            'telefono' => '99887766',
+            'nombre' => 'Juan Pérez',
+            'etiqueta_id' => $etiqueta->id,
+            'presupuesto_min' => 500000,
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertSame(1, Cliente::count());
+    }
+
+    public function test_store_with_only_presupuesto_max()
+    {
+        $agente = User::factory()->create();
+        $etiqueta = EtiquetaInteres::factory()->create();
+
+        $response = $this->actingAs($agente)->post(route('clientes.store'), [
+            'telefono' => '99887766',
+            'nombre' => 'Juan Pérez',
+            'etiqueta_id' => $etiqueta->id,
+            'presupuesto_max' => 1000000,
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertSame(1, Cliente::count());
+    }
+
+    public function test_store_with_neither_presupuesto()
+    {
+        $agente = User::factory()->create();
+        $etiqueta = EtiquetaInteres::factory()->create();
+
+        $response = $this->actingAs($agente)->post(route('clientes.store'), [
+            'telefono' => '99887766',
+            'nombre' => 'Juan Pérez',
+            'etiqueta_id' => $etiqueta->id,
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertSame(1, Cliente::count());
+    }
+
+    public function test_store_fails_when_presupuesto_max_is_less_than_presupuesto_min()
+    {
+        $agente = User::factory()->create();
+        $etiqueta = EtiquetaInteres::factory()->create();
+
+        $response = $this->actingAs($agente)->post(route('clientes.store'), [
+            'telefono' => '99887766',
+            'nombre' => 'Juan Pérez',
+            'etiqueta_id' => $etiqueta->id,
+            'presupuesto_min' => 1000000,
+            'presupuesto_max' => 500000,
+        ]);
+
+        $response->assertSessionHasErrors(['presupuesto_max']);
+        $this->assertSame(0, Cliente::count());
+    }
 }

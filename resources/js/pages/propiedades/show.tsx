@@ -1,4 +1,28 @@
 import { Form, Head, Link } from '@inertiajs/react';
+import {
+    ArrowUpRight,
+    Building2,
+    Calendar,
+    Check,
+    Copy,
+    CreditCard,
+    FileText,
+    HeartHandshake,
+    ImageIcon,
+    MapPin,
+    Maximize2,
+    MessageCircle,
+    Navigation,
+    Phone,
+    Plus,
+    Scale,
+    Share2,
+    Tag,
+    Trash2,
+    Upload,
+    User,
+    Users,
+} from 'lucide-react';
 import { useState } from 'react';
 import ClienteController from '@/actions/App/Http/Controllers/Cliente/ClienteController';
 import PropiedadController from '@/actions/App/Http/Controllers/Propiedad/PropiedadController';
@@ -28,30 +52,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { buildTextoCompartir } from '@/lib/texto-compartir';
 import { cn } from '@/lib/utils';
 import { index } from '@/routes/propiedades';
-import {
-    ArrowUpRight,
-    Building2,
-    Calendar,
-    Check,
-    Copy,
-    CreditCard,
-    FileText,
-    HeartHandshake,
-    ImageIcon,
-    MapPin,
-    Maximize2,
-    MessageCircle,
-    Navigation,
-    Phone,
-    Plus,
-    Scale,
-    Share2,
-    Tag,
-    Trash2,
-    Upload,
-    User,
-    Users,
-} from 'lucide-react';
 import type { Coincidencia } from '@/types/coincidencia';
 import type { EnumOption, Propiedad } from '@/types/propiedad';
 
@@ -94,12 +94,15 @@ const ESTADO_PROPIEDAD_STYLES: Record<
 
 function getInitials(name: string): string {
     const parts = name.trim().split(/\s+/);
+
     if (parts.length === 0 || !parts[0]) {
         return 'AG';
     }
+
     if (parts.length === 1) {
         return parts[0].slice(0, 2).toUpperCase();
     }
+
     return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
 }
 
@@ -112,9 +115,16 @@ function cleanPhoneForTel(phone: string): string {
 }
 
 function formatCurrency(amount: string | number | null | undefined): string {
-    if (!amount) return '';
+    if (!amount) {
+return '';
+}
+
     const num = typeof amount === 'string' ? parseFloat(amount) : amount;
-    if (isNaN(num)) return String(amount);
+
+    if (isNaN(num)) {
+return String(amount);
+}
+
     return num.toLocaleString('es-HN');
 }
 

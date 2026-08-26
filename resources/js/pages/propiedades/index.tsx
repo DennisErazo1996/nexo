@@ -1,10 +1,22 @@
 import { Form, Head, Link, router } from '@inertiajs/react';
 import {
-    type ColumnDef,
+    
     getCoreRowModel,
-    useReactTable,
-    type VisibilityState,
+    useReactTable
+    
 } from '@tanstack/react-table';
+import type {ColumnDef, VisibilityState} from '@tanstack/react-table';
+import {
+    ArrowUpRight,
+    Building2,
+    ImageIcon,
+    MapPin,
+    Maximize2,
+    Plus,
+    Search,
+    Trash2,
+    X,
+} from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import PropiedadController from '@/actions/App/Http/Controllers/Propiedad/PropiedadController';
 import { DataTable } from '@/components/data-table/data-table';
@@ -27,17 +39,6 @@ import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
 import { cn } from '@/lib/utils';
 import { index } from '@/routes/propiedades';
-import {
-    ArrowUpRight,
-    Building2,
-    ImageIcon,
-    MapPin,
-    Maximize2,
-    Plus,
-    Search,
-    Trash2,
-    X,
-} from 'lucide-react';
 import type {
     EnumOption,
     Propiedad,
@@ -84,9 +85,16 @@ const ESTADO_PROPIEDAD_STYLES: Record<
 };
 
 function formatCurrency(amount: string | number | null | undefined): string {
-    if (!amount) return '';
+    if (!amount) {
+return '';
+}
+
     const num = typeof amount === 'string' ? parseFloat(amount) : amount;
-    if (isNaN(num)) return String(amount);
+
+    if (isNaN(num)) {
+return String(amount);
+}
+
     return num.toLocaleString('es-HN');
 }
 
@@ -204,6 +212,7 @@ export default function PropiedadesIndex({
                 ),
                 cell: ({ row }) => {
                     const propiedad = row.original;
+
                     return (
                         <div className="text-xs font-semibold text-foreground">
                             {propiedad.moneda}{' '}
@@ -219,6 +228,7 @@ export default function PropiedadesIndex({
                 ),
                 cell: ({ row }) => {
                     const propiedad = row.original;
+
                     return (
                         <div className="flex items-center gap-1 text-xs text-muted-foreground">
                             <Maximize2 className="size-3 text-muted-foreground/70" />
@@ -263,6 +273,7 @@ export default function PropiedadesIndex({
                 header: '',
                 cell: ({ row }) => {
                     const propiedad = row.original;
+
                     return (
                         <div className="flex items-center justify-end gap-1">
                             <Button
@@ -339,7 +350,10 @@ export default function PropiedadesIndex({
 
     // Sorting state handler connected to server-side query
     const sorting = useMemo(() => {
-        if (!filters.sort) return [];
+        if (!filters.sort) {
+return [];
+}
+
         return [
             {
                 id: filters.sort,
@@ -359,6 +373,7 @@ export default function PropiedadesIndex({
         onSortingChange: (updater) => {
             const nextSorting =
                 typeof updater === 'function' ? updater(sorting) : updater;
+
             if (nextSorting.length > 0 && nextSorting[0]) {
                 actualizarFiltros({
                     sort: nextSorting[0].id,

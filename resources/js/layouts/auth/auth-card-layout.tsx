@@ -1,6 +1,5 @@
 import { Link } from '@inertiajs/react';
 import type { PropsWithChildren } from 'react';
-import AppLogoIcon from '@/components/app-logo-icon';
 import {
     Card,
     CardContent,
@@ -24,11 +23,18 @@ export default function AuthCardLayout({
             <div className="flex w-full max-w-md flex-col gap-6">
                 <Link
                     href={home()}
-                    className="flex items-center gap-2 self-center font-medium"
+                    className="flex items-center justify-center self-center"
                 >
-                    <div className="flex h-9 w-9 items-center justify-center">
-                        <AppLogoIcon className="size-9 fill-current text-black dark:text-white" />
-                    </div>
+                    <img
+                        src="/logo-nexo.png"
+                        alt="Nexo"
+                        className="h-10 w-auto object-contain dark:hidden"
+                    />
+                    <img
+                        src="/logo-nexo-blanco.png"
+                        alt="Nexo"
+                        className="hidden h-10 w-auto object-contain dark:block"
+                    />
                 </Link>
 
                 <div className="flex flex-col gap-6">

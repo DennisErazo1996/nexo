@@ -179,7 +179,11 @@ export default function Dashboard({
                     <StatCard
                         title="Sin Seguimiento"
                         value={stats.clientes.sin_seguimiento}
-                        description="Más de 14 días inactivos"
+                        description={
+                            stats.clientes.sin_seguimiento > 0
+                                ? 'Dale seguimiento a tus clientes'
+                                : 'No hay clientes pendientes'
+                        }
                         icon={Clock}
                         iconColor={
                             stats.clientes.sin_seguimiento > 0

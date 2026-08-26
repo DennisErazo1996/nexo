@@ -1,4 +1,17 @@
 import { Form, Head, Link } from '@inertiajs/react';
+import {
+    Building2,
+    Check,
+    CreditCard,
+    FileText,
+    ImageIcon,
+    MapPin,
+    Maximize2,
+    Plus,
+    Tag,
+    Upload,
+    Users,
+} from 'lucide-react';
 import { useState } from 'react';
 import PropiedadController from '@/actions/App/Http/Controllers/Propiedad/PropiedadController';
 import InputError from '@/components/input-error';
@@ -17,19 +30,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { index } from '@/routes/propiedades';
-import {
-    Building2,
-    Check,
-    CreditCard,
-    FileText,
-    ImageIcon,
-    MapPin,
-    Maximize2,
-    Plus,
-    Tag,
-    Upload,
-    Users,
-} from 'lucide-react';
 import type { EnumOption } from '@/types/propiedad';
 
 type Agente = {
@@ -54,8 +54,15 @@ type Props = {
 
 function getInitials(name: string): string {
     const parts = name.trim().split(/\s+/);
-    if (parts.length === 0 || !parts[0]) return 'AG';
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+
+    if (parts.length === 0 || !parts[0]) {
+return 'AG';
+}
+
+    if (parts.length === 1) {
+return parts[0].slice(0, 2).toUpperCase();
+}
+
     return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
 }
 

@@ -1,4 +1,22 @@
 import { Form, Head, Link } from '@inertiajs/react';
+import {
+    ArrowUpRight,
+    Building2,
+    Calendar,
+    Check,
+    Copy,
+    DollarSign,
+    HeartHandshake,
+    MapPin,
+    MessageCircle,
+    MessageSquare,
+    Phone,
+    Plus,
+    Tag,
+    Trash2,
+    User,
+    X,
+} from 'lucide-react';
 import { useState } from 'react';
 import ClienteController from '@/actions/App/Http/Controllers/Cliente/ClienteController';
 import ClienteInteresController from '@/actions/App/Http/Controllers/ClienteInteres/ClienteInteresController';
@@ -30,24 +48,6 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { index } from '@/routes/clientes';
-import {
-    ArrowUpRight,
-    Building2,
-    Calendar,
-    Check,
-    Copy,
-    DollarSign,
-    HeartHandshake,
-    MapPin,
-    MessageCircle,
-    MessageSquare,
-    Phone,
-    Plus,
-    Tag,
-    Trash2,
-    User,
-    X,
-} from 'lucide-react';
 import type {
     Cliente,
     EstadoCliente,
@@ -102,12 +102,15 @@ const ESTADO_CLIENTE_STYLES: Record<
 
 function getInitials(name: string): string {
     const parts = name.trim().split(/\s+/);
+
     if (parts.length === 0 || !parts[0]) {
         return 'CL';
     }
+
     if (parts.length === 1) {
         return parts[0].slice(0, 2).toUpperCase();
     }
+
     return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
 }
 
@@ -120,9 +123,16 @@ function cleanPhoneForTel(phone: string): string {
 }
 
 function formatCurrency(amount: string | number | null | undefined): string {
-    if (!amount) return '';
+    if (!amount) {
+return '';
+}
+
     const num = typeof amount === 'string' ? parseFloat(amount) : amount;
-    if (isNaN(num)) return String(amount);
+
+    if (isNaN(num)) {
+return String(amount);
+}
+
     return num.toLocaleString('es-HN');
 }
 
@@ -137,7 +147,10 @@ export default function ClienteShow({
     const [copiedPhone, setCopiedPhone] = useState(false);
 
     function copyPhone() {
-        if (!cliente.telefono) return;
+        if (!cliente.telefono) {
+return;
+}
+
         void navigator.clipboard.writeText(cliente.telefono);
         setCopiedPhone(true);
         setTimeout(() => setCopiedPhone(false), 2000);

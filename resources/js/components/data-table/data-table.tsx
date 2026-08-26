@@ -1,4 +1,5 @@
-import { flexRender, type Table as TableType } from '@tanstack/react-table';
+import { flexRender  } from '@tanstack/react-table';
+import type {Table as TableType} from '@tanstack/react-table';
 import {
     Table,
     TableBody,

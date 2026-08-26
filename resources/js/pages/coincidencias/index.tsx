@@ -1,10 +1,23 @@
 import { Form, Head, Link, router } from '@inertiajs/react';
 import {
-    type ColumnDef,
+    
     getCoreRowModel,
-    useReactTable,
-    type VisibilityState,
+    useReactTable
+    
 } from '@tanstack/react-table';
+import type {ColumnDef, VisibilityState} from '@tanstack/react-table';
+import {
+    ArrowUpRight,
+    Building2,
+    Calendar,
+    Check,
+    HeartHandshake,
+    MessageCircle,
+    Phone,
+    Search,
+    User,
+    X,
+} from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import ClienteController from '@/actions/App/Http/Controllers/Cliente/ClienteController';
 import CoincidenciaController from '@/actions/App/Http/Controllers/Coincidencia/CoincidenciaController';
@@ -19,18 +32,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
 import { index } from '@/routes/coincidencias';
-import {
-    ArrowUpRight,
-    Building2,
-    Calendar,
-    Check,
-    HeartHandshake,
-    MessageCircle,
-    Phone,
-    Search,
-    User,
-    X,
-} from 'lucide-react';
 import type { Coincidencia, CoincidenciaPaginado } from '@/types/coincidencia';
 
 type Props = {
@@ -42,8 +43,15 @@ type Props = {
 
 function getInitials(name: string): string {
     const parts = name.trim().split(/\s+/);
-    if (parts.length === 0 || !parts[0]) return 'CL';
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+
+    if (parts.length === 0 || !parts[0]) {
+return 'CL';
+}
+
+    if (parts.length === 1) {
+return parts[0].slice(0, 2).toUpperCase();
+}
+
     return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
 }
 
@@ -56,9 +64,16 @@ function cleanPhoneForTel(phone: string): string {
 }
 
 function formatCurrency(amount: string | number | null | undefined): string {
-    if (!amount) return '';
+    if (!amount) {
+return '';
+}
+
     const num = typeof amount === 'string' ? parseFloat(amount) : amount;
-    if (isNaN(num)) return String(amount);
+
+    if (isNaN(num)) {
+return String(amount);
+}
+
     return num.toLocaleString('es-HN');
 }
 
@@ -101,8 +116,10 @@ export default function CoincidenciasIndex({
                 ),
                 cell: ({ row }) => {
                     const cliente = row.original.cliente;
-                    if (!cliente)
-                        return <span className="text-muted-foreground">—</span>;
+
+                    if (!cliente) {
+return <span className="text-muted-foreground">—</span>;
+}
 
                     return (
                         <div className="flex items-center gap-3">
@@ -169,8 +186,10 @@ export default function CoincidenciasIndex({
                 ),
                 cell: ({ row }) => {
                     const propiedad = row.original.propiedad;
-                    if (!propiedad)
-                        return <span className="text-muted-foreground">—</span>;
+
+                    if (!propiedad) {
+return <span className="text-muted-foreground">—</span>;
+}
 
                     return (
                         <div>
@@ -233,6 +252,7 @@ export default function CoincidenciasIndex({
                 header: '',
                 cell: ({ row }) => {
                     const coincidencia = row.original;
+
                     return (
                         <div className="flex items-center justify-end gap-2">
                             <Form

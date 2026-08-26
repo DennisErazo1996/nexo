@@ -1,4 +1,17 @@
 import { Form, Head, Link } from '@inertiajs/react';
+import {
+    ArrowLeft,
+    ArrowRight,
+    CheckCircle2,
+    DollarSign,
+    MapPin,
+    Phone,
+    ShieldCheck,
+    Sparkles,
+    Tag,
+    User,
+    UserPlus,
+} from 'lucide-react';
 import ClienteController from '@/actions/App/Http/Controllers/Cliente/ClienteController';
 import InputError from '@/components/input-error';
 import { Badge } from '@/components/ui/badge';
@@ -14,19 +27,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { index } from '@/routes/clientes';
-import {
-    ArrowLeft,
-    ArrowRight,
-    CheckCircle2,
-    DollarSign,
-    MapPin,
-    Phone,
-    ShieldCheck,
-    Sparkles,
-    Tag,
-    User,
-    UserPlus,
-} from 'lucide-react';
 import type { EtiquetaInteres } from '@/types/cliente';
 
 type Props = {
