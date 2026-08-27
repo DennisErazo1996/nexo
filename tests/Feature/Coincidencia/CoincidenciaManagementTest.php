@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Coincidencia;
 
+use App\Enums\EstadoCoincidencia;
 use App\Enums\EstadoPropiedad;
 use App\Models\Cliente;
 use App\Models\Coincidencia;
@@ -80,6 +81,34 @@ class CoincidenciaManagementTest extends TestCase
         $response->assertSessionHasNoErrors();
         $this->assertSame('cerrado', $coincidencia->refresh()->estado->value);
         $this->assertSame(EstadoPropiedad::Vendida, $propiedad->refresh()->estado);
+    }
+
+    public function test_closing_a_coincidencia_discards_other_active_coincidencias_for_the_same_propiedad()
+    {
+        $agente = User::factory()->create();
+        $propiedad = Propiedad::factory()->forEquipo($agente->equipo)->create([
+            'estado' => EstadoPropiedad::Disponible,
+        ]);
+        $clienteGanador = Cliente::factory()->registradoPor($agente)->create();
+        $clienteOtro = Cliente::factory()->registradoPor($agente)->create();
+
+        $ganadora = Coincidencia::factory()->forEquipo($agente->equipo)->create([
+            'cliente_id' => $clienteGanador->id,
+            'propiedad_id' => $propiedad->id,
+            'estado' => EstadoCoincidencia::Negociando,
+        ]);
+        $otra = Coincidencia::factory()->forEquipo($agente->equipo)->create([
+            'cliente_id' => $clienteOtro->id,
+            'propiedad_id' => $propiedad->id,
+            'estado' => EstadoCoincidencia::Pendiente,
+        ]);
+
+        $this->actingAs($agente)->patch(route('coincidencias.estado.update', $ganadora), [
+            'estado' => 'cerrado',
+        ]);
+
+        $this->assertSame(EstadoCoincidencia::Cerrado, $ganadora->refresh()->estado);
+        $this->assertSame(EstadoCoincidencia::Descartado, $otra->refresh()->estado);
     }
 
     public function test_admin_can_delete_coincidencia()

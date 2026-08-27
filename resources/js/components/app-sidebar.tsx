@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react';
 import {
     Building2,
     LayoutGrid,
+    Route as RouteIcon,
     Sparkles,
     UserRound,
     Users,
@@ -23,6 +24,7 @@ import { index as indexClientes } from '@/routes/clientes';
 import { index as indexCoincidencias } from '@/routes/coincidencias';
 import { edit as editEquipo } from '@/routes/equipo';
 import { index as indexPropiedades } from '@/routes/propiedades';
+import { index as indexSeguimientos } from '@/routes/seguimientos';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
@@ -45,6 +47,11 @@ const mainNavItems: NavItem[] = [
         title: 'Coincidencias',
         href: indexCoincidencias(),
         icon: Sparkles,
+    },
+    {
+        title: 'Seguimientos',
+        href: indexSeguimientos(),
+        icon: RouteIcon,
     },
     {
         title: 'Equipo',

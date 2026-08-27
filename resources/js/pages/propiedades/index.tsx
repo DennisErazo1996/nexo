@@ -98,6 +98,54 @@ return String(amount);
     return num.toLocaleString('es-HN');
 }
 
+function DeletePropiedadDialog({ propiedad }: { propiedad: Propiedad }) {
+    const [open, setOpen] = useState(false);
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-8 text-muted-foreground opacity-60 hover:text-destructive hover:opacity-100"
+                    title="Eliminar propiedad"
+                >
+                    <Trash2 className="size-3.5" />
+                </Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>¿Eliminar propiedad?</DialogTitle>
+                    <DialogDescription>
+                        Esta acción eliminará permanentemente la propiedad "
+                        {propiedad.tipo} en {propiedad.zona}", todas sus fotos
+                        y coincidencias asociadas.
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="gap-2 pt-2">
+                    <DialogClose asChild>
+                        <Button variant="secondary">Cancelar</Button>
+                    </DialogClose>
+                    <Form
+                        {...PropiedadController.destroy.form(propiedad.id)}
+                        onSuccess={() => setOpen(false)}
+                    >
+                        {({ processing }) => (
+                            <Button
+                                type="submit"
+                                variant="destructive"
+                                disabled={processing}
+                            >
+                                Eliminar propiedad
+                            </Button>
+                        )}
+                    </Form>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 export default function PropiedadesIndex({
     propiedades,
     filters,
@@ -300,54 +348,7 @@ export default function PropiedadesIndex({
                                 </Link>
                             </Button>
 
-                            <Dialog>
-                                <DialogTrigger asChild>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="size-8 text-muted-foreground opacity-60 hover:text-destructive hover:opacity-100"
-                                        title="Eliminar propiedad"
-                                    >
-                                        <Trash2 className="size-3.5" />
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>
-                                            ¿Eliminar propiedad?
-                                        </DialogTitle>
-                                        <DialogDescription>
-                                            Esta acción eliminará
-                                            permanentemente la propiedad "
-                                            {propiedad.tipo} en {propiedad.zona}
-                                            ", todas sus fotos y coincidencias
-                                            asociadas.
-                                        </DialogDescription>
-                                    </DialogHeader>
-                                    <DialogFooter className="gap-2 pt-2">
-                                        <DialogClose asChild>
-                                            <Button variant="secondary">
-                                                Cancelar
-                                            </Button>
-                                        </DialogClose>
-                                        <Form
-                                            {...PropiedadController.destroy.form(
-                                                propiedad.id,
-                                            )}
-                                        >
-                                            {({ processing }) => (
-                                                <Button
-                                                    type="submit"
-                                                    variant="destructive"
-                                                    disabled={processing}
-                                                >
-                                                    Eliminar propiedad
-                                                </Button>
-                                            )}
-                                        </Form>
-                                    </DialogFooter>
-                                </DialogContent>
-                            </Dialog>
+                            <DeletePropiedadDialog propiedad={propiedad} />
                         </div>
                     );
                 },

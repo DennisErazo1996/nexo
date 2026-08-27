@@ -101,6 +101,54 @@ function cleanPhoneForTel(phone: string): string {
     return phone.replace(/[^\d+]/g, '');
 }
 
+function DeleteClienteDialog({ cliente }: { cliente: Cliente }) {
+    const [open, setOpen] = useState(false);
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-8 text-muted-foreground opacity-60 hover:text-destructive hover:opacity-100"
+                    title="Eliminar cliente"
+                >
+                    <Trash2 className="size-3.5" />
+                </Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>¿Eliminar cliente?</DialogTitle>
+                    <DialogDescription>
+                        Esta acción eliminará permanentemente al cliente "
+                        {cliente.nombre}", incluyendo sus intereses, notas de
+                        seguimiento y coincidencias asociadas.
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="gap-2 pt-2">
+                    <DialogClose asChild>
+                        <Button variant="secondary">Cancelar</Button>
+                    </DialogClose>
+                    <Form
+                        {...ClienteController.destroy.form(cliente.id)}
+                        onSuccess={() => setOpen(false)}
+                    >
+                        {({ processing }) => (
+                            <Button
+                                type="submit"
+                                variant="destructive"
+                                disabled={processing}
+                            >
+                                Eliminar cliente
+                            </Button>
+                        )}
+                    </Form>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 export default function ClientesIndex({ clientes, filters, estados }: Props) {
     const [searchValue, setSearchValue] = useState(filters.search ?? '');
     const debouncedSearch = useDebounce(searchValue, 350);
@@ -313,50 +361,7 @@ return <span className="text-muted-foreground">—</span>;
                                 </Link>
                             </Button>
 
-                            <Dialog>
-                                <DialogTrigger asChild>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="size-8 text-muted-foreground opacity-60 hover:text-destructive hover:opacity-100"
-                                        title="Eliminar cliente"
-                                    >
-                                        <Trash2 className="size-3.5" />
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>
-                                            ¿Eliminar cliente?
-                                        </DialogTitle>
-                                        <DialogDescription>
-                                            Esta acción eliminará permanentemente al cliente "{cliente.nombre}", incluyendo sus intereses, notas de seguimiento y coincidencias asociadas.
-                                        </DialogDescription>
-                                    </DialogHeader>
-                                    <DialogFooter className="gap-2 pt-2">
-                                        <DialogClose asChild>
-                                            <Button variant="secondary">
-                                                Cancelar
-                                            </Button>
-                                        </DialogClose>
-                                        <Form
-                                            {...ClienteController.destroy.form(
-                                                cliente.id,
-                                            )}
-                                        >
-                                            {({ processing }) => (
-                                                <Button
-                                                    type="submit"
-                                                    variant="destructive"
-                                                    disabled={processing}
-                                                >
-                                                    Eliminar cliente
-                                                </Button>
-                                            )}
-                                        </Form>
-                                    </DialogFooter>
-                                </DialogContent>
-                            </Dialog>
+                            <DeleteClienteDialog cliente={cliente} />
                         </div>
                     );
                 },

@@ -8,7 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { index as indexClientes } from '@/routes/clientes';
+import { index as indexSeguimientos } from '@/routes/seguimientos';
 import type { PipelineStage } from '@/types/dashboard';
 
 type PipelineCardProps = {
@@ -144,7 +144,7 @@ export function PipelineCard({
                         return (
                             <Link
                                 key={stage.estado}
-                                href={`${indexClientes().url}?estado=${stage.estado}`}
+                                href={`${indexSeguimientos().url}?estado=${stage.estado}`}
                                 className={cn(
                                     'group flex flex-col justify-between rounded-lg border p-2.5 transition-all duration-150 hover:shadow-sm',
                                     config.bg,

@@ -258,6 +258,10 @@ class PropiedadController extends Controller
             $generarCoincidencias->paraPropiedad($propiedad);
         }
 
+        if ($estabaDisponible && $estadoNuevo !== EstadoPropiedad::Disponible) {
+            $generarCoincidencias->descartarActivas($propiedad);
+        }
+
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Estado actualizado.')]);
 
         return to_route('propiedades.show', $propiedad);

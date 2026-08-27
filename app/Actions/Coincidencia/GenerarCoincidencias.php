@@ -85,4 +85,20 @@ class GenerarCoincidencias
             'estado' => EstadoCoincidencia::Pendiente,
         ]);
     }
+
+    /**
+     * Discard every still-active coincidencia for a propiedad that is no
+     * longer disponible, so agentes stop chasing or notifying clientes about
+     * a property that was just sold, reserved, or withdrawn. Optionally
+     * excludes the coincidencia that triggered the estado change (e.g. the
+     * one being closed to Cerrado).
+     */
+    public function descartarActivas(Propiedad $propiedad, ?int $exceptoId = null): void
+    {
+        Coincidencia::query()
+            ->where('propiedad_id', $propiedad->id)
+            ->whereNotIn('estado', [EstadoCoincidencia::Cerrado, EstadoCoincidencia::Descartado])
+            ->when($exceptoId, fn ($query) => $query->whereKeyNot($exceptoId))
+            ->update(['estado' => EstadoCoincidencia::Descartado]);
+    }
 }

@@ -2,7 +2,10 @@
 
 namespace Tests\Feature\Propiedad;
 
+use App\Enums\EstadoCoincidencia;
 use App\Enums\EstadoPropiedad;
+use App\Models\Cliente;
+use App\Models\Coincidencia;
 use App\Models\Propiedad;
 use App\Models\PropiedadFoto;
 use App\Models\User;
@@ -66,6 +69,27 @@ class PropiedadManagementTest extends TestCase
 
         $response->assertSessionHasNoErrors();
         $this->assertSame(EstadoPropiedad::Reservada, $propiedad->fresh()->estado);
+    }
+
+    public function test_marking_propiedad_as_vendida_discards_active_coincidencias()
+    {
+        $agente = User::factory()->create();
+        $propiedad = Propiedad::factory()->forEquipo($agente->equipo)->create([
+            'estado' => EstadoPropiedad::Disponible,
+        ]);
+        $cliente = Cliente::factory()->registradoPor($agente)->create();
+        $coincidencia = Coincidencia::factory()->forEquipo($agente->equipo)->create([
+            'cliente_id' => $cliente->id,
+            'propiedad_id' => $propiedad->id,
+            'estado' => EstadoCoincidencia::Notificado,
+        ]);
+
+        $response = $this->actingAs($agente)->patch(route('propiedades.estado.update', $propiedad), [
+            'estado' => 'vendida',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertSame(EstadoCoincidencia::Descartado, $coincidencia->refresh()->estado);
     }
 
     public function test_agente_can_add_additional_fotos()
