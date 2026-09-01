@@ -377,9 +377,10 @@ export default function CoincidenciasIndex({
                                         />
                                         <Button
                                             type="submit"
+                                            variant="outline"
                                             size="sm"
                                             disabled={processing}
-                                            className="h-8 gap-1 bg-emerald-600 px-2.5 text-xs text-white shadow-2xs hover:bg-emerald-700"
+                                            className="h-8 gap-1 border-emerald-600 bg-emerald-600 px-2.5 text-xs text-white shadow-2xs hover:border-emerald-700 hover:bg-emerald-700 hover:text-white dark:border-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-700"
                                         >
                                             <Check className="size-3.5" />
                                             Notificado
@@ -406,7 +407,7 @@ export default function CoincidenciasIndex({
                                             variant="outline"
                                             size="sm"
                                             disabled={processing}
-                                            className="h-8 gap-1 px-2 text-xs text-muted-foreground shadow-2xs hover:bg-destructive/10 hover:text-destructive"
+                                            className="h-8 gap-1 px-2.5 text-xs text-muted-foreground shadow-2xs hover:bg-destructive/10 hover:text-destructive"
                                             title="Descartar coincidencia"
                                         >
                                             <X className="size-3.5" />
