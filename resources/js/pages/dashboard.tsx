@@ -69,7 +69,7 @@ export default function Dashboard({
                         <div className="flex items-center gap-2">
                             <h1 className="text-xl font-bold tracking-tight md:text-2xl">
                                 Hola,{' '}
-                                {auth?.user?.name?.split(' ')[0] ?? 'Agente'} 👋
+                                {auth?.user?.name?.split(' ')[0] ?? 'Agente'}
                             </h1>
                             {auth?.equipo?.nombre && (
                                 <Badge

@@ -47,7 +47,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { cn, formatMunicipio, formatTipoPropiedad } from '@/lib/utils';
+import { cn, copyToClipboard, formatMunicipio, formatTipoPropiedad } from '@/lib/utils';
 import { index } from '@/routes/clientes';
 import type { Cliente, EstadoCliente, EtiquetaInteres } from '@/types/cliente';
 import type { MunicipioOption } from '@/types/propiedad';
@@ -124,14 +124,16 @@ export default function ClienteShow({
     const [isInteresDialogOpen, setIsInteresDialogOpen] = useState(false);
     const [copiedPhone, setCopiedPhone] = useState(false);
 
-    function copyPhone() {
+    async function copyPhone() {
         if (!cliente.telefono) {
             return;
         }
 
-        void navigator.clipboard.writeText(cliente.telefono);
-        setCopiedPhone(true);
-        setTimeout(() => setCopiedPhone(false), 2000);
+        const success = await copyToClipboard(cliente.telefono);
+        if (success) {
+            setCopiedPhone(true);
+            setTimeout(() => setCopiedPhone(false), 2000);
+        }
     }
 
     const currentEstadoStyle =

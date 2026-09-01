@@ -45,7 +45,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
+import { cn, copyToClipboard } from '@/lib/utils';
 import { edit } from '@/routes/equipo';
 import type { Auth } from '@/types';
 
@@ -94,12 +94,12 @@ export default function EquipoEdit({
     };
 
     const handleCopyInvite = async (url: string) => {
-        try {
-            await navigator.clipboard.writeText(url);
+        const success = await copyToClipboard(url);
+        if (success) {
             setCopied(true);
             toast.success('Enlace de invitación copiado al portapapeles');
             setTimeout(() => setCopied(false), 2500);
-        } catch {
+        } else {
             toast.error('No se pudo copiar el enlace automáticamente');
         }
     };

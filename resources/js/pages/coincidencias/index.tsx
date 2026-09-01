@@ -7,13 +7,16 @@ import {
     Calendar,
     Check,
     HeartHandshake,
+    Loader2,
     MessageCircle,
     Phone,
     Search,
+    Share2,
     User,
     X,
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import ClienteController from '@/actions/App/Http/Controllers/Cliente/ClienteController';
 import CoincidenciaController from '@/actions/App/Http/Controllers/Coincidencia/CoincidenciaController';
 import PropiedadController from '@/actions/App/Http/Controllers/Propiedad/PropiedadController';
@@ -28,6 +31,10 @@ import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
 import { buildTextoCompartir } from '@/lib/texto-compartir';
 import { cn, formatMunicipio, formatTipoPropiedad } from '@/lib/utils';
+import {
+    compartirFotosPropiedad,
+    isWebShareFotosSupported,
+} from '@/lib/web-share-fotos';
 import { index } from '@/routes/coincidencias';
 import type { Coincidencia, CoincidenciaPaginado } from '@/types/coincidencia';
 import type { EnumOption } from '@/types/propiedad';
@@ -94,6 +101,33 @@ export default function CoincidenciasIndex({
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
         {},
     );
+    const [webShareFotosSupported] = useState(isWebShareFotosSupported);
+    const [sharingFotosId, setSharingFotosId] = useState<number | null>(null);
+
+    async function compartirFotosCoincidencia(coincidencia: Coincidencia) {
+        const propiedad = coincidencia.propiedad;
+
+        if (!propiedad?.fotos || propiedad.fotos.length === 0) {
+            return;
+        }
+
+        setSharingFotosId(coincidencia.id);
+
+        try {
+            const resultado = await compartirFotosPropiedad(propiedad.fotos, {
+                propiedadId: propiedad.id,
+                titulo: `${formatTipoPropiedad(propiedad.tipo)} en ${formatMunicipio(propiedad.zona)}`,
+            });
+
+            if (resultado === 'unsupported') {
+                toast.error('Este navegador no puede compartir estas fotos');
+            }
+        } catch {
+            toast.error('No se pudieron compartir las fotos');
+        } finally {
+            setSharingFotosId(null);
+        }
+    }
 
     function actualizarFiltros(cambios: Partial<Props['filters']>) {
         router.get(
@@ -206,7 +240,8 @@ export default function CoincidenciasIndex({
                                 className="group inline-flex items-center gap-1 font-semibold text-foreground transition-colors hover:text-primary"
                             >
                                 <span>
-                                    {formatTipoPropiedad(propiedad.tipo)} en {formatMunicipio(propiedad.zona)}
+                                    {formatTipoPropiedad(propiedad.tipo)} en{' '}
+                                    {formatMunicipio(propiedad.zona)}
                                 </span>
                                 <ArrowUpRight className="size-3.5 opacity-0 transition-opacity group-hover:opacity-100" />
                             </Link>
@@ -300,6 +335,33 @@ export default function CoincidenciasIndex({
                                 </Button>
                             )}
 
+                            {webShareFotosSupported &&
+                                propiedad?.fotos &&
+                                propiedad.fotos.length > 0 && (
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        disabled={
+                                            sharingFotosId === coincidencia.id
+                                        }
+                                        onClick={() =>
+                                            compartirFotosCoincidencia(
+                                                coincidencia,
+                                            )
+                                        }
+                                        className="h-8 gap-1 px-2.5 text-xs"
+                                        title="Compartir fotos de la propiedad"
+                                    >
+                                        {sharingFotosId === coincidencia.id ? (
+                                            <Loader2 className="size-3.5 animate-spin" />
+                                        ) : (
+                                            <Share2 className="size-3.5" />
+                                        )}
+                                        Fotos
+                                    </Button>
+                                )}
+
                             <Form
                                 {...CoincidenciaController.updateEstado.form(
                                     coincidencia.id,
@@ -358,7 +420,7 @@ export default function CoincidenciasIndex({
                 },
             },
         ],
-        [],
+        [sharingFotosId, webShareFotosSupported],
     );
 
     const table = useReactTable({

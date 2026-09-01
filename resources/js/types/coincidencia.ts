@@ -36,6 +36,10 @@ export type Coincidencia = {
                 name: string;
             };
         }[];
+        fotos?: {
+            id: number;
+            url_con_marca_agua: string;
+        }[];
     };
 };
 

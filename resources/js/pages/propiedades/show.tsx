@@ -9,6 +9,7 @@ import {
     Eye,
     HeartHandshake,
     ImageIcon,
+    Loader2,
     Maximize2,
     MessageCircle,
     Navigation,
@@ -24,6 +25,7 @@ import {
     X,
 } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { toast } from 'sonner';
 import ClienteController from '@/actions/App/Http/Controllers/Cliente/ClienteController';
 import PropiedadController from '@/actions/App/Http/Controllers/Propiedad/PropiedadController';
 import PropiedadFotoController from '@/actions/App/Http/Controllers/PropiedadFoto/PropiedadFotoController';
@@ -55,11 +57,16 @@ import { Textarea } from '@/components/ui/textarea';
 import { buildTextoCompartir } from '@/lib/texto-compartir';
 import {
     cn,
+    copyToClipboard,
     formatCondicionLegal,
     formatFormaPago,
     formatMunicipio,
     formatTipoPropiedad,
 } from '@/lib/utils';
+import {
+    compartirFotosPropiedad,
+    isWebShareFotosSupported,
+} from '@/lib/web-share-fotos';
 import { index } from '@/routes/propiedades';
 import type { Coincidencia } from '@/types/coincidencia';
 import type { EnumOption, MunicipioOption, Propiedad } from '@/types/propiedad';
@@ -169,6 +176,8 @@ export default function PropiedadShow({
 }: Props) {
     const [textoCompartir, setTextoCompartir] = useState<string | null>(null);
     const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+    const [webShareFotosSupported] = useState(isWebShareFotosSupported);
+    const [isSharingFotos, setIsSharingFotos] = useState(false);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [copiedShareText, setCopiedShareText] = useState(false);
     const fotosInputRef = useRef<HTMLInputElement>(null);
@@ -236,11 +245,36 @@ export default function PropiedadShow({
         setIsShareDialogOpen(true);
     }
 
-    function copiarTextoCompartir() {
+    async function copiarTextoCompartir() {
         if (textoCompartir) {
-            void navigator.clipboard.writeText(textoCompartir);
-            setCopiedShareText(true);
-            setTimeout(() => setCopiedShareText(false), 2000);
+            const success = await copyToClipboard(textoCompartir);
+            if (success) {
+                setCopiedShareText(true);
+                setTimeout(() => setCopiedShareText(false), 2000);
+            }
+        }
+    }
+
+    async function compartirFotos() {
+        if (!propiedad.fotos || propiedad.fotos.length === 0) {
+            return;
+        }
+
+        setIsSharingFotos(true);
+
+        try {
+            const resultado = await compartirFotosPropiedad(propiedad.fotos, {
+                propiedadId: propiedad.id,
+                titulo: `${formatTipoPropiedad(propiedad.tipo)} en ${formatMunicipio(propiedad.zona)}`,
+            });
+
+            if (resultado === 'unsupported') {
+                toast.error('Este navegador no puede compartir estas fotos');
+            }
+        } catch {
+            toast.error('No se pudieron compartir las fotos');
+        } finally {
+            setIsSharingFotos(false);
         }
     }
 
@@ -259,7 +293,9 @@ export default function PropiedadShow({
 
     return (
         <>
-            <Head title={`${formatTipoPropiedad(propiedad.tipo)} en ${formatMunicipio(propiedad.zona)}`} />
+            <Head
+                title={`${formatTipoPropiedad(propiedad.tipo)} en ${formatMunicipio(propiedad.zona)}`}
+            />
 
             <div className="space-y-6 p-4 md:p-6 lg:p-8">
                 {/* Hero Header */}
@@ -272,7 +308,8 @@ export default function PropiedadShow({
                         <div className="space-y-1.5">
                             <div className="flex flex-wrap items-center gap-3">
                                 <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                                    {formatTipoPropiedad(propiedad.tipo)} en {formatMunicipio(propiedad.zona)}
+                                    {formatTipoPropiedad(propiedad.tipo)} en{' '}
+                                    {formatMunicipio(propiedad.zona)}
                                 </h1>
 
                                 <Form
@@ -426,7 +463,8 @@ export default function PropiedadShow({
                                                             htmlFor="edit-zona"
                                                             className="text-xs font-medium"
                                                         >
-                                                            Municipio / Ubicación *
+                                                            Municipio /
+                                                            Ubicación *
                                                         </Label>
                                                         <select
                                                             id="edit-zona"
@@ -437,14 +475,27 @@ export default function PropiedadShow({
                                                             required
                                                             className="h-9 rounded-md border border-input bg-background px-3 text-xs shadow-2xs focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
                                                         >
-                                                            {municipios.map((m) => (
-                                                                <option
-                                                                    key={m.value}
-                                                                    value={m.value}
-                                                                >
-                                                                    {m.label} ({m.departamento})
-                                                                </option>
-                                                            ))}
+                                                            {municipios.map(
+                                                                (m) => (
+                                                                    <option
+                                                                        key={
+                                                                            m.value
+                                                                        }
+                                                                        value={
+                                                                            m.value
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            m.label
+                                                                        }{' '}
+                                                                        (
+                                                                        {
+                                                                            m.departamento
+                                                                        }
+                                                                        )
+                                                                    </option>
+                                                                ),
+                                                            )}
                                                         </select>
                                                         <InputError
                                                             message={
@@ -1191,7 +1242,9 @@ export default function PropiedadShow({
                                             </span>
                                         </span>
                                         <p className="mt-1 text-sm font-semibold break-words text-foreground">
-                                            {formatFormaPago(propiedad.forma_pago)}
+                                            {formatFormaPago(
+                                                propiedad.forma_pago,
+                                            )}
                                         </p>
                                     </div>
 
@@ -1204,7 +1257,9 @@ export default function PropiedadShow({
                                                 </span>
                                             </span>
                                             <p className="mt-1 text-sm font-semibold [overflow-wrap:anywhere] break-words text-foreground">
-                                                {formatCondicionLegal(propiedad.condicion_legal)}
+                                                {formatCondicionLegal(
+                                                    propiedad.condicion_legal,
+                                                )}
                                             </p>
                                         </div>
                                     )}
@@ -1396,6 +1451,26 @@ export default function PropiedadShow({
                                             de Nexo
                                         </CardDescription>
                                     </div>
+
+                                    {webShareFotosSupported &&
+                                        propiedad.fotos &&
+                                        propiedad.fotos.length > 0 && (
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={compartirFotos}
+                                                disabled={isSharingFotos}
+                                                className="h-8 gap-1.5 text-xs"
+                                            >
+                                                {isSharingFotos ? (
+                                                    <Loader2 className="size-3.5 animate-spin" />
+                                                ) : (
+                                                    <Share2 className="size-3.5" />
+                                                )}
+                                                Compartir fotos
+                                            </Button>
+                                        )}
                                 </div>
                             </CardHeader>
 
@@ -1407,7 +1482,9 @@ export default function PropiedadShow({
                                         {propiedad.fotos.map((foto, index) => (
                                             <div
                                                 key={foto.id}
-                                                onClick={() => setLightboxIndex(index)}
+                                                onClick={() =>
+                                                    setLightboxIndex(index)
+                                                }
                                                 className="group relative aspect-4/3 cursor-pointer overflow-hidden rounded-xl border border-border/70 bg-muted/40"
                                             >
                                                 <img
@@ -1445,7 +1522,9 @@ export default function PropiedadShow({
                                                                 disabled={
                                                                     processing
                                                                 }
-                                                                onClick={(e) => e.stopPropagation()}
+                                                                onClick={(e) =>
+                                                                    e.stopPropagation()
+                                                                }
                                                                 className="pointer-events-auto size-7 shadow-md"
                                                                 title="Eliminar foto"
                                                             >
@@ -1473,110 +1552,120 @@ export default function PropiedadShow({
                                     </div>
                                 )}
 
-                                 {/* Photo Uploader Box */}
-                                 <Form
-                                     {...PropiedadFotoController.store.form(
-                                         propiedad.id,
-                                     )}
-                                     options={{
-                                         preserveScroll: true,
-                                         onSuccess: () => clearFotos(),
-                                     }}
-                                     className="space-y-3 rounded-xl border border-border/70 bg-muted/20 p-3.5"
-                                 >
-                                     {({ processing, errors }) => (
-                                         <div className="space-y-3">
-                                             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                                                 <label className="relative flex cursor-pointer items-center gap-2 rounded-lg border border-input bg-background px-3 py-2 text-xs font-medium shadow-2xs transition-colors hover:bg-accent hover:text-accent-foreground">
-                                                     <Upload className="size-3.5 text-muted-foreground" />
-                                                     <span>
-                                                         {fotos.length > 0
-                                                             ? `${fotos.length} foto(s) seleccionada(s)`
-                                                             : 'Seleccionar fotos...'}
-                                                     </span>
-                                                     <input
-                                                         ref={fotosInputRef}
-                                                         name="fotos[]"
-                                                         type="file"
-                                                         multiple
-                                                         accept="image/*"
-                                                         className="sr-only"
-                                                         onChange={onFotosChange}
-                                                     />
-                                                 </label>
+                                {/* Photo Uploader Box */}
+                                <Form
+                                    {...PropiedadFotoController.store.form(
+                                        propiedad.id,
+                                    )}
+                                    options={{
+                                        preserveScroll: true,
+                                        onSuccess: () => clearFotos(),
+                                    }}
+                                    className="space-y-3 rounded-xl border border-border/70 bg-muted/20 p-3.5"
+                                >
+                                    {({ processing, errors }) => (
+                                        <div className="space-y-3">
+                                            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                                <label className="relative flex cursor-pointer items-center gap-2 rounded-lg border border-input bg-background px-3 py-2 text-xs font-medium shadow-2xs transition-colors hover:bg-accent hover:text-accent-foreground">
+                                                    <Upload className="size-3.5 text-muted-foreground" />
+                                                    <span>
+                                                        {fotos.length > 0
+                                                            ? `${fotos.length} foto(s) seleccionada(s)`
+                                                            : 'Seleccionar fotos...'}
+                                                    </span>
+                                                    <input
+                                                        ref={fotosInputRef}
+                                                        name="fotos[]"
+                                                        type="file"
+                                                        multiple
+                                                        accept="image/*"
+                                                        className="sr-only"
+                                                        onChange={onFotosChange}
+                                                    />
+                                                </label>
 
-                                                 <Button
-                                                     type="submit"
-                                                     size="sm"
-                                                     disabled={
-                                                         processing ||
-                                                         fotos.length === 0
-                                                     }
-                                                     className="h-8 gap-1.5 text-xs shadow-2xs"
-                                                 >
-                                                     <Plus className="size-3.5" />
-                                                     {processing
-                                                         ? 'Subiendo...'
-                                                         : 'Subir fotos'}
-                                                 </Button>
-                                             </div>
+                                                <Button
+                                                    type="submit"
+                                                    size="sm"
+                                                    disabled={
+                                                        processing ||
+                                                        fotos.length === 0
+                                                    }
+                                                    className="h-8 gap-1.5 text-xs shadow-2xs"
+                                                >
+                                                    <Plus className="size-3.5" />
+                                                    {processing
+                                                        ? 'Subiendo...'
+                                                        : 'Subir fotos'}
+                                                </Button>
+                                            </div>
 
-                                             <InputError
-                                                 message={errors.fotos}
-                                             />
-                                             {Object.entries(errors)
-                                                 .filter(([key]) =>
-                                                     key.startsWith('fotos.'),
-                                                 )
-                                                 .map(([key, message]) => (
-                                                     <InputError
-                                                         key={key}
-                                                         message={message}
-                                                     />
-                                                 ))}
+                                            <InputError
+                                                message={errors.fotos}
+                                            />
+                                            {Object.entries(errors)
+                                                .filter(([key]) =>
+                                                    key.startsWith('fotos.'),
+                                                )
+                                                .map(([key, message]) => (
+                                                    <InputError
+                                                        key={key}
+                                                        message={message}
+                                                    />
+                                                ))}
 
-                                             {/* Previews Grid for Selected Photos */}
-                                             {previews.length > 0 && (
-                                                 <div className="space-y-2 pt-2">
-                                                     <div className="flex items-center justify-between">
-                                                         <p className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
-                                                             Fotos listas para subir ({previews.length})
-                                                         </p>
-                                                         <button
-                                                             type="button"
-                                                             onClick={clearFotos}
-                                                             className="text-[11px] text-muted-foreground hover:text-destructive hover:underline"
-                                                         >
-                                                             Limpiar selección
-                                                         </button>
-                                                     </div>
-                                                     <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 md:grid-cols-6">
-                                                         {previews.map((src, index) => (
-                                                             <div
-                                                                 key={index}
-                                                                 className="group relative aspect-4/3 overflow-hidden rounded-xl border border-border/70 bg-muted/40 shadow-2xs"
-                                                             >
-                                                                 <img
-                                                                     src={src}
-                                                                     alt={`Preview ${index + 1}`}
-                                                                     className="size-full object-cover"
-                                                                 />
-                                                                 <button
-                                                                     type="button"
-                                                                     onClick={() => removeFoto(index)}
-                                                                     aria-label="Eliminar foto seleccionada"
-                                                                     className="absolute top-1.5 right-1.5 flex size-5 items-center justify-center rounded-full bg-red-600 text-white shadow-xs transition-colors hover:bg-red-700"
-                                                                 >
-                                                                     <X className="size-3" />
-                                                                 </button>
-                                                             </div>
-                                                         ))}
-                                                     </div>
-                                                 </div>
-                                             )}
-                                         </div>
-                                     )}
-                                 </Form>
+                                            {/* Previews Grid for Selected Photos */}
+                                            {previews.length > 0 && (
+                                                <div className="space-y-2 pt-2">
+                                                    <div className="flex items-center justify-between">
+                                                        <p className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
+                                                            Fotos listas para
+                                                            subir (
+                                                            {previews.length})
+                                                        </p>
+                                                        <button
+                                                            type="button"
+                                                            onClick={clearFotos}
+                                                            className="text-[11px] text-muted-foreground hover:text-destructive hover:underline"
+                                                        >
+                                                            Limpiar selección
+                                                        </button>
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 md:grid-cols-6">
+                                                        {previews.map(
+                                                            (src, index) => (
+                                                                <div
+                                                                    key={index}
+                                                                    className="group relative aspect-4/3 overflow-hidden rounded-xl border border-border/70 bg-muted/40 shadow-2xs"
+                                                                >
+                                                                    <img
+                                                                        src={
+                                                                            src
+                                                                        }
+                                                                        alt={`Preview ${index + 1}`}
+                                                                        className="size-full object-cover"
+                                                                    />
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() =>
+                                                                            removeFoto(
+                                                                                index,
+                                                                            )
+                                                                        }
+                                                                        aria-label="Eliminar foto seleccionada"
+                                                                        className="absolute top-1.5 right-1.5 flex size-5 items-center justify-center rounded-full bg-red-600 text-white shadow-xs transition-colors hover:bg-red-700"
+                                                                    >
+                                                                        <X className="size-3" />
+                                                                    </button>
+                                                                </div>
+                                                            ),
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </Form>
                             </CardContent>
                         </Card>
 

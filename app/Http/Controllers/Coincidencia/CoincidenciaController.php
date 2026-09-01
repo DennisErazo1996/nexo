@@ -37,6 +37,7 @@ class CoincidenciaController extends Controller
                 'propiedad',
                 'propiedad.etiquetas.etiqueta:id,nombre',
                 'propiedad.agentes.agente:id,nombres,apellidos,telefono',
+                'propiedad.fotos:id,propiedad_id,url_con_marca_agua,orden',
             ])
             ->orderByDesc('created_at')
             ->paginate(20)
