@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/card';
 import { index as indexCoincidencias } from '@/routes/coincidencias';
 import type { Coincidencia } from '@/types/coincidencia';
+import { cn, formatMunicipio, formatTipoPropiedad } from '@/lib/utils';
 
 type CoincidenciasCardProps = {
     coincidencias: Coincidencia[];
@@ -117,10 +118,10 @@ export function CoincidenciasCard({
                                                 className="flex items-center gap-1 font-medium text-foreground hover:text-primary hover:underline"
                                             >
                                                 <Eye className="size-3" />
-                                                <span className="capitalize">
-                                                    {item.propiedad.tipo}
+                                                <span>
+                                                    {formatTipoPropiedad(item.propiedad.tipo)}
                                                 </span>{' '}
-                                                en {item.propiedad.zona}
+                                                en {formatMunicipio(item.propiedad.zona)}
                                             </Link>
                                             <span>•</span>
                                             <span className="font-semibold text-emerald-600 dark:text-emerald-400">

@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/card';
 import { index as indexPropiedades } from '@/routes/propiedades';
 import type { Propiedad } from '@/types/propiedad';
+import { cn, formatMunicipio, formatTipoPropiedad } from '@/lib/utils';
 
 type PropiedadesRecientesCardProps = {
     propiedades: Propiedad[];
@@ -116,8 +117,8 @@ export function PropiedadesRecientesCard({
 
                                         <div>
                                             <div className="flex items-center gap-2">
-                                                <span className="text-sm font-semibold capitalize group-hover:text-primary group-hover:underline">
-                                                    {propiedad.tipo}
+                                                <span className="text-sm font-semibold group-hover:text-primary group-hover:underline">
+                                                    {formatTipoPropiedad(propiedad.tipo)}
                                                 </span>
                                                 <Badge
                                                     variant="secondary"
@@ -127,7 +128,7 @@ export function PropiedadesRecientesCard({
                                                 </Badge>
                                             </div>
                                             <p className="text-xs text-muted-foreground">
-                                                {propiedad.zona} •{' '}
+                                                {formatMunicipio(propiedad.zona)} •{' '}
                                                 {propiedad.area_terreno ??
                                                     propiedad.tamano}{' '}
                                                 {propiedad.unidad_medida}

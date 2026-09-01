@@ -17,6 +17,7 @@ export type DashboardStats = {
         cerrados: number;
         perdidos: number;
         sin_seguimiento: number;
+        en_seguimiento: number;
     };
     coincidencias: {
         pendientes: number;

@@ -24,14 +24,14 @@ class GenerarCoincidenciasTest extends TestCase
         ClienteInteres::factory()->create([
             'cliente_id' => $cliente->id,
             'etiqueta_id' => $etiqueta->id,
-            'zona' => 'Tegucigalpa',
+            'zona' => 'juticalpa',
             'presupuesto_min' => 100000,
             'presupuesto_max' => 2000000,
         ]);
 
         $response = $this->actingAs($agente)->post(route('propiedades.store'), [
             'tipo' => 'casa',
-            'zona' => 'tegucigalpa',
+            'zona' => 'juticalpa',
             'area_terreno' => 250,
             'unidad_medida' => 'm2',
             'precio' => 1500000,
@@ -56,7 +56,7 @@ class GenerarCoincidenciasTest extends TestCase
         $agente = User::factory()->create();
         $etiqueta = EtiquetaInteres::factory()->create();
         $propiedad = Propiedad::factory()->forEquipo($agente->equipo)->create([
-            'zona' => 'Choluteca',
+            'zona' => 'catacamas',
             'precio' => 800000,
             'estado' => EstadoPropiedad::Retirada,
         ]);
@@ -66,7 +66,7 @@ class GenerarCoincidenciasTest extends TestCase
         ClienteInteres::factory()->create([
             'cliente_id' => $cliente->id,
             'etiqueta_id' => $etiqueta->id,
-            'zona' => 'Choluteca',
+            'zona' => 'catacamas',
             'presupuesto_min' => 500000,
             'presupuesto_max' => 1000000,
         ]);
@@ -91,7 +91,7 @@ class GenerarCoincidenciasTest extends TestCase
         $agente = User::factory()->create();
         $etiqueta = EtiquetaInteres::factory()->create();
         $propiedad = Propiedad::factory()->forEquipo($agente->equipo)->create([
-            'zona' => 'Santa Rosa',
+            'zona' => 'campamento',
             'precio' => 300000,
             'estado' => EstadoPropiedad::Disponible,
         ]);
@@ -101,7 +101,7 @@ class GenerarCoincidenciasTest extends TestCase
 
         $response = $this->actingAs($agente)->post(route('clientes.intereses.store', $cliente), [
             'etiqueta_id' => $etiqueta->id,
-            'zona' => 'santa rosa',
+            'zona' => 'campamento',
             'presupuesto_min' => 100000,
             'presupuesto_max' => 500000,
         ]);
@@ -123,14 +123,14 @@ class GenerarCoincidenciasTest extends TestCase
         ClienteInteres::factory()->create([
             'cliente_id' => $cliente->id,
             'etiqueta_id' => $etiqueta->id,
-            'zona' => 'Tegucigalpa',
+            'zona' => 'juticalpa',
             'presupuesto_min' => 100000,
             'presupuesto_max' => 200000,
         ]);
 
         $this->actingAs($agente)->post(route('propiedades.store'), [
             'tipo' => 'casa',
-            'zona' => 'San Pedro Sula',
+            'zona' => 'catacamas',
             'area_terreno' => 250,
             'unidad_medida' => 'm2',
             'precio' => 1500000,
@@ -150,13 +150,13 @@ class GenerarCoincidenciasTest extends TestCase
         ClienteInteres::factory()->create([
             'cliente_id' => $cliente->id,
             'etiqueta_id' => $etiqueta->id,
-            'zona' => 'Tegucigalpa',
+            'zona' => 'juticalpa',
             'presupuesto_min' => 100000,
             'presupuesto_max' => 2000000,
         ]);
 
         $propiedad = Propiedad::factory()->forEquipo($agente->equipo)->create([
-            'zona' => 'Tegucigalpa',
+            'zona' => 'juticalpa',
             'precio' => 1500000,
             'estado' => EstadoPropiedad::Disponible,
         ]);
@@ -178,7 +178,7 @@ class GenerarCoincidenciasTest extends TestCase
         ClienteInteres::factory()->create([
             'cliente_id' => $cliente->id,
             'etiqueta_id' => $etiqueta->id,
-            'zona' => 'Laguna Seca',
+            'zona' => 'concordia',
             'presupuesto_min' => 100000,
             'presupuesto_max' => 2000000,
         ]);
@@ -186,7 +186,7 @@ class GenerarCoincidenciasTest extends TestCase
         // First propiedad created
         $this->actingAs($agente)->post(route('propiedades.store'), [
             'tipo' => 'terreno',
-            'zona' => 'Laguna Seca',
+            'zona' => 'concordia',
             'area_terreno' => 10,
             'unidad_medida' => 'manzana',
             'precio' => 500000,
@@ -200,7 +200,7 @@ class GenerarCoincidenciasTest extends TestCase
         // Second propiedad created with same interest
         $this->actingAs($agente)->post(route('propiedades.store'), [
             'tipo' => 'terreno',
-            'zona' => 'Laguna Seca',
+            'zona' => 'concordia',
             'area_terreno' => 20,
             'unidad_medida' => 'manzana',
             'precio' => 800000,
@@ -213,6 +213,39 @@ class GenerarCoincidenciasTest extends TestCase
         $this->assertSame(2, Coincidencia::where('cliente_id', $cliente->id)->count());
     }
 
+    public function test_creating_carro_generates_match_with_cliente_interested_in_carro()
+    {
+        $agente = User::factory()->create();
+        $etiquetaCarro = EtiquetaInteres::factory()->create(['nombre' => 'carro']);
+
+        $cliente = Cliente::factory()->forEquipo($agente->equipo)->create();
+        ClienteInteres::factory()->create([
+            'cliente_id' => $cliente->id,
+            'etiqueta_id' => $etiquetaCarro->id,
+            'zona' => 'catacamas',
+            'presupuesto_min' => 100000,
+            'presupuesto_max' => 500000,
+        ]);
+
+        $response = $this->actingAs($agente)->post(route('propiedades.store'), [
+            'tipo' => 'carro',
+            'zona' => 'catacamas',
+            'precio' => 350000,
+            'moneda' => 'HNL',
+            'forma_pago' => 'contado',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+
+        $propiedad = Propiedad::firstOrFail();
+
+        $this->assertDatabaseHas('matches', [
+            'cliente_id' => $cliente->id,
+            'propiedad_id' => $propiedad->id,
+            'estado' => 'pendiente',
+        ]);
+    }
+
     public function test_creating_propiedad_matches_interest_by_tipo_without_explicit_etiquetas()
     {
         $agente = User::factory()->create();
@@ -223,7 +256,7 @@ class GenerarCoincidenciasTest extends TestCase
         ClienteInteres::factory()->create([
             'cliente_id' => $cliente->id,
             'etiqueta_id' => $etiquetaTerreno->id,
-            'zona' => 'Danli',
+            'zona' => 'patuca',
             'presupuesto_min' => 100000,
             'presupuesto_max' => 500000,
         ]);
@@ -231,7 +264,7 @@ class GenerarCoincidenciasTest extends TestCase
         // Propiedad has tipo 'terreno' and only 'agricola' in submitted etiquetas
         $this->actingAs($agente)->post(route('propiedades.store'), [
             'tipo' => 'terreno',
-            'zona' => 'Danli',
+            'zona' => 'patuca',
             'area_terreno' => 5,
             'unidad_medida' => 'manzana',
             'precio' => 200000,

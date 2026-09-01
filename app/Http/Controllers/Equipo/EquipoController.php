@@ -22,8 +22,9 @@ class EquipoController extends Controller
             'equipo' => $equipo->only(['id', 'nombre']),
             'agentes' => $equipo->agentes()
                 ->withCount(['clientesRegistrados', 'propiedadAgentes'])
-                ->orderBy('name')
-                ->get(['id', 'name', 'email', 'telefono', 'rol', 'created_at']),
+                ->orderBy('nombres')
+                ->orderBy('apellidos')
+                ->get(['id', 'nombres', 'apellidos', 'email', 'telefono', 'rol', 'created_at']),
         ]);
     }
 

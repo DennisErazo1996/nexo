@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Propiedad;
 
 use App\Concerns\PropiedadValidationRules;
+use App\Enums\TipoPropiedad;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -25,12 +26,14 @@ class UpdatePropiedadRequest extends FormRequest
      */
     public function rules(): array
     {
+        $requiereTerreno = $this->input('tipo') !== TipoPropiedad::Carro->value;
+
         return [
             'tipo' => $this->tipoRules(),
             'zona' => $this->zonaRules(),
-            'area_terreno' => $this->areaTerrenoRules(),
+            'area_terreno' => $this->areaTerrenoRules($requiereTerreno),
             'area_construccion' => $this->areaConstruccionRules(),
-            'unidad_medida' => $this->unidadMedidaRules(),
+            'unidad_medida' => $this->unidadMedidaRules($requiereTerreno),
             'precio' => $this->precioRules(),
             'moneda' => $this->monedaRules(),
             'forma_pago' => $this->formaPagoRules(),

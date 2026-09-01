@@ -1,11 +1,6 @@
 import { Form, Head, Link, router } from '@inertiajs/react';
-import {
-    
-    getCoreRowModel,
-    useReactTable
-    
-} from '@tanstack/react-table';
-import type {ColumnDef, VisibilityState} from '@tanstack/react-table';
+import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import type { ColumnDef, VisibilityState } from '@tanstack/react-table';
 import {
     ArrowUpRight,
     Calendar,
@@ -83,12 +78,12 @@ function getInitials(name: string): string {
     const parts = name.trim().split(/\s+/);
 
     if (parts.length === 0 || !parts[0]) {
-return 'CL';
-}
+        return 'CL';
+    }
 
     if (parts.length === 1) {
-return parts[0].slice(0, 2).toUpperCase();
-}
+        return parts[0].slice(0, 2).toUpperCase();
+    }
 
     return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
 }
@@ -218,8 +213,8 @@ export default function ClientesIndex({ clientes, filters, estados }: Props) {
                     const telefono = row.original.telefono;
 
                     if (!telefono) {
-return <span className="text-muted-foreground">—</span>;
-}
+                        return <span className="text-muted-foreground">—</span>;
+                    }
 
                     return (
                         <div className="flex items-center gap-2">
@@ -313,7 +308,7 @@ return <span className="text-muted-foreground">—</span>;
                 header: ({ column }) => (
                     <DataTableColumnHeader
                         column={column}
-                        title="Último Seguimiento"
+                        title="Última Nota"
                     />
                 ),
                 cell: ({ row }) => {
@@ -322,7 +317,7 @@ return <span className="text-muted-foreground">—</span>;
                     if (!fecha) {
                         return (
                             <span className="inline-flex items-center rounded-md bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:text-amber-400">
-                                Sin seguimiento
+                                Sin nota reciente
                             </span>
                         );
                     }
@@ -373,8 +368,8 @@ return <span className="text-muted-foreground">—</span>;
     // Sorting state handler connected to server-side query
     const sorting = useMemo(() => {
         if (!filters.sort) {
-return [];
-}
+            return [];
+        }
 
         return [
             {
@@ -495,7 +490,7 @@ return [];
                             ))}
                         </select>
 
-                        {/* Sin seguimiento Toggle */}
+                        {/* Sin nota reciente Toggle */}
                         <label className="flex cursor-pointer items-center gap-2 rounded-md border border-input bg-card px-3 py-1.5 text-xs font-medium shadow-2xs transition-colors select-none hover:bg-muted/40">
                             <Checkbox
                                 checked={filters.sin_seguimiento === '1'}
@@ -508,7 +503,7 @@ return [];
                                 }
                             />
                             <span className="text-muted-foreground">
-                                Sin seguimiento reciente
+                                Sin nota reciente
                             </span>
                         </label>
 

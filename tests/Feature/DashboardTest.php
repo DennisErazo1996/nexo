@@ -75,7 +75,51 @@ class DashboardTest extends TestCase
             ->where('stats.propiedades.disponibles', 1)
             ->where('stats.clientes.totales', 1)
             ->where('stats.coincidencias.pendientes', 1)
+            ->where('stats.clientes.en_seguimiento', 1)
             ->where('stats.valor_cartera.HNL', 3500000)
+        );
+    }
+
+    public function test_en_seguimiento_excludes_clientes_whose_coincidencias_are_all_cerrado_or_descartado(): void
+    {
+        $equipo = Equipo::factory()->create();
+        $user = User::factory()->create(['equipo_id' => $equipo->id]);
+        $this->actingAs($user);
+
+        $propiedad = Propiedad::factory()->create(['equipo_id' => $equipo->id]);
+
+        $clienteActivo = Cliente::factory()->create(['equipo_id' => $equipo->id]);
+        Coincidencia::factory()->create([
+            'equipo_id' => $equipo->id,
+            'cliente_id' => $clienteActivo->id,
+            'propiedad_id' => $propiedad->id,
+            'estado' => EstadoCoincidencia::Notificado,
+        ]);
+
+        $clienteCerrado = Cliente::factory()->create(['equipo_id' => $equipo->id]);
+        Coincidencia::factory()->create([
+            'equipo_id' => $equipo->id,
+            'cliente_id' => $clienteCerrado->id,
+            'propiedad_id' => $propiedad->id,
+            'estado' => EstadoCoincidencia::Cerrado,
+        ]);
+
+        $clienteDescartado = Cliente::factory()->create(['equipo_id' => $equipo->id]);
+        Coincidencia::factory()->create([
+            'equipo_id' => $equipo->id,
+            'cliente_id' => $clienteDescartado->id,
+            'propiedad_id' => $propiedad->id,
+            'estado' => EstadoCoincidencia::Descartado,
+        ]);
+
+        // Cliente without any coincidencia is not "en seguimiento".
+        Cliente::factory()->create(['equipo_id' => $equipo->id]);
+
+        $response = $this->get(route('dashboard'));
+
+        $response->assertOk();
+        $response->assertInertia(fn (Assert $page) => $page
+            ->where('stats.clientes.en_seguimiento', 1)
         );
     }
 

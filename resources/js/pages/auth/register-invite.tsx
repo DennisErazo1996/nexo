@@ -44,11 +44,7 @@ export default function RegisterInvite({
                             name="equipo_id"
                             value={equipo.id}
                         />
-                        <input
-                            type="hidden"
-                            name="expires"
-                            value={expires}
-                        />
+                        <input type="hidden" name="expires" value={expires} />
                         <input
                             type="hidden"
                             name="signature"
@@ -61,43 +57,80 @@ export default function RegisterInvite({
                                 <Building2 className="h-4 w-4" />
                             </div>
                             <div>
-                                <p className="text-xs text-muted-foreground">Invitación para unirte a:</p>
-                                <p className="font-semibold text-foreground">{equipo.nombre}</p>
+                                <p className="text-xs text-muted-foreground">
+                                    Invitación para unirte a:
+                                </p>
+                                <p className="font-semibold text-foreground">
+                                    {equipo.nombre}
+                                </p>
                             </div>
                         </div>
 
                         <div className="grid gap-5">
                             {/* Sección: Datos Personales */}
-                            <div className="rounded-lg border border-border/80 bg-card/60 p-4 space-y-3.5 shadow-xs">
-                                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                            <div className="space-y-3.5 rounded-lg border border-border/80 bg-card/60 p-4 shadow-xs">
+                                <div className="flex items-center gap-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                     <User className="h-3.5 w-3.5 text-primary" />
                                     <span>Tus Datos de Agente</span>
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
-                                    <div className="grid gap-1.5">
-                                        <Label htmlFor="name" className="text-sm font-medium">
-                                            Nombre completo
-                                        </Label>
-                                        <Input
-                                            id="name"
-                                            type="text"
-                                            required
-                                            autoFocus
-                                            tabIndex={1}
-                                            autoComplete="name"
-                                            name="name"
-                                            placeholder="Tu nombre y apellido"
-                                            className="h-10"
-                                        />
-                                        <InputError
-                                            message={errors.name}
-                                            className="mt-1"
-                                        />
+                                    <div className="grid gap-1.5 sm:col-span-2">
+                                        <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
+                                            <div className="grid gap-1.5">
+                                                <Label
+                                                    htmlFor="nombres"
+                                                    className="text-sm font-medium"
+                                                >
+                                                    Nombres
+                                                </Label>
+                                                <Input
+                                                    id="nombres"
+                                                    type="text"
+                                                    required
+                                                    autoFocus
+                                                    tabIndex={1}
+                                                    autoComplete="given-name"
+                                                    name="nombres"
+                                                    placeholder="Tus nombres"
+                                                    className="h-10"
+                                                />
+                                                <InputError
+                                                    message={errors.nombres}
+                                                    className="mt-1"
+                                                />
+                                            </div>
+
+                                            <div className="grid gap-1.5">
+                                                <Label
+                                                    htmlFor="apellidos"
+                                                    className="text-sm font-medium"
+                                                >
+                                                    Apellidos
+                                                </Label>
+                                                <Input
+                                                    id="apellidos"
+                                                    type="text"
+                                                    required
+                                                    tabIndex={2}
+                                                    autoComplete="family-name"
+                                                    name="apellidos"
+                                                    placeholder="Tus apellidos"
+                                                    className="h-10"
+                                                />
+                                                <InputError
+                                                    message={errors.apellidos}
+                                                    className="mt-1"
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div className="grid gap-1.5">
-                                        <Label htmlFor="telefono" className="text-sm font-medium">
+                                        <Label
+                                            htmlFor="telefono"
+                                            className="text-sm font-medium"
+                                        >
                                             Celular / WhatsApp
                                         </Label>
                                         <Input
@@ -118,7 +151,10 @@ export default function RegisterInvite({
                                 </div>
 
                                 <div className="grid gap-1.5">
-                                    <Label htmlFor="email" className="text-sm font-medium">
+                                    <Label
+                                        htmlFor="email"
+                                        className="text-sm font-medium"
+                                    >
                                         Correo electrónico
                                     </Label>
                                     <Input
@@ -131,20 +167,26 @@ export default function RegisterInvite({
                                         placeholder="correo@ejemplo.com"
                                         className="h-10"
                                     />
-                                    <InputError message={errors.email} className="mt-1" />
+                                    <InputError
+                                        message={errors.email}
+                                        className="mt-1"
+                                    />
                                 </div>
                             </div>
 
                             {/* Sección: Seguridad */}
-                            <div className="rounded-lg border border-border/80 bg-card/60 p-4 space-y-3.5 shadow-xs">
-                                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                            <div className="space-y-3.5 rounded-lg border border-border/80 bg-card/60 p-4 shadow-xs">
+                                <div className="flex items-center gap-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                     <Lock className="h-3.5 w-3.5 text-primary" />
                                     <span>Seguridad</span>
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
                                     <div className="grid gap-1.5">
-                                        <Label htmlFor="password" className="text-sm font-medium">
+                                        <Label
+                                            htmlFor="password"
+                                            className="text-sm font-medium"
+                                        >
                                             Contraseña
                                         </Label>
                                         <PasswordInput
@@ -157,11 +199,17 @@ export default function RegisterInvite({
                                             passwordrules={passwordRules}
                                             className="h-10"
                                         />
-                                        <InputError message={errors.password} className="mt-1" />
+                                        <InputError
+                                            message={errors.password}
+                                            className="mt-1"
+                                        />
                                     </div>
 
                                     <div className="grid gap-1.5">
-                                        <Label htmlFor="password_confirmation" className="text-sm font-medium">
+                                        <Label
+                                            htmlFor="password_confirmation"
+                                            className="text-sm font-medium"
+                                        >
                                             Confirmar contraseña
                                         </Label>
                                         <PasswordInput
@@ -175,7 +223,9 @@ export default function RegisterInvite({
                                             className="h-10"
                                         />
                                         <InputError
-                                            message={errors.password_confirmation}
+                                            message={
+                                                errors.password_confirmation
+                                            }
                                             className="mt-1"
                                         />
                                     </div>
@@ -199,7 +249,11 @@ export default function RegisterInvite({
 
                         <div className="pt-1 text-center text-sm text-muted-foreground">
                             ¿Ya tienes cuenta?{' '}
-                            <TextLink href={login()} tabIndex={7} className="font-semibold text-primary underline-offset-4 hover:underline">
+                            <TextLink
+                                href={login()}
+                                tabIndex={7}
+                                className="font-semibold text-primary underline-offset-4 hover:underline"
+                            >
                                 Inicia sesión
                             </TextLink>
                         </div>

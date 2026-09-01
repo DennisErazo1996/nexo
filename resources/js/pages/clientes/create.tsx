@@ -28,14 +28,16 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { index } from '@/routes/clientes';
 import type { EtiquetaInteres } from '@/types/cliente';
+import type { MunicipioOption } from '@/types/propiedad';
 
 type Props = {
     step: 'telefono' | 'datos';
     telefono?: string;
     etiquetas: EtiquetaInteres[];
+    municipios?: MunicipioOption[];
 };
 
-export default function ClienteCreate({ step, telefono, etiquetas }: Props) {
+export default function ClienteCreate({ step, telefono, etiquetas, municipios }: Props) {
     return (
         <>
             <Head title="Nuevo cliente — Registro en el Equipo" />
@@ -243,24 +245,44 @@ export default function ClienteCreate({ step, telefono, etiquetas }: Props) {
                                     </CardHeader>
 
                                     <CardContent className="space-y-4 pt-0">
-                                        <div className="grid gap-2">
-                                            <Label
-                                                htmlFor="nombre"
-                                                className="text-xs font-semibold"
-                                            >
-                                                Nombre Completo *
-                                            </Label>
-                                            <Input
-                                                id="nombre"
-                                                name="nombre"
-                                                required
-                                                autoFocus
-                                                placeholder="Ej. Juan Carlos Pérez"
-                                                className="h-10"
-                                            />
-                                            <InputError
-                                                message={errors.nombre}
-                                            />
+                                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                            <div className="grid gap-2">
+                                                <Label
+                                                    htmlFor="nombres"
+                                                    className="text-xs font-semibold"
+                                                >
+                                                    Nombres *
+                                                </Label>
+                                                <Input
+                                                    id="nombres"
+                                                    name="nombres"
+                                                    required
+                                                    autoFocus
+                                                    placeholder="Ej. Juan Carlos"
+                                                    className="h-10"
+                                                />
+                                                <InputError
+                                                    message={errors.nombres}
+                                                />
+                                            </div>
+                                            <div className="grid gap-2">
+                                                <Label
+                                                    htmlFor="apellidos"
+                                                    className="text-xs font-semibold"
+                                                >
+                                                    Apellidos *
+                                                </Label>
+                                                <Input
+                                                    id="apellidos"
+                                                    name="apellidos"
+                                                    required
+                                                    placeholder="Ej. Pérez"
+                                                    className="h-10"
+                                                />
+                                                <InputError
+                                                    message={errors.apellidos}
+                                                />
+                                            </div>
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -338,13 +360,26 @@ export default function ClienteCreate({ step, telefono, etiquetas }: Props) {
                                                     htmlFor="zona"
                                                     className="text-xs font-semibold"
                                                 >
-                                                    Zona Geográfica Deseada
+                                                    Municipio / Zona de Interés
                                                 </Label>
-                                                <Input
+                                                <select
                                                     id="zona"
                                                     name="zona"
-                                                    placeholder="Ej. Col. Palmira, Santa Rosa..."
-                                                />
+                                                    className="h-9 rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
+                                                >
+                                                    <option value="">
+                                                        Cualquier municipio (Sin
+                                                        preferencia)
+                                                    </option>
+                                                    {municipios?.map((m) => (
+                                                        <option
+                                                            key={m.value}
+                                                            value={m.value}
+                                                        >
+                                                            {m.label} ({m.departamento})
+                                                        </option>
+                                                    ))}
+                                                </select>
                                                 <InputError
                                                     message={errors.zona}
                                                 />

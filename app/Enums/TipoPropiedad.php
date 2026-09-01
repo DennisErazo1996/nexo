@@ -9,6 +9,7 @@ enum TipoPropiedad: string
     case Apartamento = 'apartamento';
     case LocalComercial = 'local_comercial';
     case Bodega = 'bodega';
+    case Carro = 'carro';
 
     /**
      * Get the human-readable label for the tipo.
@@ -21,6 +22,7 @@ enum TipoPropiedad: string
             self::Apartamento => 'Apartamento',
             self::LocalComercial => 'Local comercial',
             self::Bodega => 'Bodega',
+            self::Carro => 'Carro',
         };
     }
 }

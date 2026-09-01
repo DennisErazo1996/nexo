@@ -16,7 +16,8 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property int $equipo_id
- * @property string $nombre
+ * @property string $nombres
+ * @property string $apellidos
  * @property string $telefono
  * @property EstadoCliente $estado
  * @property int $agente_registro_id
@@ -24,14 +25,34 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Equipo $equipo
  * @property-read User $agenteRegistro
+ * @property-read string $nombre
  */
-#[Fillable(['nombre', 'telefono', 'estado', 'agente_registro_id'])]
+#[Fillable(['nombres', 'apellidos', 'telefono', 'estado', 'agente_registro_id'])]
 class Cliente extends Model
 {
     use BelongsToEquipo;
 
     /** @use HasFactory<ClienteFactory> */
     use HasFactory;
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array<int, string>
+     */
+    protected $appends = [
+        'nombre',
+    ];
+
+    /**
+     * Get the cliente's full name.
+     */
+    protected function nombre(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => trim(($this->nombres ?? '').' '.($this->apellidos ?? '')),
+        );
+    }
 
     /**
      * Normalize a telefono for storage/comparison: strip everything except

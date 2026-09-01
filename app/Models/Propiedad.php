@@ -22,9 +22,9 @@ use Illuminate\Support\Carbon;
  * @property int $equipo_id
  * @property TipoPropiedad $tipo
  * @property string $zona
- * @property string $area_terreno
+ * @property string|null $area_terreno
  * @property string|null $area_construccion
- * @property UnidadMedida $unidad_medida
+ * @property UnidadMedida|null $unidad_medida
  * @property string $precio
  * @property Moneda $moneda
  * @property FormaPago $forma_pago

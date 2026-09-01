@@ -2,6 +2,7 @@
 
 namespace App\Concerns;
 
+use App\Enums\Municipio;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Validation\Rule;
 
@@ -24,7 +25,7 @@ trait InteresValidationRules
      */
     protected function zonaRules(): array
     {
-        return ['nullable', 'string', 'max:255'];
+        return ['nullable', Rule::enum(Municipio::class)];
     }
 
     /**

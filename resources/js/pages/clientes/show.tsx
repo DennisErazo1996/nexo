@@ -47,9 +47,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { cn } from '@/lib/utils';
+import { cn, formatMunicipio, formatTipoPropiedad } from '@/lib/utils';
 import { index } from '@/routes/clientes';
 import type { Cliente, EstadoCliente, EtiquetaInteres } from '@/types/cliente';
+import type { MunicipioOption } from '@/types/propiedad';
 import type { Coincidencia, EstadoCoincidencia } from '@/types/coincidencia';
 
 type Props = {
@@ -57,6 +58,7 @@ type Props = {
     coincidencias: Coincidencia[];
     etiquetas: EtiquetaInteres[];
     estadosCoincidencia: { value: EstadoCoincidencia; label: string }[];
+    municipios: MunicipioOption[];
 };
 
 const ESTADO_CLIENTE_STYLES: Record<
@@ -99,14 +101,14 @@ function cleanPhoneForTel(phone: string): string {
 
 function formatCurrency(amount: string | number | null | undefined): string {
     if (!amount) {
-return '';
-}
+        return '';
+    }
 
     const num = typeof amount === 'string' ? parseFloat(amount) : amount;
 
     if (isNaN(num)) {
-return String(amount);
-}
+        return String(amount);
+    }
 
     return num.toLocaleString('es-HN');
 }
@@ -116,6 +118,7 @@ export default function ClienteShow({
     coincidencias,
     etiquetas,
     estadosCoincidencia,
+    municipios,
 }: Props) {
     const { auth } = usePage().props;
     const [isInteresDialogOpen, setIsInteresDialogOpen] = useState(false);
@@ -123,8 +126,8 @@ export default function ClienteShow({
 
     function copyPhone() {
         if (!cliente.telefono) {
-return;
-}
+            return;
+        }
 
         void navigator.clipboard.writeText(cliente.telefono);
         setCopiedPhone(true);
@@ -280,7 +283,10 @@ return;
                                         ¿Eliminar cliente?
                                     </DialogTitle>
                                     <DialogDescription>
-                                        Esta acción eliminará permanentemente al cliente "{cliente.nombre}", incluyendo todos sus intereses, notas de seguimiento y coincidencias asociadas.
+                                        Esta acción eliminará permanentemente al
+                                        cliente "{cliente.nombre}", incluyendo
+                                        todos sus intereses, notas de
+                                        seguimiento y coincidencias asociadas.
                                     </DialogDescription>
                                 </DialogHeader>
                                 <DialogFooter className="gap-2 pt-2">
@@ -457,13 +463,25 @@ return;
 
                                                     <div className="grid gap-2">
                                                         <Label htmlFor="zona">
-                                                            Zona de interés
+                                                            Municipio / Zona de interés
                                                         </Label>
-                                                        <Input
+                                                        <select
                                                             id="zona"
                                                             name="zona"
-                                                            placeholder="Ej. Col. Palmira, Santa Rosa..."
-                                                        />
+                                                            className="h-9 rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
+                                                        >
+                                                            <option value="">
+                                                                Cualquier municipio (Sin preferencia)
+                                                            </option>
+                                                            {municipios.map((m) => (
+                                                                <option
+                                                                    key={m.value}
+                                                                    value={m.value}
+                                                                >
+                                                                    {m.label} ({m.departamento})
+                                                                </option>
+                                                            ))}
+                                                        </select>
                                                         <InputError
                                                             message={
                                                                 errors.zona
@@ -572,7 +590,7 @@ return;
                                                     <div className="flex items-center gap-1.5 font-medium text-foreground/90">
                                                         <MapPin className="size-3.5 shrink-0 text-muted-foreground" />
                                                         <span>
-                                                            {interes.zona}
+                                                            {formatMunicipio(interes.zona)}
                                                         </span>
                                                     </div>
                                                 )}
@@ -684,17 +702,9 @@ return;
                                                                 className="group/link inline-flex items-center gap-1 text-sm font-semibold text-foreground transition-colors hover:text-primary"
                                                             >
                                                                 <span>
-                                                                    {
-                                                                        coincidencia
-                                                                            .propiedad
-                                                                            .tipo
-                                                                    }{' '}
+                                                                    {formatTipoPropiedad(coincidencia.propiedad.tipo)}{' '}
                                                                     en{' '}
-                                                                    {
-                                                                        coincidencia
-                                                                            .propiedad
-                                                                            .zona
-                                                                    }
+                                                                    {formatMunicipio(coincidencia.propiedad.zona)}
                                                                 </span>
                                                                 <ArrowUpRight className="size-3.5 opacity-60 transition-transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 group-hover/link:opacity-100" />
                                                             </Link>
@@ -892,7 +902,9 @@ return;
                                                                 preserveScroll: true,
                                                             }}
                                                         >
-                                                            {({ processing }) => (
+                                                            {({
+                                                                processing,
+                                                            }) => (
                                                                 <Button
                                                                     type="submit"
                                                                     size="icon"
@@ -1108,17 +1120,9 @@ return;
                                                                 >
                                                                     <Building2 className="size-3 text-muted-foreground" />
                                                                     <span>
-                                                                        {
-                                                                            nota
-                                                                                .propiedad
-                                                                                .tipo
-                                                                        }{' '}
+                                                                        {formatTipoPropiedad(nota.propiedad.tipo)}{' '}
                                                                         en{' '}
-                                                                        {
-                                                                            nota
-                                                                                .propiedad
-                                                                                .zona
-                                                                        }
+                                                                        {formatMunicipio(nota.propiedad.zona)}
                                                                     </span>
                                                                 </Link>
                                                             </div>

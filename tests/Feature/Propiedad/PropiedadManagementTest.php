@@ -24,7 +24,7 @@ class PropiedadManagementTest extends TestCase
         $coAgente = User::factory()->forEquipo($agente->equipo)->create();
         $propiedad = Propiedad::factory()->forEquipo($agente->equipo)->create([
             'tipo' => 'casa',
-            'zona' => 'Old Zone',
+            'zona' => 'juticalpa',
             'precio' => 150000,
         ]);
 
@@ -32,7 +32,7 @@ class PropiedadManagementTest extends TestCase
 
         $response = $this->actingAs($agente)->put(route('propiedades.update', $propiedad), [
             'tipo' => 'apartamento',
-            'zona' => 'New Zone, Tegucigalpa',
+            'zona' => 'catacamas',
             'area_terreno' => 250,
             'area_construccion' => 180,
             'unidad_medida' => 'm2',
@@ -50,7 +50,7 @@ class PropiedadManagementTest extends TestCase
 
         $fresh = $propiedad->fresh();
         $this->assertSame('apartamento', $fresh->tipo->value);
-        $this->assertSame('New Zone, Tegucigalpa', $fresh->zona);
+        $this->assertSame('catacamas', $fresh->zona);
         $this->assertEquals(220000, $fresh->precio);
         $this->assertSame('Calle principal pavimentada', $fresh->acceso);
         $this->assertSame('Hermoso apartamento remodelado', $fresh->descripcion);
@@ -106,6 +106,35 @@ class PropiedadManagementTest extends TestCase
 
         $response->assertSessionHasNoErrors();
         $this->assertSame(1, $propiedad->fotos()->count());
+
+        $foto = $propiedad->fotos()->first();
+        $this->assertStringStartsWith('/storage/propiedades/', $foto->url);
+        $this->assertStringStartsWith('/storage/propiedades/', $foto->url_con_marca_agua);
+        $this->assertStringNotContainsString('http', $foto->url_con_marca_agua);
+    }
+
+    public function test_delete_foto_handles_legacy_absolute_urls()
+    {
+        Storage::fake('public');
+
+        $agente = User::factory()->create();
+        $propiedad = Propiedad::factory()->forEquipo($agente->equipo)->create();
+
+        Storage::disk('public')->put('propiedades/1/original/foto.jpg', 'contenido');
+        Storage::disk('public')->put('propiedades/1/marca-agua/foto.jpg', 'contenido');
+
+        $foto = PropiedadFoto::factory()->create([
+            'propiedad_id' => $propiedad->id,
+            'url' => 'http://localhost:8000/storage/propiedades/1/original/foto.jpg',
+            'url_con_marca_agua' => 'http://localhost:8000/storage/propiedades/1/marca-agua/foto.jpg',
+        ]);
+
+        $response = $this->actingAs($agente)->delete(route('propiedades.fotos.destroy', [$propiedad, $foto]));
+
+        $response->assertSessionHasNoErrors();
+        $this->assertNull($foto->fresh());
+        Storage::disk('public')->assertMissing('propiedades/1/original/foto.jpg');
+        Storage::disk('public')->assertMissing('propiedades/1/marca-agua/foto.jpg');
     }
 
     public function test_agente_can_delete_a_foto_and_its_files()
@@ -186,10 +215,10 @@ class PropiedadManagementTest extends TestCase
     public function test_index_searches_by_zona_case_insensitively()
     {
         $agente = User::factory()->create();
-        $propiedadA = Propiedad::factory()->forEquipo($agente->equipo)->create(['zona' => 'Col. Palmira, Tegucigalpa']);
-        $propiedadB = Propiedad::factory()->forEquipo($agente->equipo)->create(['zona' => 'Santa Rosa de Copán']);
+        $propiedadA = Propiedad::factory()->forEquipo($agente->equipo)->create(['zona' => 'juticalpa']);
+        $propiedadB = Propiedad::factory()->forEquipo($agente->equipo)->create(['zona' => 'catacamas']);
 
-        $response = $this->actingAs($agente)->get(route('propiedades.index', ['search' => 'palmira']));
+        $response = $this->actingAs($agente)->get(route('propiedades.index', ['search' => 'juticalpa']));
 
         $response->assertInertia(fn ($page) => $page
             ->component('propiedades/index')
@@ -197,9 +226,9 @@ class PropiedadManagementTest extends TestCase
             ->where('propiedades.data.0.id', $propiedadA->id)
         );
 
-        $responseCopan = $this->actingAs($agente)->get(route('propiedades.index', ['search' => 'santa rosa']));
+        $responseCatacamas = $this->actingAs($agente)->get(route('propiedades.index', ['search' => 'catacamas']));
 
-        $responseCopan->assertInertia(fn ($page) => $page
+        $responseCatacamas->assertInertia(fn ($page) => $page
             ->component('propiedades/index')
             ->has('propiedades.data', 1)
             ->where('propiedades.data.0.id', $propiedadB->id)
@@ -210,11 +239,11 @@ class PropiedadManagementTest extends TestCase
     {
         $agente = User::factory()->create();
         $propiedad = Propiedad::factory()->forEquipo($agente->equipo)->create([
-            'zona' => 'El Hatillo',
+            'zona' => 'gualaco',
             'acceso' => 'Calle de tierra 500m',
         ]);
         Propiedad::factory()->forEquipo($agente->equipo)->create([
-            'zona' => 'Valle de Ángeles',
+            'zona' => 'guayape',
             'acceso' => 'Pavimentado',
         ]);
 

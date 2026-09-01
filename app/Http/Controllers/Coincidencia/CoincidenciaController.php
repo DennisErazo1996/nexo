@@ -3,8 +3,13 @@
 namespace App\Http\Controllers\Coincidencia;
 
 use App\Actions\Coincidencia\GenerarCoincidencias;
+use App\Enums\CondicionLegal;
 use App\Enums\EstadoCoincidencia;
 use App\Enums\EstadoPropiedad;
+use App\Enums\FormaPago;
+use App\Enums\Moneda;
+use App\Enums\TipoPropiedad;
+use App\Enums\UnidadMedida;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Coincidencia\DestroyCoincidenciaRequest;
 use App\Http\Requests\Coincidencia\UpdateEstadoCoincidenciaRequest;
@@ -27,10 +32,11 @@ class CoincidenciaController extends Controller
             ->tap(fn ($query) => $this->scopeRelacionado($query, $request->user()->id))
             ->when($request->filled('search'), fn ($query) => $this->scopeBusqueda($query, $request->string('search')->value()))
             ->with([
-                'cliente:id,nombre,telefono,agente_registro_id',
-                'cliente.agenteRegistro:id,name',
-                'propiedad:id,tipo,zona,precio,moneda',
-                'propiedad.agentes.agente:id,name',
+                'cliente:id,nombres,apellidos,telefono,agente_registro_id',
+                'cliente.agenteRegistro:id,nombres,apellidos',
+                'propiedad',
+                'propiedad.etiquetas.etiqueta:id,nombre',
+                'propiedad.agentes.agente:id,nombres,apellidos,telefono',
             ])
             ->orderByDesc('created_at')
             ->paginate(20)
@@ -39,6 +45,11 @@ class CoincidenciaController extends Controller
         return Inertia::render('coincidencias/index', [
             'coincidencias' => $coincidencias,
             'filters' => $request->only(['search']),
+            'tipos' => $this->options(TipoPropiedad::cases()),
+            'unidadesMedida' => $this->options(UnidadMedida::cases()),
+            'monedas' => $this->options(Moneda::cases()),
+            'formasPago' => $this->options(FormaPago::cases()),
+            'condicionesLegales' => $this->options(CondicionLegal::cases()),
         ]);
     }
 
@@ -51,12 +62,16 @@ class CoincidenciaController extends Controller
         $coincidencias = Coincidencia::query()
             ->tap(fn ($query) => $this->scopeRelacionado($query, $request->user()->id))
             ->when($request->filled('search'), fn ($query) => $this->scopeBusqueda($query, $request->string('search')->value()))
-            ->when($request->filled('estado'), fn ($query) => $query->where('estado', $request->string('estado')->value()))
+            ->when(
+                $request->filled('estado'),
+                fn ($query) => $query->where('estado', $request->string('estado')->value()),
+                fn ($query) => $query->where('estado', '!=', EstadoCoincidencia::Pendiente)
+            )
             ->with([
-                'cliente:id,nombre,telefono,agente_registro_id',
-                'cliente.agenteRegistro:id,name',
+                'cliente:id,nombres,apellidos,telefono,agente_registro_id',
+                'cliente.agenteRegistro:id,nombres,apellidos',
                 'propiedad:id,tipo,zona,precio,moneda',
-                'propiedad.agentes.agente:id,name',
+                'propiedad.agentes.agente:id,nombres,apellidos',
             ])
             ->when($request->filled('sort'), function ($query) use ($request): void {
                 $direction = strtolower($request->string('direction')->value()) === 'asc' ? 'asc' : 'desc';
@@ -165,5 +180,16 @@ class CoincidenciaController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Propiedad potencial eliminada.')]);
 
         return to_route('clientes.show', $clienteId);
+    }
+
+    /**
+     * Build a {value, label} option list from a backed enum's cases.
+     */
+    private function options(array $cases): array
+    {
+        return array_map(
+            fn ($case) => ['value' => $case->value, 'label' => $case->label()],
+            $cases,
+        );
     }
 }

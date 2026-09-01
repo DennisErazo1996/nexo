@@ -532,6 +532,7 @@ export default function EquipoEdit({
                                                                                 {
                                                                                     agente.name
                                                                                 }
+
                                                                                 ?
                                                                             </DialogTitle>
                                                                             <DialogDescription>

@@ -29,7 +29,8 @@ class RegistrationTest extends TestCase
     public function test_new_users_can_register_and_create_an_equipo()
     {
         $response = $this->post(route('register.store'), [
-            'name' => 'Test User',
+            'nombres' => 'Test',
+            'apellidos' => 'User',
             'email' => 'test@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
@@ -51,7 +52,8 @@ class RegistrationTest extends TestCase
     public function test_equipo_nombre_is_required_to_register()
     {
         $response = $this->post(route('register.store'), [
-            'name' => 'Test User',
+            'nombres' => 'Test',
+            'apellidos' => 'User',
             'email' => 'test@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
@@ -66,7 +68,8 @@ class RegistrationTest extends TestCase
     public function test_telefono_is_required_to_register()
     {
         $response = $this->post(route('register.store'), [
-            'name' => 'Test User',
+            'nombres' => 'Test',
+            'apellidos' => 'User',
             'email' => 'test@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',

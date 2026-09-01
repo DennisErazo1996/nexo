@@ -23,9 +23,13 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
-import { cn } from '@/lib/utils';
+import { cn, formatMunicipio, formatTipoPropiedad } from '@/lib/utils';
 import { index } from '@/routes/seguimientos';
-import type { Coincidencia, CoincidenciaPaginado, EstadoCoincidencia } from '@/types/coincidencia';
+import type {
+    Coincidencia,
+    CoincidenciaPaginado,
+    EstadoCoincidencia,
+} from '@/types/coincidencia';
 
 type EstadoOption = { value: EstadoCoincidencia; label: string };
 
@@ -212,10 +216,7 @@ export default function SeguimientosIndex({
             {
                 accessorKey: 'propiedad',
                 header: ({ column }) => (
-                    <DataTableColumnHeader
-                        column={column}
-                        title="Propiedad"
-                    />
+                    <DataTableColumnHeader column={column} title="Propiedad" />
                 ),
                 cell: ({ row }) => {
                     const propiedad = row.original.propiedad;
@@ -231,7 +232,7 @@ export default function SeguimientosIndex({
                                 className="group inline-flex items-center gap-1 font-semibold text-foreground transition-colors hover:text-primary"
                             >
                                 <span>
-                                    {propiedad.tipo} en {propiedad.zona}
+                                    {formatTipoPropiedad(propiedad.tipo)} en {formatMunicipio(propiedad.zona)}
                                 </span>
                                 <ArrowUpRight className="size-3.5 opacity-0 transition-opacity group-hover:opacity-100" />
                             </Link>
@@ -262,7 +263,8 @@ export default function SeguimientosIndex({
                 ),
                 cell: ({ row }) => {
                     const coincidencia = row.original;
-                    const style = ESTADO_COINCIDENCIA_STYLES[coincidencia.estado];
+                    const style =
+                        ESTADO_COINCIDENCIA_STYLES[coincidencia.estado];
 
                     return (
                         <Form
@@ -433,8 +435,7 @@ export default function SeguimientosIndex({
                                 actualizarFiltros({
                                     estado: (event.target.value ||
                                         undefined) as
-                                        | EstadoCoincidencia
-                                        | undefined,
+                                        EstadoCoincidencia | undefined,
                                 })
                             }
                             className="h-9 rounded-md border border-input bg-card px-3 text-xs font-medium shadow-2xs focus:ring-2 focus:ring-ring/40 focus:outline-hidden"

@@ -52,7 +52,7 @@ class ClienteManagementTest extends TestCase
 
         $response = $this->actingAs($agente)->post(route('clientes.intereses.store', $cliente), [
             'etiqueta_id' => $etiqueta->id,
-            'zona' => 'Comayagua',
+            'zona' => 'juticalpa',
             'presupuesto_min' => 200000,
             'presupuesto_max' => 400000,
         ]);
@@ -67,7 +67,7 @@ class ClienteManagementTest extends TestCase
         $agente = User::factory()->create();
         $etiqueta = EtiquetaInteres::factory()->create();
         $propiedad = Propiedad::factory()->forEquipo($agente->equipo)->create([
-            'zona' => 'Santa Rosa',
+            'zona' => 'catacamas',
             'precio' => 300000,
             'estado' => EstadoPropiedad::Disponible,
         ]);
@@ -77,7 +77,7 @@ class ClienteManagementTest extends TestCase
 
         $this->actingAs($agente)->post(route('clientes.intereses.store', $cliente), [
             'etiqueta_id' => $etiqueta->id,
-            'zona' => 'santa rosa',
+            'zona' => 'catacamas',
             'presupuesto_min' => 100000,
             'presupuesto_max' => 500000,
         ]);
@@ -96,17 +96,18 @@ class ClienteManagementTest extends TestCase
         $agente = User::factory()->create();
         $etiqueta = EtiquetaInteres::factory()->create();
         $propiedad = Propiedad::factory()->forEquipo($agente->equipo)->create([
-            'zona' => 'Laguna Seca',
+            'zona' => 'campamento',
             'precio' => 300000,
             'estado' => EstadoPropiedad::Disponible,
         ]);
         $propiedad->etiquetas()->create(['etiqueta_id' => $etiqueta->id]);
 
         $response = $this->actingAs($agente)->post(route('clientes.store'), [
-            'nombre' => 'Cliente Nuevo',
+            'nombres' => 'Cliente',
+            'apellidos' => 'Nuevo',
             'telefono' => '99998888',
             'etiqueta_id' => $etiqueta->id,
-            'zona' => 'laguna seca',
+            'zona' => 'campamento',
         ]);
 
         $cliente = Cliente::firstOrFail();

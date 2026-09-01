@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\Municipio;
 use App\Models\Cliente;
 use App\Models\ClienteInteres;
 use App\Models\EtiquetaInteres;
@@ -23,7 +24,7 @@ class ClienteInteresFactory extends Factory
         return [
             'cliente_id' => Cliente::factory(),
             'etiqueta_id' => EtiquetaInteres::factory(),
-            'zona' => fake()->city(),
+            'zona' => fake()->randomElement(Municipio::cases())->value,
             'presupuesto_min' => fake()->numberBetween(100000, 500000),
             'presupuesto_max' => fake()->numberBetween(500001, 1000000),
             'agente_id' => User::factory(),

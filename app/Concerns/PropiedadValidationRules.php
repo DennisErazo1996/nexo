@@ -6,6 +6,7 @@ use App\Enums\CondicionLegal;
 use App\Enums\EstadoPropiedad;
 use App\Enums\FormaPago;
 use App\Enums\Moneda;
+use App\Enums\Municipio;
 use App\Enums\TipoPropiedad;
 use App\Enums\UnidadMedida;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -30,17 +31,19 @@ trait PropiedadValidationRules
      */
     protected function zonaRules(): array
     {
-        return ['required', 'string', 'max:255'];
+        return ['required', Rule::enum(Municipio::class)];
     }
 
     /**
      * Get the validation rules used to validate a propiedad's area_terreno.
      *
+     * Vehículos (carro) omiten este campo, por lo que se valida como nullable.
+     *
      * @return array<int, ValidationRule|array<mixed>|string>
      */
-    protected function areaTerrenoRules(): array
+    protected function areaTerrenoRules(bool $obligatorio = true): array
     {
-        return ['required', 'numeric', 'min:0'];
+        return [$obligatorio ? 'required' : 'nullable', 'numeric', 'min:0'];
     }
 
     /**
@@ -66,11 +69,13 @@ trait PropiedadValidationRules
     /**
      * Get the validation rules used to validate a propiedad's unidad_medida.
      *
+     * Vehículos (carro) omiten este campo, por lo que se valida como nullable.
+     *
      * @return array<int, ValidationRule|array<mixed>|string>
      */
-    protected function unidadMedidaRules(): array
+    protected function unidadMedidaRules(bool $obligatorio = true): array
     {
-        return ['required', Rule::in(array_column(UnidadMedida::cases(), 'value'))];
+        return [$obligatorio ? 'required' : 'nullable', Rule::in(array_column(UnidadMedida::cases(), 'value'))];
     }
 
     /**

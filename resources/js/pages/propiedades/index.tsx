@@ -1,11 +1,6 @@
 import { Form, Head, Link, router } from '@inertiajs/react';
-import {
-    
-    getCoreRowModel,
-    useReactTable
-    
-} from '@tanstack/react-table';
-import type {ColumnDef, VisibilityState} from '@tanstack/react-table';
+import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import type { ColumnDef, VisibilityState } from '@tanstack/react-table';
 import {
     ArrowUpRight,
     Building2,
@@ -37,7 +32,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
-import { cn } from '@/lib/utils';
+import { cn, formatMunicipio, formatTipoPropiedad } from '@/lib/utils';
 import { index } from '@/routes/propiedades';
 import type {
     EnumOption,
@@ -86,14 +81,14 @@ const ESTADO_PROPIEDAD_STYLES: Record<
 
 function formatCurrency(amount: string | number | null | undefined): string {
     if (!amount) {
-return '';
-}
+        return '';
+    }
 
     const num = typeof amount === 'string' ? parseFloat(amount) : amount;
 
     if (isNaN(num)) {
-return String(amount);
-}
+        return String(amount);
+    }
 
     return num.toLocaleString('es-HN');
 }
@@ -118,8 +113,8 @@ function DeletePropiedadDialog({ propiedad }: { propiedad: Propiedad }) {
                     <DialogTitle>¿Eliminar propiedad?</DialogTitle>
                     <DialogDescription>
                         Esta acción eliminará permanentemente la propiedad "
-                        {propiedad.tipo} en {propiedad.zona}", todas sus fotos
-                        y coincidencias asociadas.
+                        {formatTipoPropiedad(propiedad.tipo)} en {formatMunicipio(propiedad.zona)}", todas sus fotos y
+                        coincidencias asociadas.
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter className="gap-2 pt-2">
@@ -223,7 +218,7 @@ export default function PropiedadesIndex({
                                 className="group inline-flex items-center gap-1 font-semibold text-foreground transition-colors hover:text-primary"
                             >
                                 <span>
-                                    {tipoLabel} en {propiedad.zona}
+                                    {tipoLabel} en {formatMunicipio(propiedad.zona)}
                                 </span>
                                 <ArrowUpRight className="size-3.5 opacity-0 transition-opacity group-hover:opacity-100" />
                             </Link>
@@ -247,7 +242,7 @@ export default function PropiedadesIndex({
                         <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
                             <MapPin className="size-3.5 text-muted-foreground/70" />
                             <span className="max-w-[180px] truncate">
-                                {row.original.zona}
+                                {formatMunicipio(row.original.zona)}
                             </span>
                         </div>
                     );
@@ -287,8 +282,9 @@ export default function PropiedadesIndex({
                                 </span>
                             </div>
                             {propiedad.area_construccion && (
-                                <span className="text-[11px] text-muted-foreground/80 pl-4">
-                                    {propiedad.area_construccion} {propiedad.unidad_medida} constr.
+                                <span className="pl-4 text-[11px] text-muted-foreground/80">
+                                    {propiedad.area_construccion}{' '}
+                                    {propiedad.unidad_medida} constr.
                                 </span>
                             )}
                         </div>
@@ -360,8 +356,8 @@ export default function PropiedadesIndex({
     // Sorting state handler connected to server-side query
     const sorting = useMemo(() => {
         if (!filters.sort) {
-return [];
-}
+            return [];
+        }
 
         return [
             {

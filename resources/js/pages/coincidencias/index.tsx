@@ -1,11 +1,6 @@
 import { Form, Head, Link, router } from '@inertiajs/react';
-import {
-    
-    getCoreRowModel,
-    useReactTable
-    
-} from '@tanstack/react-table';
-import type {ColumnDef, VisibilityState} from '@tanstack/react-table';
+import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import type { ColumnDef, VisibilityState } from '@tanstack/react-table';
 import {
     ArrowUpRight,
     Building2,
@@ -31,26 +26,34 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
+import { buildTextoCompartir } from '@/lib/texto-compartir';
+import { cn, formatMunicipio, formatTipoPropiedad } from '@/lib/utils';
 import { index } from '@/routes/coincidencias';
 import type { Coincidencia, CoincidenciaPaginado } from '@/types/coincidencia';
+import type { EnumOption } from '@/types/propiedad';
 
 type Props = {
     coincidencias: CoincidenciaPaginado;
     filters?: {
         search?: string;
     };
+    tipos: EnumOption[];
+    unidadesMedida: EnumOption[];
+    monedas: EnumOption[];
+    formasPago: EnumOption[];
+    condicionesLegales: EnumOption[];
 };
 
 function getInitials(name: string): string {
     const parts = name.trim().split(/\s+/);
 
     if (parts.length === 0 || !parts[0]) {
-return 'CL';
-}
+        return 'CL';
+    }
 
     if (parts.length === 1) {
-return parts[0].slice(0, 2).toUpperCase();
-}
+        return parts[0].slice(0, 2).toUpperCase();
+    }
 
     return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
 }
@@ -65,14 +68,14 @@ function cleanPhoneForTel(phone: string): string {
 
 function formatCurrency(amount: string | number | null | undefined): string {
     if (!amount) {
-return '';
-}
+        return '';
+    }
 
     const num = typeof amount === 'string' ? parseFloat(amount) : amount;
 
     if (isNaN(num)) {
-return String(amount);
-}
+        return String(amount);
+    }
 
     return num.toLocaleString('es-HN');
 }
@@ -80,6 +83,11 @@ return String(amount);
 export default function CoincidenciasIndex({
     coincidencias,
     filters = {},
+    tipos,
+    unidadesMedida,
+    monedas,
+    formasPago,
+    condicionesLegales,
 }: Props) {
     const [searchValue, setSearchValue] = useState(filters.search ?? '');
     const debouncedSearch = useDebounce(searchValue, 350);
@@ -118,8 +126,8 @@ export default function CoincidenciasIndex({
                     const cliente = row.original.cliente;
 
                     if (!cliente) {
-return <span className="text-muted-foreground">—</span>;
-}
+                        return <span className="text-muted-foreground">—</span>;
+                    }
 
                     return (
                         <div className="flex items-center gap-3">
@@ -188,8 +196,8 @@ return <span className="text-muted-foreground">—</span>;
                     const propiedad = row.original.propiedad;
 
                     if (!propiedad) {
-return <span className="text-muted-foreground">—</span>;
-}
+                        return <span className="text-muted-foreground">—</span>;
+                    }
 
                     return (
                         <div>
@@ -198,7 +206,7 @@ return <span className="text-muted-foreground">—</span>;
                                 className="group inline-flex items-center gap-1 font-semibold text-foreground transition-colors hover:text-primary"
                             >
                                 <span>
-                                    {propiedad.tipo} en {propiedad.zona}
+                                    {formatTipoPropiedad(propiedad.tipo)} en {formatMunicipio(propiedad.zona)}
                                 </span>
                                 <ArrowUpRight className="size-3.5 opacity-0 transition-opacity group-hover:opacity-100" />
                             </Link>
@@ -252,9 +260,46 @@ return <span className="text-muted-foreground">—</span>;
                 header: '',
                 cell: ({ row }) => {
                     const coincidencia = row.original;
+                    const cliente = coincidencia.cliente;
+                    const propiedad = coincidencia.propiedad;
+
+                    let hrefWhatsApp = '';
+                    if (cliente && propiedad) {
+                        const ficha = buildTextoCompartir(
+                            propiedad,
+                            tipos,
+                            unidadesMedida,
+                            monedas,
+                            formasPago,
+                            condicionesLegales,
+                        );
+
+                        // Formatear mensaje para que sea un saludo + ficha
+                        const mensaje = `Hola ${cliente.nombre},\n\nTe comparto la información de esta propiedad que podría interesarte:\n\n${ficha}`;
+                        hrefWhatsApp = `https://wa.me/${cleanPhoneForWhatsApp(cliente.telefono)}?text=${encodeURIComponent(mensaje)}`;
+                    }
 
                     return (
                         <div className="flex items-center justify-end gap-2">
+                            {hrefWhatsApp && (
+                                <Button
+                                    asChild
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8 gap-1 px-2.5 text-xs text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/40"
+                                    title="Enviar ficha por WhatsApp"
+                                >
+                                    <a
+                                        href={hrefWhatsApp}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <MessageCircle className="size-3.5" />
+                                        Ficha
+                                    </a>
+                                </Button>
+                            )}
+
                             <Form
                                 {...CoincidenciaController.updateEstado.form(
                                     coincidencia.id,

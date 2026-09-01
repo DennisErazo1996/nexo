@@ -25,7 +25,7 @@ class PropiedadRegistrationTest extends TestCase
 
         $response = $this->actingAs($agente)->post(route('propiedades.store'), [
             'tipo' => 'casa',
-            'zona' => 'Tegucigalpa',
+            'zona' => 'juticalpa',
             'area_terreno' => 250,
             'area_construccion' => 120,
             'unidad_medida' => 'm2',
@@ -43,7 +43,7 @@ class PropiedadRegistrationTest extends TestCase
         $response->assertSessionHasNoErrors();
 
         $propiedad = Propiedad::firstOrFail();
-        $this->assertSame('Tegucigalpa', $propiedad->zona);
+        $this->assertSame('juticalpa', $propiedad->zona);
         $this->assertEquals(250, (float) $propiedad->area_terreno);
         $this->assertEquals(120, (float) $propiedad->area_construccion);
         $this->assertCount(1, $propiedad->etiquetas);
@@ -59,6 +59,44 @@ class PropiedadRegistrationTest extends TestCase
         Storage::disk('public')->assertExists(str_replace(Storage::disk('public')->url(''), '', $fotoCreada->url_con_marca_agua));
 
         $response->assertRedirect(route('propiedades.show', $propiedad));
+    }
+
+    public function test_agente_can_create_carro_without_area_terreno_or_unidad_medida()
+    {
+        $agente = User::factory()->create();
+
+        $response = $this->actingAs($agente)->post(route('propiedades.store'), [
+            'tipo' => 'carro',
+            'zona' => 'catacamas',
+            'precio' => 350000,
+            'moneda' => 'HNL',
+            'forma_pago' => 'contado',
+            'condicion_legal' => 'papeles_en_regla',
+            'descripcion' => 'Toyota Hilux 2018, único dueño',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+
+        $propiedad = Propiedad::firstOrFail();
+        $this->assertSame('carro', $propiedad->tipo->value);
+        $this->assertNull($propiedad->area_terreno);
+        $this->assertNull($propiedad->unidad_medida);
+        $this->assertSame('papeles_en_regla', $propiedad->condicion_legal->value);
+    }
+
+    public function test_non_carro_propiedad_still_requires_area_terreno_and_unidad_medida()
+    {
+        $agente = User::factory()->create();
+
+        $response = $this->actingAs($agente)->post(route('propiedades.store'), [
+            'tipo' => 'casa',
+            'zona' => 'juticalpa',
+            'precio' => 1500000,
+            'moneda' => 'HNL',
+            'forma_pago' => 'contado',
+        ]);
+
+        $response->assertSessionHasErrors(['area_terreno', 'unidad_medida']);
     }
 
     public function test_create_page_excludes_the_logged_in_agente_from_co_agentes_options()
@@ -81,7 +119,7 @@ class PropiedadRegistrationTest extends TestCase
 
         $this->actingAs($agente)->post(route('propiedades.store'), [
             'tipo' => 'terreno',
-            'zona' => 'Choluteca',
+            'zona' => 'gualaco',
             'area_terreno' => 10,
             'unidad_medida' => 'manzana',
             'precio' => 500000,
@@ -93,5 +131,22 @@ class PropiedadRegistrationTest extends TestCase
         $this->assertCount(1, $propiedad->agentes);
         $this->assertSame($agente->id, $propiedad->agentes->first()->agente_id);
         $this->assertNull($propiedad->area_construccion);
+    }
+
+    public function test_propiedad_requires_valid_municipio_enum_value()
+    {
+        $agente = User::factory()->create();
+
+        $response = $this->actingAs($agente)->post(route('propiedades.store'), [
+            'tipo' => 'casa',
+            'zona' => 'municipio_invalido_xyz',
+            'area_terreno' => 250,
+            'unidad_medida' => 'm2',
+            'precio' => 1500000,
+            'moneda' => 'HNL',
+            'forma_pago' => 'contado',
+        ]);
+
+        $response->assertSessionHasErrors('zona');
     }
 }

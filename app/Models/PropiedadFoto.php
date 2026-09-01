@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 /**
  * @property int $id
@@ -33,5 +34,25 @@ class PropiedadFoto extends Model
     public function propiedad(): BelongsTo
     {
         return $this->belongsTo(Propiedad::class);
+    }
+
+    /**
+     * Path of the original file relative to the public disk root.
+     *
+     * Tolerates both the current root-relative form (`/storage/...`) and the
+     * legacy absolute form (`http://host/storage/...`) stored before URLs were
+     * normalized.
+     */
+    public function rutaOriginal(): string
+    {
+        return Str::after($this->url, '/storage/');
+    }
+
+    /**
+     * Path of the watermarked file relative to the public disk root.
+     */
+    public function rutaMarcaAgua(): string
+    {
+        return Str::after($this->url_con_marca_agua, '/storage/');
     }
 }

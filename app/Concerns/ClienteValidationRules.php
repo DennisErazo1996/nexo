@@ -7,11 +7,21 @@ use Illuminate\Contracts\Validation\ValidationRule;
 trait ClienteValidationRules
 {
     /**
-     * Get the validation rules used to validate a cliente's nombre.
+     * Get the validation rules used to validate a cliente's nombres.
      *
      * @return array<int, ValidationRule|array<mixed>|string>
      */
-    protected function nombreRules(): array
+    protected function nombresRules(): array
+    {
+        return ['required', 'string', 'max:255'];
+    }
+
+    /**
+     * Get the validation rules used to validate a cliente's apellidos.
+     *
+     * @return array<int, ValidationRule|array<mixed>|string>
+     */
+    protected function apellidosRules(): array
     {
         return ['required', 'string', 'max:255'];
     }

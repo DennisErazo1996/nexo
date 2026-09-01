@@ -67,8 +67,8 @@ export function DataTablePagination({
                                 const isNumber = !isNaN(Number(link.label));
 
                                 if (!isNumber && link.label !== '...') {
-return null;
-}
+                                    return null;
+                                }
 
                                 return (
                                     <Button

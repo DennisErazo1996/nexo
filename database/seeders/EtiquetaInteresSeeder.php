@@ -21,6 +21,7 @@ class EtiquetaInteresSeeder extends Seeder
         'lotificacion',
         'bodega',
         'agricola',
+        'carro',
     ];
 
     /**

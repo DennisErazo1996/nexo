@@ -30,7 +30,7 @@ class ClienteRegistrationTest extends TestCase
     public function test_buscar_redirects_to_existing_cliente_when_telefono_already_registered()
     {
         $agente = User::factory()->create();
-        $registrador = User::factory()->forEquipo(Equipo::find($agente->equipo_id))->create(['name' => 'Ana Agente']);
+        $registrador = User::factory()->forEquipo(Equipo::find($agente->equipo_id))->create(['nombres' => 'Ana', 'apellidos' => 'Agente']);
         $cliente = Cliente::factory()->registradoPor($registrador)->create(['telefono' => '+50499887766']);
 
         $response = $this->actingAs($agente)->post(route('clientes.buscar'), ['telefono' => '9988-7766']);
@@ -52,9 +52,10 @@ class ClienteRegistrationTest extends TestCase
 
         $response = $this->actingAs($agente)->post(route('clientes.store'), [
             'telefono' => '99887766',
-            'nombre' => 'Juan Pérez',
+            'nombres' => 'Juan',
+            'apellidos' => 'Pérez',
             'etiqueta_id' => $etiqueta->id,
-            'zona' => 'Tegucigalpa',
+            'zona' => 'juticalpa',
             'presupuesto_min' => 500000,
             'presupuesto_max' => 1000000,
         ]);
@@ -78,7 +79,8 @@ class ClienteRegistrationTest extends TestCase
 
         $response = $this->actingAs($agente)->post(route('clientes.store'), [
             'telefono' => '99887766',
-            'nombre' => 'Otro Nombre',
+            'nombres' => 'Otro',
+            'apellidos' => 'Nombre',
             'etiqueta_id' => $etiqueta->id,
         ]);
 
@@ -96,7 +98,8 @@ class ClienteRegistrationTest extends TestCase
 
         $response = $this->actingAs($agenteB)->post(route('clientes.store'), [
             'telefono' => '99887766',
-            'nombre' => 'Cliente Equipo B',
+            'nombres' => 'Cliente',
+            'apellidos' => 'Equipo B',
             'etiqueta_id' => $etiqueta->id,
         ]);
 
@@ -111,7 +114,8 @@ class ClienteRegistrationTest extends TestCase
 
         $response = $this->actingAs($agente)->post(route('clientes.store'), [
             'telefono' => '99887766',
-            'nombre' => 'Juan Pérez',
+            'nombres' => 'Juan',
+            'apellidos' => 'Pérez',
             'etiqueta_id' => $etiqueta->id,
             'presupuesto_min' => 500000,
         ]);
@@ -127,7 +131,8 @@ class ClienteRegistrationTest extends TestCase
 
         $response = $this->actingAs($agente)->post(route('clientes.store'), [
             'telefono' => '99887766',
-            'nombre' => 'Juan Pérez',
+            'nombres' => 'Juan',
+            'apellidos' => 'Pérez',
             'etiqueta_id' => $etiqueta->id,
             'presupuesto_max' => 1000000,
         ]);
@@ -143,7 +148,8 @@ class ClienteRegistrationTest extends TestCase
 
         $response = $this->actingAs($agente)->post(route('clientes.store'), [
             'telefono' => '99887766',
-            'nombre' => 'Juan Pérez',
+            'nombres' => 'Juan',
+            'apellidos' => 'Pérez',
             'etiqueta_id' => $etiqueta->id,
         ]);
 
@@ -165,6 +171,23 @@ class ClienteRegistrationTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors(['presupuesto_max']);
+        $this->assertSame(0, Cliente::count());
+    }
+
+    public function test_cliente_fails_when_zona_is_not_valid_municipio()
+    {
+        $agente = User::factory()->create();
+        $etiqueta = EtiquetaInteres::factory()->create();
+
+        $response = $this->actingAs($agente)->post(route('clientes.store'), [
+            'telefono' => '99887766',
+            'nombres' => 'Juan',
+            'apellidos' => 'Pérez',
+            'etiqueta_id' => $etiqueta->id,
+            'zona' => 'invalido_zona_xyz',
+        ]);
+
+        $response->assertSessionHasErrors(['zona']);
         $this->assertSame(0, Cliente::count());
     }
 }

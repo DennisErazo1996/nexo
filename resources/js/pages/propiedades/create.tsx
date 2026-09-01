@@ -31,7 +31,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { index } from '@/routes/propiedades';
-import type { EnumOption } from '@/types/propiedad';
+import type { EnumOption, MunicipioOption } from '@/types/propiedad';
 
 type Agente = {
     id: number;
@@ -51,18 +51,19 @@ type Props = {
     monedas: EnumOption[];
     formasPago: EnumOption[];
     condicionesLegales: EnumOption[];
+    municipios: MunicipioOption[];
 };
 
 function getInitials(name: string): string {
     const parts = name.trim().split(/\s+/);
 
     if (parts.length === 0 || !parts[0]) {
-return 'AG';
-}
+        return 'AG';
+    }
 
     if (parts.length === 1) {
-return parts[0].slice(0, 2).toUpperCase();
-}
+        return parts[0].slice(0, 2).toUpperCase();
+    }
 
     return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
 }
@@ -75,11 +76,15 @@ export default function PropiedadCreate({
     monedas,
     formasPago,
     condicionesLegales,
+    municipios,
 }: Props) {
     const fotosInputRef = useRef<HTMLInputElement>(null);
     const [fotos, setFotos] = useState<File[]>([]);
     const [previews, setPreviews] = useState<string[]>([]);
     const [tieneConstruccion, setTieneConstruccion] = useState(false);
+    const [tipo, setTipo] = useState<string>(tipos[0]?.value ?? '');
+
+    const esCarro = tipo === 'carro';
 
     function onFotosChange(event: React.ChangeEvent<HTMLInputElement>) {
         const files = event.target.files ? Array.from(event.target.files) : [];
@@ -168,6 +173,10 @@ export default function PropiedadCreate({
                                                 id="tipo"
                                                 name="tipo"
                                                 required
+                                                value={tipo}
+                                                onChange={(event) =>
+                                                    setTipo(event.target.value)
+                                                }
                                                 className="h-9 rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
                                             >
                                                 {tipos.map((tipo) => (
@@ -184,101 +193,131 @@ export default function PropiedadCreate({
 
                                         <div className="grid gap-2">
                                             <Label htmlFor="zona">
-                                                Zona / Ubicación *
+                                                Municipio / Ubicación *
                                             </Label>
-                                            <Input
+                                            <select
                                                 id="zona"
                                                 name="zona"
                                                 required
-                                                placeholder="Ej. Col. Palmira, Santa Rosa de Copán..."
-                                            />
+                                                className="h-9 rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
+                                            >
+                                                {municipios.map((m) => (
+                                                    <option key={m.value} value={m.value}>
+                                                        {m.label} ({m.departamento})
+                                                    </option>
+                                                ))}
+                                            </select>
                                             <InputError message={errors.zona} />
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="area_terreno">
-                                                Área de Terreno *
-                                            </Label>
-                                            <Input
-                                                id="area_terreno"
-                                                name="area_terreno"
-                                                type="number"
-                                                step="0.01"
-                                                required
-                                                placeholder="Ej. 250.00"
-                                            />
-                                            <InputError
-                                                message={errors.area_terreno}
-                                            />
-                                        </div>
+                                    {!esCarro && (
+                                        <>
+                                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                                <div className="grid gap-2">
+                                                    <Label htmlFor="area_terreno">
+                                                        Área de Terreno *
+                                                    </Label>
+                                                    <Input
+                                                        id="area_terreno"
+                                                        name="area_terreno"
+                                                        type="number"
+                                                        step="0.01"
+                                                        required
+                                                        placeholder="Ej. 250.00"
+                                                    />
+                                                    <InputError
+                                                        message={
+                                                            errors.area_terreno
+                                                        }
+                                                    />
+                                                </div>
 
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="unidad_medida">
-                                                Unidad de Medida *
-                                            </Label>
-                                            <select
-                                                id="unidad_medida"
-                                                name="unidad_medida"
-                                                required
-                                                className="h-9 rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
-                                            >
-                                                {unidadesMedida.map(
-                                                    (unidad) => (
-                                                        <option
-                                                            key={unidad.value}
-                                                            value={unidad.value}
-                                                        >
-                                                            {unidad.label}
-                                                        </option>
-                                                    ),
-                                                )}
-                                            </select>
-                                            <InputError
-                                                message={errors.unidad_medida}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* Optional Construction Area Toggle */}
-                                    <div className="rounded-xl border border-border/70 bg-muted/20 p-3.5 transition-colors hover:bg-muted/30">
-                                        <div className="flex items-center gap-3">
-                                            <Checkbox
-                                                id="tiene_construccion"
-                                                checked={tieneConstruccion}
-                                                onCheckedChange={(checked) =>
-                                                    setTieneConstruccion(
-                                                        Boolean(checked),
-                                                    )
-                                                }
-                                            />
-                                            <Label
-                                                htmlFor="tiene_construccion"
-                                                className="cursor-pointer text-xs font-medium leading-none text-foreground"
-                                            >
-                                                Incluye construcción / casa dentro de la propiedad
-                                            </Label>
-                                        </div>
-
-                                        {tieneConstruccion && (
-                                            <div className="mt-3.5 pt-3.5 border-t border-border/50 grid gap-2">
-                                                <Label htmlFor="area_construccion">
-                                                    Área de Construcción
-                                                </Label>
-                                                <Input
-                                                    id="area_construccion"
-                                                    name="area_construccion"
-                                                    type="number"
-                                                    step="0.01"
-                                                    placeholder="Ej. 120.00"
-                                                />
-                                                <InputError
-                                                    message={errors.area_construccion}
-                                                />
+                                                <div className="grid gap-2">
+                                                    <Label htmlFor="unidad_medida">
+                                                        Unidad de Medida *
+                                                    </Label>
+                                                    <select
+                                                        id="unidad_medida"
+                                                        name="unidad_medida"
+                                                        required
+                                                        className="h-9 rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
+                                                    >
+                                                        {unidadesMedida.map(
+                                                            (unidad) => (
+                                                                <option
+                                                                    key={
+                                                                        unidad.value
+                                                                    }
+                                                                    value={
+                                                                        unidad.value
+                                                                    }
+                                                                >
+                                                                    {
+                                                                        unidad.label
+                                                                    }
+                                                                </option>
+                                                            ),
+                                                        )}
+                                                    </select>
+                                                    <InputError
+                                                        message={
+                                                            errors.unidad_medida
+                                                        }
+                                                    />
+                                                </div>
                                             </div>
-                                        )}
-                                    </div>
+
+                                            {/* Optional Construction Area Toggle */}
+                                            <div className="rounded-xl border border-border/70 bg-muted/20 p-3.5 transition-colors hover:bg-muted/30">
+                                                <div className="flex items-center gap-3">
+                                                    <Checkbox
+                                                        id="tiene_construccion"
+                                                        checked={
+                                                            tieneConstruccion
+                                                        }
+                                                        onCheckedChange={(
+                                                            checked,
+                                                        ) =>
+                                                            setTieneConstruccion(
+                                                                Boolean(
+                                                                    checked,
+                                                                ),
+                                                            )
+                                                        }
+                                                    />
+                                                    <Label
+                                                        htmlFor="tiene_construccion"
+                                                        className="cursor-pointer text-xs leading-none font-medium text-foreground"
+                                                    >
+                                                        Incluye construcción /
+                                                        casa dentro de la
+                                                        propiedad
+                                                    </Label>
+                                                </div>
+
+                                                {tieneConstruccion && (
+                                                    <div className="mt-3.5 grid gap-2 border-t border-border/50 pt-3.5">
+                                                        <Label htmlFor="area_construccion">
+                                                            Área de Construcción
+                                                        </Label>
+                                                        <Input
+                                                            id="area_construccion"
+                                                            name="area_construccion"
+                                                            type="number"
+                                                            step="0.01"
+                                                            placeholder="Ej. 120.00"
+                                                        />
+                                                        <InputError
+                                                            message={
+                                                                errors.area_construccion
+                                                            }
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </>
+                                    )}
                                 </CardContent>
                             </Card>
 
@@ -416,28 +455,35 @@ export default function PropiedadCreate({
                                         </div>
                                         <div>
                                             <CardTitle className="text-base font-semibold">
-                                                Acceso & Descripción Detallada
+                                                {esCarro
+                                                    ? 'Descripción Detallada'
+                                                    : 'Acceso & Descripción Detallada'}
                                             </CardTitle>
                                             <CardDescription className="text-xs">
-                                                Facilidades de llegada y
-                                                características comerciales
+                                                {esCarro
+                                                    ? 'Características comerciales del vehículo'
+                                                    : 'Facilidades de llegada y características comerciales'}
                                             </CardDescription>
                                         </div>
                                     </div>
                                 </CardHeader>
 
                                 <CardContent className="space-y-4 pt-0">
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="acceso">
-                                            Vías de Acceso y Cercanías
-                                        </Label>
-                                        <Input
-                                            id="acceso"
-                                            name="acceso"
-                                            placeholder="Distancia a pavimento, tiempo desde la ciudad, tipo de vía..."
-                                        />
-                                        <InputError message={errors.acceso} />
-                                    </div>
+                                    {!esCarro && (
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="acceso">
+                                                Vías de Acceso y Cercanías
+                                            </Label>
+                                            <Input
+                                                id="acceso"
+                                                name="acceso"
+                                                placeholder="Distancia a pavimento, tiempo desde la ciudad, tipo de vía..."
+                                            />
+                                            <InputError
+                                                message={errors.acceso}
+                                            />
+                                        </div>
+                                    )}
 
                                     <div className="grid gap-2">
                                         <Label htmlFor="descripcion">
@@ -466,11 +512,14 @@ export default function PropiedadCreate({
                                         </div>
                                         <div>
                                             <CardTitle className="text-base font-semibold">
-                                                Etiquetas de Uso & Co-Agentes
+                                                {esCarro
+                                                    ? 'Co-Agentes'
+                                                    : 'Etiquetas de Uso & Co-Agentes'}
                                             </CardTitle>
                                             <CardDescription className="text-xs">
-                                                Categorización y compañeros de
-                                                equipo asignados
+                                                {esCarro
+                                                    ? 'Compañeros de equipo asignados'
+                                                    : 'Categorización y compañeros de equipo asignados'}
                                             </CardDescription>
                                         </div>
                                     </div>
@@ -478,32 +527,34 @@ export default function PropiedadCreate({
 
                                 <CardContent className="space-y-6 pt-0">
                                     {/* Tags */}
-                                    <div className="space-y-2.5">
-                                        <Label className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-                                            Etiquetas de Uso / Vocación
-                                        </Label>
-                                        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4">
-                                            {etiquetas.map((etiqueta) => (
-                                                <label
-                                                    key={etiqueta.id}
-                                                    className="flex cursor-pointer items-center gap-2.5 rounded-xl border border-border/60 bg-muted/20 p-2.5 text-xs font-medium transition-colors select-none hover:border-border hover:bg-muted/50"
-                                                >
-                                                    <Checkbox
-                                                        name="etiquetas[]"
-                                                        value={String(
-                                                            etiqueta.id,
-                                                        )}
-                                                    />
-                                                    <span>
-                                                        {etiqueta.nombre}
-                                                    </span>
-                                                </label>
-                                            ))}
+                                    {!esCarro && (
+                                        <div className="space-y-2.5">
+                                            <Label className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                                                Etiquetas de Uso / Vocación
+                                            </Label>
+                                            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4">
+                                                {etiquetas.map((etiqueta) => (
+                                                    <label
+                                                        key={etiqueta.id}
+                                                        className="flex cursor-pointer items-center gap-2.5 rounded-xl border border-border/60 bg-muted/20 p-2.5 text-xs font-medium transition-colors select-none hover:border-border hover:bg-muted/50"
+                                                    >
+                                                        <Checkbox
+                                                            name="etiquetas[]"
+                                                            value={String(
+                                                                etiqueta.id,
+                                                            )}
+                                                        />
+                                                        <span>
+                                                            {etiqueta.nombre}
+                                                        </span>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                            <InputError
+                                                message={errors.etiquetas}
+                                            />
                                         </div>
-                                        <InputError
-                                            message={errors.etiquetas}
-                                        />
-                                    </div>
+                                    )}
 
                                     {/* Co-Agents */}
                                     {agentes.length > 0 && (

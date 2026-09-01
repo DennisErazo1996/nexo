@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Cliente;
 use App\Actions\Coincidencia\GenerarCoincidencias;
 use App\Enums\EstadoCliente;
 use App\Enums\EstadoCoincidencia;
+use App\Enums\Municipio;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Cliente\BuscarClienteRequest;
 use App\Http\Requests\Cliente\DestroyClienteRequest;
@@ -32,7 +33,7 @@ class ClienteController extends Controller
     public function index(Request $request): Response
     {
         $clientes = Cliente::query()
-            ->with('agenteRegistro:id,name')
+            ->with('agenteRegistro:id,nombres,apellidos')
             ->withMax('notas', 'created_at')
             ->when($request->filled('search'), function ($query) use ($request): void {
                 $rawSearch = trim($request->string('search')->value());
@@ -40,7 +41,7 @@ class ClienteController extends Controller
                 $lowerFull = mb_strtolower($rawSearch);
 
                 $query->where(function ($q) use ($lowerFull, $terms): void {
-                    $q->whereRaw('LOWER(nombre) LIKE ?', ["%{$lowerFull}%"])
+                    $q->whereRaw("LOWER(nombres || ' ' || apellidos) LIKE ?", ["%{$lowerFull}%"])
                         ->orWhere('telefono', 'like', "%{$lowerFull}%");
 
                     if (count($terms) > 1) {
@@ -48,7 +49,7 @@ class ClienteController extends Controller
                             foreach ($terms as $term) {
                                 $lowerTerm = mb_strtolower($term);
                                 $wordQuery->where(function ($sub) use ($lowerTerm): void {
-                                    $sub->whereRaw('LOWER(nombre) LIKE ?', ["%{$lowerTerm}%"])
+                                    $sub->whereRaw("LOWER(nombres || ' ' || apellidos) LIKE ?", ["%{$lowerTerm}%"])
                                         ->orWhere('telefono', 'like', "%{$lowerTerm}%");
                                 });
                             }
@@ -65,16 +66,20 @@ class ClienteController extends Controller
             ->when($request->filled('sort'), function ($query) use ($request): void {
                 $direction = strtolower($request->string('direction')->value()) === 'desc' ? 'desc' : 'asc';
                 $field = match ($request->string('sort')->value()) {
-                    'nombre' => 'nombre',
+                    'nombre' => 'nombres',
                     'telefono' => 'telefono',
                     'estado' => 'estado',
                     'created_at' => 'created_at',
                     'notas_max_created_at' => 'notas_max_created_at',
-                    default => 'nombre',
+                    default => 'nombres',
                 };
-                $query->orderBy($field, $direction);
+                if ($field === 'nombres') {
+                    $query->orderBy('nombres', $direction)->orderBy('apellidos', $direction);
+                } else {
+                    $query->orderBy($field, $direction);
+                }
             }, function ($query): void {
-                $query->orderBy('nombre');
+                $query->orderBy('nombres')->orderBy('apellidos');
             })
             ->paginate(20)
             ->withQueryString();
@@ -94,6 +99,7 @@ class ClienteController extends Controller
         return Inertia::render('clientes/create', [
             'step' => 'telefono',
             'etiquetas' => EtiquetaInteres::orderBy('nombre')->get(['id', 'nombre']),
+            'municipios' => $this->municipioOptions(),
         ]);
     }
 
@@ -105,7 +111,7 @@ class ClienteController extends Controller
     {
         $telefono = Cliente::normalizarTelefono($request->string('telefono')->value());
 
-        $cliente = Cliente::where('telefono', $telefono)->with('agenteRegistro:id,name')->first();
+        $cliente = Cliente::where('telefono', $telefono)->with('agenteRegistro:id,nombres,apellidos')->first();
 
         if ($cliente) {
             Inertia::flash('toast', [
@@ -123,6 +129,7 @@ class ClienteController extends Controller
             'step' => 'datos',
             'telefono' => $telefono,
             'etiquetas' => EtiquetaInteres::orderBy('nombre')->get(['id', 'nombre']),
+            'municipios' => $this->municipioOptions(),
         ]);
     }
 
@@ -133,7 +140,8 @@ class ClienteController extends Controller
     {
         [$cliente, $interes] = DB::transaction(function () use ($request) {
             $cliente = Cliente::create([
-                'nombre' => $request->validated('nombre'),
+                'nombres' => $request->validated('nombres'),
+                'apellidos' => $request->validated('apellidos'),
                 'telefono' => $request->validated('telefono'),
                 'agente_registro_id' => $request->user()->id,
             ]);
@@ -162,17 +170,17 @@ class ClienteController extends Controller
     public function show(Cliente $cliente): Response
     {
         $cliente->load([
-            'agenteRegistro:id,name',
+            'agenteRegistro:id,nombres,apellidos',
             'intereses.etiqueta:id,nombre',
-            'intereses.agente:id,name',
-            'notas.agente:id,name',
+            'intereses.agente:id,nombres,apellidos',
+            'notas.agente:id,nombres,apellidos',
             'notas.propiedad:id,tipo,zona,precio,moneda',
         ]);
         $cliente->setRelation('notas', $cliente->notas->sortByDesc('created_at')->values());
 
         $coincidencias = Coincidencia::with([
             'propiedad:id,tipo,zona,precio,moneda',
-            'propiedad.agentes.agente:id,name',
+            'propiedad.agentes.agente:id,nombres,apellidos',
         ])
             ->where('cliente_id', $cliente->id)
             ->get();
@@ -181,6 +189,7 @@ class ClienteController extends Controller
             'cliente' => $cliente,
             'coincidencias' => $coincidencias,
             'etiquetas' => EtiquetaInteres::orderBy('nombre')->get(['id', 'nombre']),
+            'municipios' => $this->municipioOptions(),
             'estadosCoincidencia' => $this->estadosCoincidenciaOptions(),
         ]);
     }
@@ -224,5 +233,22 @@ class ClienteController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Cliente eliminado.')]);
 
         return to_route('clientes.index');
+    }
+
+    /**
+     * Build the municipio option list including departamento for frontend display.
+     *
+     * @return array<int, array{value: string, label: string, departamento: string}>
+     */
+    private function municipioOptions(): array
+    {
+        return array_map(
+            fn (Municipio $m) => [
+                'value' => $m->value,
+                'label' => $m->label(),
+                'departamento' => $m->departamento()->label(),
+            ],
+            Municipio::cases(),
+        );
     }
 }

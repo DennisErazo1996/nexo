@@ -3,6 +3,12 @@ export type EnumOption = {
     label: string;
 };
 
+export type MunicipioOption = {
+    value: string;
+    label: string;
+    departamento: string;
+};
+
 export type PropiedadFoto = {
     id: number;
     url: string;
@@ -28,10 +34,10 @@ export type Propiedad = {
     equipo_id: number;
     tipo: string;
     zona: string;
-    area_terreno: string;
+    area_terreno: string | null;
     area_construccion: string | null;
     tamano?: string;
-    unidad_medida: string;
+    unidad_medida: string | null;
     precio: string;
     moneda: string;
     forma_pago: string;

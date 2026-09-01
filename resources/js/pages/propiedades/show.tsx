@@ -6,6 +6,7 @@ import {
     Check,
     Copy,
     CreditCard,
+    Eye,
     HeartHandshake,
     ImageIcon,
     Maximize2,
@@ -20,11 +21,13 @@ import {
     Trash2,
     Upload,
     Users,
+    X,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import ClienteController from '@/actions/App/Http/Controllers/Cliente/ClienteController';
 import PropiedadController from '@/actions/App/Http/Controllers/Propiedad/PropiedadController';
 import PropiedadFotoController from '@/actions/App/Http/Controllers/PropiedadFoto/PropiedadFotoController';
+import { ImageLightbox } from '@/components/image-lightbox';
 import InputError from '@/components/input-error';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -50,10 +53,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { buildTextoCompartir } from '@/lib/texto-compartir';
-import { cn } from '@/lib/utils';
+import {
+    cn,
+    formatCondicionLegal,
+    formatFormaPago,
+    formatMunicipio,
+    formatTipoPropiedad,
+} from '@/lib/utils';
 import { index } from '@/routes/propiedades';
 import type { Coincidencia } from '@/types/coincidencia';
-import type { EnumOption, Propiedad } from '@/types/propiedad';
+import type { EnumOption, MunicipioOption, Propiedad } from '@/types/propiedad';
 
 type Agente = {
     id: number;
@@ -77,6 +86,7 @@ type Props = {
     monedas: EnumOption[];
     formasPago: EnumOption[];
     condicionesLegales: EnumOption[];
+    municipios: MunicipioOption[];
 };
 
 const ESTADO_PROPIEDAD_STYLES: Record<
@@ -155,12 +165,51 @@ export default function PropiedadShow({
     monedas,
     formasPago,
     condicionesLegales,
+    municipios,
 }: Props) {
     const [textoCompartir, setTextoCompartir] = useState<string | null>(null);
     const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [copiedShareText, setCopiedShareText] = useState(false);
-    const [selectedFilesCount, setSelectedFilesCount] = useState<number>(0);
+    const fotosInputRef = useRef<HTMLInputElement>(null);
+    const [fotos, setFotos] = useState<File[]>([]);
+    const [previews, setPreviews] = useState<string[]>([]);
+    const [editTipo, setEditTipo] = useState<string>(propiedad.tipo);
+    const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+    function onFotosChange(event: React.ChangeEvent<HTMLInputElement>) {
+        const files = event.target.files ? Array.from(event.target.files) : [];
+        previews.forEach((src) => URL.revokeObjectURL(src));
+        setFotos(files);
+        setPreviews(files.map((file) => URL.createObjectURL(file)));
+    }
+
+    function removeFoto(index: number) {
+        const nextFotos = fotos.filter((_, i) => i !== index);
+        URL.revokeObjectURL(previews[index]);
+        const nextPreviews = previews.filter((_, i) => i !== index);
+
+        const dataTransfer = new DataTransfer();
+        nextFotos.forEach((file) => dataTransfer.items.add(file));
+        if (fotosInputRef.current) {
+            fotosInputRef.current.files = dataTransfer.files;
+        }
+
+        setFotos(nextFotos);
+        setPreviews(nextPreviews);
+    }
+
+    function clearFotos() {
+        previews.forEach((src) => URL.revokeObjectURL(src));
+        setFotos([]);
+        setPreviews([]);
+        if (fotosInputRef.current) {
+            fotosInputRef.current.value = '';
+        }
+    }
+
+    const esCarroEdit = editTipo === 'carro';
+    const areaTerreno = propiedad.area_terreno ?? propiedad.tamano;
 
     const resolvedCreadorId = creadorId ?? propiedad.agentes?.[0]?.agente_id;
     const creadorAgente =
@@ -210,7 +259,7 @@ export default function PropiedadShow({
 
     return (
         <>
-            <Head title={`${propiedad.tipo} en ${propiedad.zona}`} />
+            <Head title={`${formatTipoPropiedad(propiedad.tipo)} en ${formatMunicipio(propiedad.zona)}`} />
 
             <div className="space-y-6 p-4 md:p-6 lg:p-8">
                 {/* Hero Header */}
@@ -223,7 +272,7 @@ export default function PropiedadShow({
                         <div className="space-y-1.5">
                             <div className="flex flex-wrap items-center gap-3">
                                 <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                                    {propiedad.tipo} en {propiedad.zona}
+                                    {formatTipoPropiedad(propiedad.tipo)} en {formatMunicipio(propiedad.zona)}
                                 </h1>
 
                                 <Form
@@ -339,8 +388,12 @@ export default function PropiedadShow({
                                                         <select
                                                             id="edit-tipo"
                                                             name="tipo"
-                                                            defaultValue={
-                                                                propiedad.tipo
+                                                            value={editTipo}
+                                                            onChange={(event) =>
+                                                                setEditTipo(
+                                                                    event.target
+                                                                        .value,
+                                                                )
                                                             }
                                                             className="h-9 rounded-md border border-input bg-card px-3 text-xs shadow-2xs focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
                                                         >
@@ -373,18 +426,26 @@ export default function PropiedadShow({
                                                             htmlFor="edit-zona"
                                                             className="text-xs font-medium"
                                                         >
-                                                            Zona / Ubicación *
+                                                            Municipio / Ubicación *
                                                         </Label>
-                                                        <Input
+                                                        <select
                                                             id="edit-zona"
                                                             name="zona"
                                                             defaultValue={
                                                                 propiedad.zona
                                                             }
-                                                            placeholder="Ej: Col. Palmira, Tegucigalpa"
-                                                            className="h-9 text-xs shadow-2xs"
                                                             required
-                                                        />
+                                                            className="h-9 rounded-md border border-input bg-background px-3 text-xs shadow-2xs focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
+                                                        >
+                                                            {municipios.map((m) => (
+                                                                <option
+                                                                    key={m.value}
+                                                                    value={m.value}
+                                                                >
+                                                                    {m.label} ({m.departamento})
+                                                                </option>
+                                                            ))}
+                                                        </select>
                                                         <InputError
                                                             message={
                                                                 errors.zona
@@ -471,98 +532,104 @@ export default function PropiedadShow({
                                                     2. Ficha Técnica &
                                                     Dimensiones
                                                 </h3>
-                                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                                                    <div className="grid gap-1.5">
-                                                        <Label
-                                                            htmlFor="edit-area-terreno"
-                                                            className="text-xs font-medium"
-                                                        >
-                                                            Área de Terreno *
-                                                        </Label>
-                                                        <Input
-                                                            id="edit-area-terreno"
-                                                            name="area_terreno"
-                                                            type="number"
-                                                            step="any"
-                                                            defaultValue={
-                                                                propiedad.area_terreno ??
-                                                                propiedad.tamano
-                                                            }
-                                                            className="h-9 text-xs shadow-2xs"
-                                                            required
-                                                        />
-                                                        <InputError
-                                                            message={
-                                                                errors.area_terreno
-                                                            }
-                                                        />
-                                                    </div>
+                                                {!esCarroEdit && (
+                                                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                                                        <div className="grid gap-1.5">
+                                                            <Label
+                                                                htmlFor="edit-area-terreno"
+                                                                className="text-xs font-medium"
+                                                            >
+                                                                Área de Terreno
+                                                                *
+                                                            </Label>
+                                                            <Input
+                                                                id="edit-area-terreno"
+                                                                name="area_terreno"
+                                                                type="number"
+                                                                step="any"
+                                                                defaultValue={
+                                                                    propiedad.area_terreno ??
+                                                                    propiedad.tamano
+                                                                }
+                                                                className="h-9 text-xs shadow-2xs"
+                                                                required
+                                                            />
+                                                            <InputError
+                                                                message={
+                                                                    errors.area_terreno
+                                                                }
+                                                            />
+                                                        </div>
 
-                                                    <div className="grid gap-1.5">
-                                                        <Label
-                                                            htmlFor="edit-area-construccion"
-                                                            className="text-xs font-medium"
-                                                        >
-                                                            Área de Construcción
-                                                        </Label>
-                                                        <Input
-                                                            id="edit-area-construccion"
-                                                            name="area_construccion"
-                                                            type="number"
-                                                            step="any"
-                                                            defaultValue={
-                                                                propiedad.area_construccion ??
-                                                                ''
-                                                            }
-                                                            placeholder="Opcional"
-                                                            className="h-9 text-xs shadow-2xs"
-                                                        />
-                                                        <InputError
-                                                            message={
-                                                                errors.area_construccion
-                                                            }
-                                                        />
-                                                    </div>
+                                                        <div className="grid gap-1.5">
+                                                            <Label
+                                                                htmlFor="edit-area-construccion"
+                                                                className="text-xs font-medium"
+                                                            >
+                                                                Área de
+                                                                Construcción
+                                                            </Label>
+                                                            <Input
+                                                                id="edit-area-construccion"
+                                                                name="area_construccion"
+                                                                type="number"
+                                                                step="any"
+                                                                defaultValue={
+                                                                    propiedad.area_construccion ??
+                                                                    ''
+                                                                }
+                                                                placeholder="Opcional"
+                                                                className="h-9 text-xs shadow-2xs"
+                                                            />
+                                                            <InputError
+                                                                message={
+                                                                    errors.area_construccion
+                                                                }
+                                                            />
+                                                        </div>
 
-                                                    <div className="grid gap-1.5">
-                                                        <Label
-                                                            htmlFor="edit-unidad"
-                                                            className="text-xs font-medium"
-                                                        >
-                                                            Unidad de Medida *
-                                                        </Label>
-                                                        <select
-                                                            id="edit-unidad"
-                                                            name="unidad_medida"
-                                                            defaultValue={
-                                                                propiedad.unidad_medida
-                                                            }
-                                                            className="h-9 rounded-md border border-input bg-card px-3 text-xs shadow-2xs focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
-                                                        >
-                                                            {unidadesMedida.map(
-                                                                (u) => (
-                                                                    <option
-                                                                        key={
-                                                                            u.value
-                                                                        }
-                                                                        value={
-                                                                            u.value
-                                                                        }
-                                                                    >
-                                                                        {
-                                                                            u.label
-                                                                        }
-                                                                    </option>
-                                                                ),
-                                                            )}
-                                                        </select>
-                                                        <InputError
-                                                            message={
-                                                                errors.unidad_medida
-                                                            }
-                                                        />
+                                                        <div className="grid gap-1.5">
+                                                            <Label
+                                                                htmlFor="edit-unidad"
+                                                                className="text-xs font-medium"
+                                                            >
+                                                                Unidad de Medida
+                                                                *
+                                                            </Label>
+                                                            <select
+                                                                id="edit-unidad"
+                                                                name="unidad_medida"
+                                                                defaultValue={
+                                                                    propiedad.unidad_medida ??
+                                                                    ''
+                                                                }
+                                                                className="h-9 rounded-md border border-input bg-card px-3 text-xs shadow-2xs focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
+                                                            >
+                                                                {unidadesMedida.map(
+                                                                    (u) => (
+                                                                        <option
+                                                                            key={
+                                                                                u.value
+                                                                            }
+                                                                            value={
+                                                                                u.value
+                                                                            }
+                                                                        >
+                                                                            {
+                                                                                u.label
+                                                                            }
+                                                                        </option>
+                                                                    ),
+                                                                )}
+                                                            </select>
+                                                            <InputError
+                                                                message={
+                                                                    errors.unidad_medida
+                                                                }
+                                                            />
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                )}
 
                                                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                                     <div className="grid gap-1.5">
@@ -648,27 +715,31 @@ export default function PropiedadShow({
                                                     </div>
                                                 </div>
 
-                                                <div className="grid gap-1.5">
-                                                    <Label
-                                                        htmlFor="edit-acceso"
-                                                        className="text-xs font-medium"
-                                                    >
-                                                        Tipo de Acceso
-                                                    </Label>
-                                                    <Input
-                                                        id="edit-acceso"
-                                                        name="acceso"
-                                                        defaultValue={
-                                                            propiedad.acceso ??
-                                                            ''
-                                                        }
-                                                        placeholder="Ej: Calle pavimentada principal, calle de tierra 200m..."
-                                                        className="h-9 text-xs shadow-2xs"
-                                                    />
-                                                    <InputError
-                                                        message={errors.acceso}
-                                                    />
-                                                </div>
+                                                {!esCarroEdit && (
+                                                    <div className="grid gap-1.5">
+                                                        <Label
+                                                            htmlFor="edit-acceso"
+                                                            className="text-xs font-medium"
+                                                        >
+                                                            Tipo de Acceso
+                                                        </Label>
+                                                        <Input
+                                                            id="edit-acceso"
+                                                            name="acceso"
+                                                            defaultValue={
+                                                                propiedad.acceso ??
+                                                                ''
+                                                            }
+                                                            placeholder="Ej: Calle pavimentada principal, calle de tierra 200m..."
+                                                            className="h-9 text-xs shadow-2xs"
+                                                        />
+                                                        <InputError
+                                                            message={
+                                                                errors.acceso
+                                                            }
+                                                        />
+                                                    </div>
+                                                )}
                                             </div>
 
                                             {/* Section 3: Descripción */}
@@ -697,7 +768,8 @@ export default function PropiedadShow({
                                             </div>
 
                                             {/* Section 4: Etiquetas / Características */}
-                                            {etiquetas &&
+                                            {!esCarroEdit &&
+                                                etiquetas &&
                                                 etiquetas.length > 0 && (
                                                     <div className="space-y-3 border-t border-border/60 pt-3">
                                                         <h3 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
@@ -1006,28 +1078,30 @@ export default function PropiedadShow({
                         </CardContent>
                     </Card>
 
-                    <Card className="py-4 shadow-2xs">
-                        <CardContent className="flex items-center justify-between px-5 py-0">
-                            <div>
-                                <p className="text-xs font-medium tracking-wider text-muted-foreground uppercase">
-                                    Área de Terreno
-                                </p>
-                                <p className="text-xl font-bold tracking-tight">
-                                    {propiedad.area_terreno ?? propiedad.tamano}{' '}
-                                    {propiedad.unidad_medida}
-                                </p>
-                                {propiedad.area_construccion && (
-                                    <p className="text-xs text-muted-foreground">
-                                        + {propiedad.area_construccion}{' '}
-                                        {propiedad.unidad_medida} construcción
+                    {areaTerreno && (
+                        <Card className="py-4 shadow-2xs">
+                            <CardContent className="flex items-center justify-between px-5 py-0">
+                                <div>
+                                    <p className="text-xs font-medium tracking-wider text-muted-foreground uppercase">
+                                        Área de Terreno
                                     </p>
-                                )}
-                            </div>
-                            <div className="flex size-10 items-center justify-center rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400">
-                                <Maximize2 className="size-5" />
-                            </div>
-                        </CardContent>
-                    </Card>
+                                    <p className="text-xl font-bold tracking-tight">
+                                        {areaTerreno} {propiedad.unidad_medida}
+                                    </p>
+                                    {propiedad.area_construccion && (
+                                        <p className="text-xs text-muted-foreground">
+                                            + {propiedad.area_construccion}{' '}
+                                            {propiedad.unidad_medida}{' '}
+                                            construcción
+                                        </p>
+                                    )}
+                                </div>
+                                <div className="flex size-10 items-center justify-center rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400">
+                                    <Maximize2 className="size-5" />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
 
                     <Card className="py-4 shadow-2xs">
                         <CardContent className="flex items-center justify-between px-5 py-0">
@@ -1079,19 +1153,20 @@ export default function PropiedadShow({
 
                             <CardContent className="min-w-0 space-y-4 pt-0">
                                 <div className="grid grid-cols-2 gap-3">
-                                    <div className="min-w-0 rounded-xl border border-border/60 bg-muted/20 p-3">
-                                        <span className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
-                                            <Maximize2 className="size-3 shrink-0" />
-                                            <span className="truncate">
-                                                Área de Terreno
+                                    {areaTerreno && (
+                                        <div className="min-w-0 rounded-xl border border-border/60 bg-muted/20 p-3">
+                                            <span className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
+                                                <Maximize2 className="size-3 shrink-0" />
+                                                <span className="truncate">
+                                                    Área de Terreno
+                                                </span>
                                             </span>
-                                        </span>
-                                        <p className="mt-1 text-sm font-semibold break-words text-foreground">
-                                            {propiedad.area_terreno ??
-                                                propiedad.tamano}{' '}
-                                            {propiedad.unidad_medida}
-                                        </p>
-                                    </div>
+                                            <p className="mt-1 text-sm font-semibold break-words text-foreground">
+                                                {areaTerreno}{' '}
+                                                {propiedad.unidad_medida}
+                                            </p>
+                                        </div>
+                                    )}
 
                                     {propiedad.area_construccion && (
                                         <div className="min-w-0 rounded-xl border border-border/60 bg-muted/20 p-3">
@@ -1115,8 +1190,8 @@ export default function PropiedadShow({
                                                 Forma de Pago
                                             </span>
                                         </span>
-                                        <p className="mt-1 text-sm font-semibold break-words text-foreground capitalize">
-                                            {propiedad.forma_pago}
+                                        <p className="mt-1 text-sm font-semibold break-words text-foreground">
+                                            {formatFormaPago(propiedad.forma_pago)}
                                         </p>
                                     </div>
 
@@ -1129,7 +1204,7 @@ export default function PropiedadShow({
                                                 </span>
                                             </span>
                                             <p className="mt-1 text-sm font-semibold [overflow-wrap:anywhere] break-words text-foreground">
-                                                {propiedad.condicion_legal}
+                                                {formatCondicionLegal(propiedad.condicion_legal)}
                                             </p>
                                         </div>
                                     )}
@@ -1329,10 +1404,11 @@ export default function PropiedadShow({
                                 {propiedad.fotos &&
                                 propiedad.fotos.length > 0 ? (
                                     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                                        {propiedad.fotos.map((foto) => (
+                                        {propiedad.fotos.map((foto, index) => (
                                             <div
                                                 key={foto.id}
-                                                className="group relative aspect-4/3 overflow-hidden rounded-xl border border-border/70 bg-muted/40"
+                                                onClick={() => setLightboxIndex(index)}
+                                                className="group relative aspect-4/3 cursor-pointer overflow-hidden rounded-xl border border-border/70 bg-muted/40"
                                             >
                                                 <img
                                                     src={
@@ -1343,7 +1419,13 @@ export default function PropiedadShow({
                                                     loading="lazy"
                                                 />
 
-                                                <div className="absolute inset-0 flex items-start justify-end bg-gradient-to-t from-black/40 via-transparent to-black/30 p-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                                                <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                                                    <div className="flex size-10 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm">
+                                                        <Eye className="size-5" />
+                                                    </div>
+                                                </div>
+
+                                                <div className="pointer-events-none absolute inset-0 flex items-start justify-end bg-gradient-to-t from-black/40 via-transparent to-black/30 p-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                                                     <Form
                                                         {...PropiedadFotoController.destroy.form(
                                                             [
@@ -1363,7 +1445,8 @@ export default function PropiedadShow({
                                                                 disabled={
                                                                     processing
                                                                 }
-                                                                className="size-7 shadow-md"
+                                                                onClick={(e) => e.stopPropagation()}
+                                                                className="pointer-events-auto size-7 shadow-md"
                                                                 title="Eliminar foto"
                                                             >
                                                                 <Trash2 className="size-3.5" />
@@ -1390,60 +1473,110 @@ export default function PropiedadShow({
                                     </div>
                                 )}
 
-                                {/* Photo Uploader Box */}
-                                <Form
-                                    {...PropiedadFotoController.store.form(
-                                        propiedad.id,
-                                    )}
-                                    options={{ preserveScroll: true }}
-                                    className="space-y-3 rounded-xl border border-border/70 bg-muted/20 p-3.5"
-                                >
-                                    {({ processing, errors }) => (
-                                        <div className="space-y-3">
-                                            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                                                <label className="relative flex cursor-pointer items-center gap-2 rounded-lg border border-input bg-background px-3 py-2 text-xs font-medium shadow-2xs transition-colors hover:bg-accent hover:text-accent-foreground">
-                                                    <Upload className="size-3.5 text-muted-foreground" />
-                                                    <span>
-                                                        {selectedFilesCount > 0
-                                                            ? `${selectedFilesCount} foto(s) seleccionada(s)`
-                                                            : 'Seleccionar fotos...'}
-                                                    </span>
-                                                    <input
-                                                        name="fotos[]"
-                                                        type="file"
-                                                        multiple
-                                                        accept="image/*"
-                                                        className="sr-only"
-                                                        onChange={(e) =>
-                                                            setSelectedFilesCount(
-                                                                e.target.files
-                                                                    ?.length ??
-                                                                    0,
-                                                            )
-                                                        }
-                                                    />
-                                                </label>
+                                 {/* Photo Uploader Box */}
+                                 <Form
+                                     {...PropiedadFotoController.store.form(
+                                         propiedad.id,
+                                     )}
+                                     options={{
+                                         preserveScroll: true,
+                                         onSuccess: () => clearFotos(),
+                                     }}
+                                     className="space-y-3 rounded-xl border border-border/70 bg-muted/20 p-3.5"
+                                 >
+                                     {({ processing, errors }) => (
+                                         <div className="space-y-3">
+                                             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                                 <label className="relative flex cursor-pointer items-center gap-2 rounded-lg border border-input bg-background px-3 py-2 text-xs font-medium shadow-2xs transition-colors hover:bg-accent hover:text-accent-foreground">
+                                                     <Upload className="size-3.5 text-muted-foreground" />
+                                                     <span>
+                                                         {fotos.length > 0
+                                                             ? `${fotos.length} foto(s) seleccionada(s)`
+                                                             : 'Seleccionar fotos...'}
+                                                     </span>
+                                                     <input
+                                                         ref={fotosInputRef}
+                                                         name="fotos[]"
+                                                         type="file"
+                                                         multiple
+                                                         accept="image/*"
+                                                         className="sr-only"
+                                                         onChange={onFotosChange}
+                                                     />
+                                                 </label>
 
-                                                <Button
-                                                    type="submit"
-                                                    size="sm"
-                                                    disabled={
-                                                        processing ||
-                                                        selectedFilesCount === 0
-                                                    }
-                                                    className="h-8 gap-1.5 text-xs shadow-2xs"
-                                                >
-                                                    <Plus className="size-3.5" />
-                                                    Subir fotos
-                                                </Button>
-                                            </div>
+                                                 <Button
+                                                     type="submit"
+                                                     size="sm"
+                                                     disabled={
+                                                         processing ||
+                                                         fotos.length === 0
+                                                     }
+                                                     className="h-8 gap-1.5 text-xs shadow-2xs"
+                                                 >
+                                                     <Plus className="size-3.5" />
+                                                     {processing
+                                                         ? 'Subiendo...'
+                                                         : 'Subir fotos'}
+                                                 </Button>
+                                             </div>
 
-                                            <InputError
-                                                message={errors.fotos}
-                                            />
-                                        </div>
-                                    )}
-                                </Form>
+                                             <InputError
+                                                 message={errors.fotos}
+                                             />
+                                             {Object.entries(errors)
+                                                 .filter(([key]) =>
+                                                     key.startsWith('fotos.'),
+                                                 )
+                                                 .map(([key, message]) => (
+                                                     <InputError
+                                                         key={key}
+                                                         message={message}
+                                                     />
+                                                 ))}
+
+                                             {/* Previews Grid for Selected Photos */}
+                                             {previews.length > 0 && (
+                                                 <div className="space-y-2 pt-2">
+                                                     <div className="flex items-center justify-between">
+                                                         <p className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
+                                                             Fotos listas para subir ({previews.length})
+                                                         </p>
+                                                         <button
+                                                             type="button"
+                                                             onClick={clearFotos}
+                                                             className="text-[11px] text-muted-foreground hover:text-destructive hover:underline"
+                                                         >
+                                                             Limpiar selección
+                                                         </button>
+                                                     </div>
+                                                     <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 md:grid-cols-6">
+                                                         {previews.map((src, index) => (
+                                                             <div
+                                                                 key={index}
+                                                                 className="group relative aspect-4/3 overflow-hidden rounded-xl border border-border/70 bg-muted/40 shadow-2xs"
+                                                             >
+                                                                 <img
+                                                                     src={src}
+                                                                     alt={`Preview ${index + 1}`}
+                                                                     className="size-full object-cover"
+                                                                 />
+                                                                 <button
+                                                                     type="button"
+                                                                     onClick={() => removeFoto(index)}
+                                                                     aria-label="Eliminar foto seleccionada"
+                                                                     className="absolute top-1.5 right-1.5 flex size-5 items-center justify-center rounded-full bg-red-600 text-white shadow-xs transition-colors hover:bg-red-700"
+                                                                 >
+                                                                     <X className="size-3" />
+                                                                 </button>
+                                                             </div>
+                                                         ))}
+                                                     </div>
+                                                 </div>
+                                             )}
+                                         </div>
+                                     )}
+                                 </Form>
                             </CardContent>
                         </Card>
 
@@ -1607,6 +1740,15 @@ export default function PropiedadShow({
                     </div>
                 </div>
             </div>
+
+            <ImageLightbox
+                images={propiedad.fotos ?? []}
+                currentIndex={lightboxIndex ?? 0}
+                isOpen={lightboxIndex !== null}
+                onClose={() => setLightboxIndex(null)}
+                onNavigate={(idx) => setLightboxIndex(idx)}
+                title={`${formatTipoPropiedad(propiedad.tipo)} en ${formatMunicipio(propiedad.zona)}`}
+            />
         </>
     );
 }
@@ -1615,7 +1757,7 @@ PropiedadShow.layout = (props: Props) => ({
     breadcrumbs: [
         { title: 'Propiedades', href: index() },
         {
-            title: `${props.propiedad.tipo} en ${props.propiedad.zona}`,
+            title: `${formatTipoPropiedad(props.propiedad.tipo)} en ${formatMunicipio(props.propiedad.zona)}`,
             href: index(),
         },
     ],

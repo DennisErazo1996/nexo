@@ -36,7 +36,10 @@ export default function Login({ status, canResetPassword }: Props) {
                     <>
                         <div className="grid gap-5">
                             <div className="grid gap-2">
-                                <Label htmlFor="email" className="text-sm font-medium">
+                                <Label
+                                    htmlFor="email"
+                                    className="text-sm font-medium"
+                                >
                                     Correo electrónico
                                 </Label>
                                 <Input
@@ -55,13 +58,16 @@ export default function Login({ status, canResetPassword }: Props) {
 
                             <div className="grid gap-2">
                                 <div className="flex items-center justify-between">
-                                    <Label htmlFor="password" className="text-sm font-medium">
+                                    <Label
+                                        htmlFor="password"
+                                        className="text-sm font-medium"
+                                    >
                                         Contraseña
                                     </Label>
                                     {canResetPassword && (
                                         <TextLink
                                             href={request()}
-                                            className="text-xs text-muted-foreground hover:text-primary transition-colors"
+                                            className="text-xs text-muted-foreground transition-colors hover:text-primary"
                                             tabIndex={5}
                                         >
                                             ¿Olvidaste tu contraseña?
@@ -108,7 +114,11 @@ export default function Login({ status, canResetPassword }: Props) {
 
                         <div className="pt-2 text-center text-sm text-muted-foreground">
                             ¿No tienes cuenta?{' '}
-                            <TextLink href={register()} tabIndex={6} className="font-semibold text-primary underline-offset-4 hover:underline">
+                            <TextLink
+                                href={register()}
+                                tabIndex={6}
+                                className="font-semibold text-primary underline-offset-4 hover:underline"
+                            >
                                 Regístrate aquí
                             </TextLink>
                         </div>

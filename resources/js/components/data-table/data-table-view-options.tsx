@@ -70,7 +70,7 @@ export function DataTableViewOptions<TData>({
                     return (
                         <DropdownMenuCheckboxItem
                             key={column.id}
-                            className="text-xs capitalize cursor-pointer"
+                            className="cursor-pointer text-xs capitalize"
                             checked={column.getIsVisible()}
                             onCheckedChange={(value) =>
                                 column.toggleVisibility(!!value)
@@ -84,7 +84,7 @@ export function DataTableViewOptions<TData>({
                     <>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
-                            className="text-xs font-medium text-primary justify-center cursor-pointer gap-1.5"
+                            className="cursor-pointer justify-center gap-1.5 text-xs font-medium text-primary"
                             onClick={() => table.toggleAllColumnsVisible(true)}
                         >
                             <RotateCcw className="size-3" />

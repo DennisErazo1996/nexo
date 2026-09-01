@@ -8,6 +8,7 @@ use App\Enums\CondicionLegal;
 use App\Enums\EstadoPropiedad;
 use App\Enums\FormaPago;
 use App\Enums\Moneda;
+use App\Enums\Municipio;
 use App\Enums\TipoPropiedad;
 use App\Enums\UnidadMedida;
 use App\Http\Controllers\Controller;
@@ -104,9 +105,11 @@ class PropiedadController extends Controller
             'etiquetas' => EtiquetaInteres::orderBy('nombre')->get(['id', 'nombre']),
             'agentes' => $request->user()->equipo->agentes()
                 ->whereKeyNot($request->user()->id)
-                ->orderBy('name')
-                ->get(['id', 'name']),
+                ->orderBy('nombres')
+                ->orderBy('apellidos')
+                ->get(['id', 'nombres', 'apellidos']),
             'tipos' => $this->options(TipoPropiedad::cases()),
+            'municipios' => $this->municipioOptions(),
             'unidadesMedida' => $this->options(UnidadMedida::cases()),
             'monedas' => $this->options(Moneda::cases()),
             'formasPago' => $this->options(FormaPago::cases()),
@@ -168,12 +171,12 @@ class PropiedadController extends Controller
         $propiedad->load([
             'fotos',
             'etiquetas.etiqueta:id,nombre',
-            'agentes.agente:id,name,telefono',
+            'agentes.agente:id,nombres,apellidos,telefono',
         ]);
 
         $coincidencias = Coincidencia::with([
-            'cliente:id,nombre,telefono,agente_registro_id',
-            'cliente.agenteRegistro:id,name',
+            'cliente:id,nombres,apellidos,telefono,agente_registro_id',
+            'cliente.agenteRegistro:id,nombres,apellidos',
         ])
             ->where('propiedad_id', $propiedad->id)
             ->get();
@@ -187,10 +190,12 @@ class PropiedadController extends Controller
             'etiquetas' => EtiquetaInteres::orderBy('nombre')->get(['id', 'nombre']),
             'agentes' => $request->user()->equipo->agentes()
                 ->when($creadorId, fn ($query) => $query->whereKeyNot($creadorId))
-                ->orderBy('name')
-                ->get(['id', 'name']),
+                ->orderBy('nombres')
+                ->orderBy('apellidos')
+                ->get(['id', 'nombres', 'apellidos']),
             'estados' => $this->options(EstadoPropiedad::cases()),
             'tipos' => $this->options(TipoPropiedad::cases()),
+            'municipios' => $this->municipioOptions(),
             'unidadesMedida' => $this->options(UnidadMedida::cases()),
             'monedas' => $this->options(Moneda::cases()),
             'formasPago' => $this->options(FormaPago::cases()),
@@ -276,8 +281,8 @@ class PropiedadController extends Controller
 
         foreach ($propiedad->fotos as $foto) {
             $disk->delete([
-                str_replace($disk->url(''), '', $foto->url),
-                str_replace($disk->url(''), '', $foto->url_con_marca_agua),
+                $foto->rutaOriginal(),
+                $foto->rutaMarcaAgua(),
             ]);
         }
 
@@ -299,6 +304,23 @@ class PropiedadController extends Controller
         return array_map(
             fn ($case) => ['value' => $case->value, 'label' => $case->label()],
             $cases,
+        );
+    }
+
+    /**
+     * Build the municipio option list including departamento for frontend display.
+     *
+     * @return array<int, array{value: string, label: string, departamento: string}>
+     */
+    private function municipioOptions(): array
+    {
+        return array_map(
+            fn (Municipio $m) => [
+                'value' => $m->value,
+                'label' => $m->label(),
+                'departamento' => $m->departamento()->label(),
+            ],
+            Municipio::cases(),
         );
     }
 }

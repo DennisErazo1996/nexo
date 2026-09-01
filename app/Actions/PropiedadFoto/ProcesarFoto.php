@@ -40,8 +40,8 @@ class ProcesarFoto
             ->save(Storage::disk('public')->path($rutaMarcaAgua));
 
         return [
-            'url' => Storage::disk('public')->url($rutaOriginal),
-            'url_con_marca_agua' => Storage::disk('public')->url($rutaMarcaAgua),
+            'url' => "/storage/{$rutaOriginal}",
+            'url_con_marca_agua' => "/storage/{$rutaMarcaAgua}",
         ];
     }
 }

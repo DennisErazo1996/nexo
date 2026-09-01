@@ -10,6 +10,12 @@ export type EtiquetaInteres = {
     nombre: string;
 };
 
+export type MunicipioOption = {
+    value: string;
+    label: string;
+    departamento: string;
+};
+
 export type ClienteInteres = {
     id: number;
     etiqueta_id: number;
@@ -41,6 +47,8 @@ export type NotaSeguimiento = {
 export type Cliente = {
     id: number;
     equipo_id: number;
+    nombres: string;
+    apellidos: string;
     nombre: string;
     telefono: string;
     estado: EstadoCliente;

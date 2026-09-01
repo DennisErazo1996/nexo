@@ -57,7 +57,7 @@ propiedades
   id, equipo_id, tipo (terreno|casa|apartamento|local_comercial|bodega),
   zona, tamano (decimal), unidad_medida (manzana|m2|vara2),
   precio, moneda (HNL|USD), forma_pago (contado|financiable|negociable),
-  condicion_legal (escritura_publica|en_tramite|hipotecada) nullable,
+  condicion_legal (escritura_publica|en_tramite|hipotecada|papeles_en_regla|documento_privado) nullable,
   acceso (texto libre: distancia a pavimento, tiempo desde ciudad, tipo de vía),
   descripcion, estado (disponible|reservada|vendida|retirada), created_at
 

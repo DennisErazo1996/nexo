@@ -34,13 +34,16 @@ export default function Register({ passwordRules }: Props) {
 
                         <div className="grid gap-5">
                             {/* Sección: Equipo / Inmobiliaria */}
-                            <div className="rounded-lg border border-border/80 bg-card/60 p-4 space-y-3 shadow-xs">
-                                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                            <div className="space-y-3 rounded-lg border border-border/80 bg-card/60 p-4 shadow-xs">
+                                <div className="flex items-center gap-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                     <Building2 className="h-3.5 w-3.5 text-primary" />
                                     <span>Tu Inmobiliaria o Equipo</span>
                                 </div>
                                 <div className="grid gap-1.5">
-                                    <Label htmlFor="equipo.nombre" className="text-sm font-medium">
+                                    <Label
+                                        htmlFor="equipo.nombre"
+                                        className="text-sm font-medium"
+                                    >
                                         Nombre del equipo / agencia
                                     </Label>
                                     <Input
@@ -61,35 +64,68 @@ export default function Register({ passwordRules }: Props) {
                             </div>
 
                             {/* Sección: Datos Personales */}
-                            <div className="rounded-lg border border-border/80 bg-card/60 p-4 space-y-3.5 shadow-xs">
-                                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                            <div className="space-y-3.5 rounded-lg border border-border/80 bg-card/60 p-4 shadow-xs">
+                                <div className="flex items-center gap-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                     <User className="h-3.5 w-3.5 text-primary" />
                                     <span>Datos del Administrador</span>
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
-                                    <div className="grid gap-1.5">
-                                        <Label htmlFor="name" className="text-sm font-medium">
-                                            Nombre completo
-                                        </Label>
-                                        <Input
-                                            id="name"
-                                            type="text"
-                                            required
-                                            tabIndex={2}
-                                            autoComplete="name"
-                                            name="name"
-                                            placeholder="Tu nombre y apellido"
-                                            className="h-10"
-                                        />
-                                        <InputError
-                                            message={errors.name}
-                                            className="mt-1"
-                                        />
+                                    <div className="grid gap-1.5 sm:col-span-2">
+                                        <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
+                                            <div className="grid gap-1.5">
+                                                <Label
+                                                    htmlFor="nombres"
+                                                    className="text-sm font-medium"
+                                                >
+                                                    Nombres
+                                                </Label>
+                                                <Input
+                                                    id="nombres"
+                                                    type="text"
+                                                    required
+                                                    tabIndex={2}
+                                                    autoComplete="given-name"
+                                                    name="nombres"
+                                                    placeholder="Tus nombres"
+                                                    className="h-10"
+                                                />
+                                                <InputError
+                                                    message={errors.nombres}
+                                                    className="mt-1"
+                                                />
+                                            </div>
+
+                                            <div className="grid gap-1.5">
+                                                <Label
+                                                    htmlFor="apellidos"
+                                                    className="text-sm font-medium"
+                                                >
+                                                    Apellidos
+                                                </Label>
+                                                <Input
+                                                    id="apellidos"
+                                                    type="text"
+                                                    required
+                                                    tabIndex={3}
+                                                    autoComplete="family-name"
+                                                    name="apellidos"
+                                                    placeholder="Tus apellidos"
+                                                    className="h-10"
+                                                />
+                                                <InputError
+                                                    message={errors.apellidos}
+                                                    className="mt-1"
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div className="grid gap-1.5">
-                                        <Label htmlFor="telefono" className="text-sm font-medium">
+                                        <Label
+                                            htmlFor="telefono"
+                                            className="text-sm font-medium"
+                                        >
                                             Celular / WhatsApp
                                         </Label>
                                         <Input
@@ -110,7 +146,10 @@ export default function Register({ passwordRules }: Props) {
                                 </div>
 
                                 <div className="grid gap-1.5">
-                                    <Label htmlFor="email" className="text-sm font-medium">
+                                    <Label
+                                        htmlFor="email"
+                                        className="text-sm font-medium"
+                                    >
                                         Correo electrónico
                                     </Label>
                                     <Input
@@ -123,20 +162,26 @@ export default function Register({ passwordRules }: Props) {
                                         placeholder="correo@ejemplo.com"
                                         className="h-10"
                                     />
-                                    <InputError message={errors.email} className="mt-1" />
+                                    <InputError
+                                        message={errors.email}
+                                        className="mt-1"
+                                    />
                                 </div>
                             </div>
 
                             {/* Sección: Seguridad */}
-                            <div className="rounded-lg border border-border/80 bg-card/60 p-4 space-y-3.5 shadow-xs">
-                                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                            <div className="space-y-3.5 rounded-lg border border-border/80 bg-card/60 p-4 shadow-xs">
+                                <div className="flex items-center gap-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                     <Lock className="h-3.5 w-3.5 text-primary" />
                                     <span>Seguridad</span>
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
                                     <div className="grid gap-1.5">
-                                        <Label htmlFor="password" className="text-sm font-medium">
+                                        <Label
+                                            htmlFor="password"
+                                            className="text-sm font-medium"
+                                        >
                                             Contraseña
                                         </Label>
                                         <PasswordInput
@@ -149,11 +194,17 @@ export default function Register({ passwordRules }: Props) {
                                             passwordrules={passwordRules}
                                             className="h-10"
                                         />
-                                        <InputError message={errors.password} className="mt-1" />
+                                        <InputError
+                                            message={errors.password}
+                                            className="mt-1"
+                                        />
                                     </div>
 
                                     <div className="grid gap-1.5">
-                                        <Label htmlFor="password_confirmation" className="text-sm font-medium">
+                                        <Label
+                                            htmlFor="password_confirmation"
+                                            className="text-sm font-medium"
+                                        >
                                             Confirmar contraseña
                                         </Label>
                                         <PasswordInput
@@ -167,7 +218,9 @@ export default function Register({ passwordRules }: Props) {
                                             className="h-10"
                                         />
                                         <InputError
-                                            message={errors.password_confirmation}
+                                            message={
+                                                errors.password_confirmation
+                                            }
                                             className="mt-1"
                                         />
                                     </div>
@@ -188,7 +241,11 @@ export default function Register({ passwordRules }: Props) {
 
                         <div className="pt-1 text-center text-sm text-muted-foreground">
                             ¿Ya tienes una cuenta registrada?{' '}
-                            <TextLink href={login()} tabIndex={8} className="font-semibold text-primary underline-offset-4 hover:underline">
+                            <TextLink
+                                href={login()}
+                                tabIndex={8}
+                                className="font-semibold text-primary underline-offset-4 hover:underline"
+                            >
                                 Inicia sesión
                             </TextLink>
                         </div>

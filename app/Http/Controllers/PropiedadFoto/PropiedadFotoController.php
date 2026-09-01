@@ -43,10 +43,9 @@ class PropiedadFotoController extends Controller
 
         abort_unless($foto->propiedad_id === $propiedad->id, 404);
 
-        $disk = Storage::disk('public');
-        $disk->delete([
-            str_replace($disk->url(''), '', $foto->url),
-            str_replace($disk->url(''), '', $foto->url_con_marca_agua),
+        Storage::disk('public')->delete([
+            $foto->rutaOriginal(),
+            $foto->rutaMarcaAgua(),
         ]);
 
         $foto->delete();

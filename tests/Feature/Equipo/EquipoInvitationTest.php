@@ -42,7 +42,8 @@ class EquipoInvitationTest extends TestCase
         parse_str(parse_url($url, PHP_URL_QUERY), $query);
 
         $response = $this->post(route('register.store'), [
-            'name' => 'New Agente',
+            'nombres' => 'New',
+            'apellidos' => 'Agente',
             'email' => 'agente@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
@@ -68,7 +69,8 @@ class EquipoInvitationTest extends TestCase
         $equipo = Equipo::factory()->create();
 
         $response = $this->post(route('register.store'), [
-            'name' => 'New Agente',
+            'nombres' => 'New',
+            'apellidos' => 'Agente',
             'email' => 'agente@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
@@ -91,7 +93,8 @@ class EquipoInvitationTest extends TestCase
         parse_str(parse_url($url, PHP_URL_QUERY), $query);
 
         $response = $this->post(route('register.store'), [
-            'name' => 'New Agente',
+            'nombres' => 'New',
+            'apellidos' => 'Agente',
             'email' => 'agente@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',

@@ -22,7 +22,8 @@ class ClienteFactory extends Factory
     {
         return [
             'equipo_id' => Equipo::factory(),
-            'nombre' => fake()->name(),
+            'nombres' => fake()->firstName(),
+            'apellidos' => fake()->lastName(),
             'telefono' => fake()->unique()->numerify('+504########'),
             'estado' => EstadoCliente::Nuevo,
             'agente_registro_id' => User::factory(),

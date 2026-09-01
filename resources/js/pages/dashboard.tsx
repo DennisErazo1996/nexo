@@ -2,9 +2,9 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import {
     Building2,
     Calendar,
-    Clock,
     DollarSign,
     Plus,
+    Route,
     Sparkles,
     Users,
 } from 'lucide-react';
@@ -25,6 +25,7 @@ import { dashboard } from '@/routes';
 import { index as indexClientes } from '@/routes/clientes';
 import { index as indexCoincidencias } from '@/routes/coincidencias';
 import { index as indexPropiedades } from '@/routes/propiedades';
+import { index as indexSeguimientos } from '@/routes/seguimientos';
 import type { Auth } from '@/types';
 import type { DashboardProps } from '@/types/dashboard';
 
@@ -177,34 +178,24 @@ export default function Dashboard({
                     />
 
                     <StatCard
-                        title="Sin Seguimiento"
-                        value={stats.clientes.sin_seguimiento}
+                        title="En seguimiento"
+                        value={stats.clientes.en_seguimiento}
                         description={
-                            stats.clientes.sin_seguimiento > 0
-                                ? 'Dale seguimiento a tus clientes'
-                                : 'No hay clientes pendientes'
+                            stats.clientes.en_seguimiento > 0
+                                ? 'Clientes con coincidencias activas'
+                                : 'Sin clientes en seguimiento'
                         }
-                        icon={Clock}
-                        iconColor={
-                            stats.clientes.sin_seguimiento > 0
-                                ? 'text-rose-600 dark:text-rose-400'
-                                : 'text-emerald-600 dark:text-emerald-400'
-                        }
-                        iconBg={
-                            stats.clientes.sin_seguimiento > 0
-                                ? 'bg-rose-500/10 dark:bg-rose-500/15'
-                                : 'bg-emerald-500/10 dark:bg-emerald-500/15'
-                        }
-                        href={`${indexClientes().url}?sin_seguimiento=1`}
+                        icon={Route}
+                        iconColor="text-indigo-600 dark:text-indigo-400"
+                        iconBg="bg-indigo-500/10 dark:bg-indigo-500/15"
+                        href={indexSeguimientos().url}
                         badge={{
                             text:
-                                stats.clientes.sin_seguimiento > 0
-                                    ? 'Urgente'
+                                stats.clientes.en_seguimiento > 0
+                                    ? `${stats.clientes.en_seguimiento} activos`
                                     : 'Al día',
                             className:
-                                stats.clientes.sin_seguimiento > 0
-                                    ? 'bg-rose-500/10 text-rose-700 dark:text-rose-400'
-                                    : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400',
+                                'bg-indigo-500/10 text-indigo-700 dark:text-indigo-400',
                         }}
                     />
 

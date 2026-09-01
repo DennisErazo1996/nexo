@@ -16,17 +16,28 @@ trait ProfileValidationRules
     protected function profileRules(?int $userId = null): array
     {
         return [
-            'name' => $this->nameRules(),
+            'nombres' => $this->nombresRules(),
+            'apellidos' => $this->apellidosRules(),
             'email' => $this->emailRules($userId),
         ];
     }
 
     /**
-     * Get the validation rules used to validate user names.
+     * Get the validation rules used to validate user nombres.
      *
      * @return array<int, ValidationRule|array<mixed>|string>
      */
-    protected function nameRules(): array
+    protected function nombresRules(): array
+    {
+        return ['required', 'string', 'max:255'];
+    }
+
+    /**
+     * Get the validation rules used to validate user apellidos.
+     *
+     * @return array<int, ValidationRule|array<mixed>|string>
+     */
+    protected function apellidosRules(): array
     {
         return ['required', 'string', 'max:255'];
     }

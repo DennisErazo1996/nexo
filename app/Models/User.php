@@ -7,6 +7,7 @@ use App\Enums\Rol;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -20,7 +21,8 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 /**
  * @property int $id
  * @property int $equipo_id
- * @property string $name
+ * @property string $nombres
+ * @property string $apellidos
  * @property string $email
  * @property string|null $telefono
  * @property Rol $rol
@@ -33,13 +35,33 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Equipo $equipo
+ * @property-read string $name
  */
-#[Fillable(['name', 'email', 'password', 'equipo_id', 'telefono', 'rol'])]
+#[Fillable(['nombres', 'apellidos', 'email', 'password', 'equipo_id', 'telefono', 'rol'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements PasskeyUser
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array<int, string>
+     */
+    protected $appends = [
+        'name',
+    ];
+
+    /**
+     * Get the user's full name.
+     */
+    protected function name(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => trim(($this->nombres ?? '').' '.($this->apellidos ?? '')),
+        );
+    }
 
     /**
      * Get the equipo this user belongs to.

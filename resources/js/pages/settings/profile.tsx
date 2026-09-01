@@ -46,23 +46,39 @@ export default function Profile({
                 >
                     {({ processing, errors }) => (
                         <>
-                            <div className="grid gap-2">
-                                <Label htmlFor="name">Nombre</Label>
-
-                                <Input
-                                    id="name"
-                                    className="mt-1 block w-full"
-                                    defaultValue={auth.user.name}
-                                    name="name"
-                                    required
-                                    autoComplete="name"
-                                    placeholder="Nombre completo"
-                                />
-
-                                <InputError
-                                    className="mt-2"
-                                    message={errors.name}
-                                />
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="nombres">Nombres</Label>
+                                    <Input
+                                        id="nombres"
+                                        className="mt-1 block w-full"
+                                        defaultValue={auth.user.nombres}
+                                        name="nombres"
+                                        required
+                                        autoComplete="given-name"
+                                        placeholder="Tus nombres"
+                                    />
+                                    <InputError
+                                        className="mt-2"
+                                        message={errors.nombres}
+                                    />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="apellidos">Apellidos</Label>
+                                    <Input
+                                        id="apellidos"
+                                        className="mt-1 block w-full"
+                                        defaultValue={auth.user.apellidos}
+                                        name="apellidos"
+                                        required
+                                        autoComplete="family-name"
+                                        placeholder="Tus apellidos"
+                                    />
+                                    <InputError
+                                        className="mt-2"
+                                        message={errors.apellidos}
+                                    />
+                                </div>
                             </div>
 
                             <div className="grid gap-2">

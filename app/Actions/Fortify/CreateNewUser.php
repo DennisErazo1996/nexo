@@ -48,7 +48,8 @@ class CreateNewUser implements CreatesNewUsers
             $equipo = Equipo::create(['nombre' => $input['equipo']['nombre']]);
 
             return User::create([
-                'name' => $input['name'],
+                'nombres' => $input['nombres'],
+                'apellidos' => $input['apellidos'],
                 'email' => $input['email'],
                 'password' => $input['password'],
                 'telefono' => $input['telefono'],
@@ -81,7 +82,8 @@ class CreateNewUser implements CreatesNewUsers
         }
 
         return User::create([
-            'name' => $input['name'],
+            'nombres' => $input['nombres'],
+            'apellidos' => $input['apellidos'],
             'email' => $input['email'],
             'password' => $input['password'],
             'telefono' => $input['telefono'],

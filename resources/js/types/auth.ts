@@ -1,6 +1,8 @@
 export type User = {
     id: number;
     equipo_id: number;
+    nombres: string;
+    apellidos: string;
     name: string;
     email: string;
     telefono: string | null;

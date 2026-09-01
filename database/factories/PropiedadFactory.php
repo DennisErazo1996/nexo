@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Enums\EstadoPropiedad;
 use App\Enums\FormaPago;
 use App\Enums\Moneda;
+use App\Enums\Municipio;
 use App\Enums\TipoPropiedad;
 use App\Enums\UnidadMedida;
 use App\Models\Equipo;
@@ -26,7 +27,7 @@ class PropiedadFactory extends Factory
         return [
             'equipo_id' => Equipo::factory(),
             'tipo' => fake()->randomElement(TipoPropiedad::cases()),
-            'zona' => fake()->city(),
+            'zona' => fake()->randomElement(Municipio::cases())->value,
             'area_terreno' => fake()->randomFloat(2, 1, 500),
             'area_construccion' => null,
             'unidad_medida' => fake()->randomElement(UnidadMedida::cases()),
@@ -38,6 +39,20 @@ class PropiedadFactory extends Factory
             'descripcion' => fake()->paragraph(),
             'estado' => EstadoPropiedad::Disponible,
         ];
+    }
+
+    /**
+     * Indicate that the propiedad is a vehículo (carro), which omits the
+     * land-specific fields área de terreno and unidad de medida.
+     */
+    public function carro(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'tipo' => TipoPropiedad::Carro,
+            'area_terreno' => null,
+            'area_construccion' => null,
+            'unidad_medida' => null,
+        ]);
     }
 
     /**

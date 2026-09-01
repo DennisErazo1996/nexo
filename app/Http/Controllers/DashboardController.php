@@ -53,6 +53,13 @@ class DashboardController extends Controller
             $query->where('created_at', '>=', now()->subDays(self::DIAS_SIN_SEGUIMIENTO));
         })->count();
 
+        $clientesEnSeguimientoCount = Cliente::whereHas('coincidencias', function ($query): void {
+            $query->whereNotIn('estado', [
+                EstadoCoincidencia::Cerrado->value,
+                EstadoCoincidencia::Descartado->value,
+            ]);
+        })->count();
+
         // 3. Estadísticas de Coincidencias
         $coincidenciasPendientesCount = Coincidencia::where('estado', EstadoCoincidencia::Pendiente)->count();
         $coincidenciasNotificadasCount = Coincidencia::where('estado', EstadoCoincidencia::Notificado)->count();
@@ -123,10 +130,10 @@ class DashboardController extends Controller
         $coincidenciasRecientes = Coincidencia::query()
             ->where('estado', EstadoCoincidencia::Pendiente)
             ->with([
-                'cliente:id,nombre,telefono,estado,agente_registro_id',
-                'cliente.agenteRegistro:id,name',
+                'cliente:id,nombres,apellidos,telefono,estado,agente_registro_id',
+                'cliente.agenteRegistro:id,nombres,apellidos',
                 'propiedad:id,tipo,zona,precio,moneda,estado',
-                'propiedad.agentes.agente:id,name',
+                'propiedad.agentes.agente:id,nombres,apellidos',
                 'propiedad.fotos' => fn ($query) => $query->limit(1),
             ])
             ->orderByDesc('created_at')
@@ -135,7 +142,7 @@ class DashboardController extends Controller
 
         // 8. Clientes que Requieren Atención (sin notas recientes)
         $clientesAtencion = Cliente::query()
-            ->with('agenteRegistro:id,name')
+            ->with('agenteRegistro:id,nombres,apellidos')
             ->withMax('notas', 'created_at')
             ->whereDoesntHave('notas', function ($query): void {
                 $query->where('created_at', '>=', now()->subDays(self::DIAS_SIN_SEGUIMIENTO));
@@ -155,8 +162,8 @@ class DashboardController extends Controller
         $actividadReciente = NotaSeguimiento::query()
             ->whereHas('cliente')
             ->with([
-                'agente:id,name',
-                'cliente:id,nombre',
+                'agente:id,nombres,apellidos',
+                'cliente:id,nombres,apellidos',
             ])
             ->orderByDesc('created_at')
             ->limit(6)
@@ -166,8 +173,9 @@ class DashboardController extends Controller
         $agentesEquipo = User::query()
             ->where('equipo_id', $equipoId)
             ->withCount(['clientesRegistrados', 'propiedadAgentes'])
-            ->orderBy('name')
-            ->get(['id', 'name', 'email', 'telefono', 'rol']);
+            ->orderBy('nombres')
+            ->orderBy('apellidos')
+            ->get(['id', 'nombres', 'apellidos', 'email', 'telefono', 'rol']);
 
         return Inertia::render('dashboard', [
             'stats' => [
@@ -185,6 +193,7 @@ class DashboardController extends Controller
                     'cerrados' => $clientesCerrados,
                     'perdidos' => $clientesPerdidos,
                     'sin_seguimiento' => $clientesSinSeguimientoCount,
+                    'en_seguimiento' => $clientesEnSeguimientoCount,
                 ],
                 'coincidencias' => [
                     'pendientes' => $coincidenciasPendientesCount,
