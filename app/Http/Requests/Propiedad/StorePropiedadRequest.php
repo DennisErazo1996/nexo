@@ -48,6 +48,7 @@ class StorePropiedadRequest extends FormRequest
             'agentes.*' => $this->agenteIdRules(),
             'fotos' => $this->fotosRules(),
             'fotos.*' => $this->fotoRules(),
+            'aplicar_marca_agua' => ['boolean'],
         ];
     }
 

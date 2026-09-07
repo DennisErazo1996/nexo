@@ -655,6 +655,13 @@ export default function PropiedadCreate({
                                         />
                                     </label>
 
+                                    <div className="flex justify-center mt-3">
+                                        <label className="flex items-center gap-2 text-sm text-muted-foreground">
+                                            <input type="checkbox" name="aplicar_marca_agua" value="1" defaultChecked className="rounded border-gray-300 text-primary shadow-xs focus:border-primary focus:ring focus:ring-primary/20 focus:ring-opacity-50" />
+                                            Aplicar marca de agua (Logo del perfil)
+                                        </label>
+                                    </div>
+
                                     <InputError message={errors.fotos} />
                                     {Object.entries(errors)
                                         .filter(([key]) =>

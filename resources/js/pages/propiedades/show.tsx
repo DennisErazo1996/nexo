@@ -271,8 +271,9 @@ export default function PropiedadShow({
             if (resultado === 'unsupported') {
                 toast.error('Este navegador no puede compartir estas fotos');
             }
-        } catch {
-            toast.error('No se pudieron compartir las fotos');
+        } catch (err: any) {
+            console.error('Share error:', err);
+            toast.error(`Error: ${err?.message || 'No se pudieron compartir las fotos'}`);
         } finally {
             setIsSharingFotos(false);
         }
@@ -1566,23 +1567,29 @@ export default function PropiedadShow({
                                     {({ processing, errors }) => (
                                         <div className="space-y-3">
                                             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                                                <label className="relative flex cursor-pointer items-center gap-2 rounded-lg border border-input bg-background px-3 py-2 text-xs font-medium shadow-2xs transition-colors hover:bg-accent hover:text-accent-foreground">
-                                                    <Upload className="size-3.5 text-muted-foreground" />
-                                                    <span>
-                                                        {fotos.length > 0
-                                                            ? `${fotos.length} foto(s) seleccionada(s)`
-                                                            : 'Seleccionar fotos...'}
-                                                    </span>
-                                                    <input
-                                                        ref={fotosInputRef}
-                                                        name="fotos[]"
-                                                        type="file"
-                                                        multiple
-                                                        accept="image/*"
-                                                        className="sr-only"
-                                                        onChange={onFotosChange}
-                                                    />
-                                                </label>
+                                                <div className="flex flex-col gap-3">
+                                                    <label className="relative flex cursor-pointer items-center gap-2 rounded-lg border border-input bg-background px-3 py-2 text-xs font-medium shadow-2xs transition-colors hover:bg-accent hover:text-accent-foreground">
+                                                        <Upload className="size-3.5 text-muted-foreground" />
+                                                        <span>
+                                                            {fotos.length > 0
+                                                                ? `${fotos.length} foto(s) seleccionada(s)`
+                                                                : 'Seleccionar fotos...'}
+                                                        </span>
+                                                        <input
+                                                            ref={fotosInputRef}
+                                                            name="fotos[]"
+                                                            type="file"
+                                                            multiple
+                                                            accept="image/*"
+                                                            className="sr-only"
+                                                            onChange={onFotosChange}
+                                                        />
+                                                    </label>
+                                                    <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                                                        <input type="checkbox" name="aplicar_marca_agua" value="1" defaultChecked className="rounded border-gray-300 text-primary shadow-xs focus:border-primary focus:ring focus:ring-primary/20 focus:ring-opacity-50" />
+                                                        Aplicar marca de agua (Logo del perfil)
+                                                    </label>
+                                                </div>
 
                                                 <Button
                                                     type="submit"

@@ -45,14 +45,22 @@ class PropiedadFoto extends Model
      */
     public function rutaOriginal(): string
     {
-        return Str::after($this->url, '/storage/');
+        if (Str::contains($this->url, '/storage/')) {
+            return Str::after($this->url, '/storage/');
+        }
+        
+        return ltrim(parse_url($this->url, PHP_URL_PATH) ?? '', '/');
     }
 
     /**
-     * Path of the watermarked file relative to the public disk root.
+     * Path of the watermarked file relative to the disk root.
      */
     public function rutaMarcaAgua(): string
     {
-        return Str::after($this->url_con_marca_agua, '/storage/');
+        if (Str::contains($this->url_con_marca_agua, '/storage/')) {
+            return Str::after($this->url_con_marca_agua, '/storage/');
+        }
+        
+        return ltrim(parse_url($this->url_con_marca_agua, PHP_URL_PATH) ?? '', '/');
     }
 }

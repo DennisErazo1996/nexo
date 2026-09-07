@@ -22,7 +22,7 @@ class PropiedadFotoController extends Controller
         $siguienteOrden = $propiedad->fotos()->max('orden') + 1;
 
         foreach ($request->file('fotos', []) as $index => $foto) {
-            $rutas = $procesarFoto->handle($foto, $propiedad->id);
+            $rutas = $procesarFoto->handle($foto, $propiedad->id, $request->boolean('aplicar_marca_agua', true));
 
             $propiedad->fotos()->create([...$rutas, 'orden' => $siguienteOrden + $index]);
         }
@@ -43,7 +43,7 @@ class PropiedadFotoController extends Controller
 
         abort_unless($foto->propiedad_id === $propiedad->id, 404);
 
-        Storage::disk('public')->delete([
+        Storage::delete([
             $foto->rutaOriginal(),
             $foto->rutaMarcaAgua(),
         ]);

@@ -26,7 +26,9 @@ export async function compartirFotosPropiedad(
 ): Promise<'shared' | 'cancelled' | 'unsupported'> {
     const archivos = await Promise.all(
         fotos.map(async (foto, index) => {
-            const response = await fetch(foto.url_con_marca_agua);
+            const url = new URL(foto.url_con_marca_agua, window.location.origin);
+            url.searchParams.set('t', Date.now().toString());
+            const response = await fetch(url.toString());
             const blob = await response.blob();
             const extension = blob.type.split('/')[1] ?? 'jpg';
 

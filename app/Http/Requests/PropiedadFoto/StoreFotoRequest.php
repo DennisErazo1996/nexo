@@ -28,6 +28,7 @@ class StoreFotoRequest extends FormRequest
         return [
             'fotos' => ['required', 'array'],
             'fotos.*' => $this->fotoRules(),
+            'aplicar_marca_agua' => ['boolean'],
         ];
     }
 

@@ -26,6 +26,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property string $email
  * @property string|null $telefono
  * @property Rol $rol
+ * @property string|null $logo_marca_agua
  * @property Carbon|null $email_verified_at
  * @property string $password
  * @property string|null $two_factor_secret
@@ -36,8 +37,9 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property Carbon|null $updated_at
  * @property-read Equipo $equipo
  * @property-read string $name
+ * @property-read string|null $logo_marca_agua_url
  */
-#[Fillable(['nombres', 'apellidos', 'email', 'password', 'equipo_id', 'telefono', 'rol'])]
+#[Fillable(['nombres', 'apellidos', 'email', 'password', 'equipo_id', 'telefono', 'rol', 'logo_marca_agua'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements PasskeyUser
 {
@@ -51,6 +53,7 @@ class User extends Authenticatable implements PasskeyUser
      */
     protected $appends = [
         'name',
+        'logo_marca_agua_url',
     ];
 
     /**
@@ -60,6 +63,16 @@ class User extends Authenticatable implements PasskeyUser
     {
         return Attribute::make(
             get: fn () => trim(($this->nombres ?? '').' '.($this->apellidos ?? '')),
+        );
+    }
+
+    /**
+     * Get the user's logo URL.
+     */
+    protected function logoMarcaAguaUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->logo_marca_agua ? \Illuminate\Support\Facades\Storage::url($this->logo_marca_agua) : null,
         );
     }
 

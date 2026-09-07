@@ -148,7 +148,7 @@ class PropiedadController extends Controller
             }
 
             foreach ($request->file('fotos', []) as $orden => $foto) {
-                $rutas = $procesarFoto->handle($foto, $propiedad->id);
+                $rutas = $procesarFoto->handle($foto, $propiedad->id, $request->boolean('aplicar_marca_agua', true));
 
                 $propiedad->fotos()->create([...$rutas, 'orden' => $orden]);
             }
@@ -277,10 +277,8 @@ class PropiedadController extends Controller
      */
     public function destroy(DestroyPropiedadRequest $request, Propiedad $propiedad): RedirectResponse
     {
-        $disk = Storage::disk('public');
-
         foreach ($propiedad->fotos as $foto) {
-            $disk->delete([
+            Storage::delete([
                 $foto->rutaOriginal(),
                 $foto->rutaMarcaAgua(),
             ]);

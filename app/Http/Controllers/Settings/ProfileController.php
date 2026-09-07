@@ -30,13 +30,33 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $user->fill($request->safe()->except(['logo']));
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        if ($request->hasFile('logo')) {
+            if ($user->logo_marca_agua) {
+                \Illuminate\Support\Facades\Storage::delete($user->logo_marca_agua);
+            }
+            
+            $logoFile = $request->file('logo');
+            // Increase memory limit in case they upload a huge logo
+            ini_set('memory_limit', '512M');
+            
+            $image = \Intervention\Image\Laravel\Facades\Image::decode($logoFile)
+                ->scaleDown(width: 300); // 300px width max for logos
+                
+            $encoded = $image->encodeUsingFileExtension($logoFile->getClientOriginalExtension());
+            $path = 'logos/' . \Illuminate\Support\Str::random(40) . '.' . $logoFile->getClientOriginalExtension();
+            \Illuminate\Support\Facades\Storage::put($path, (string) $encoded);
+            
+            $user->logo_marca_agua = $path;
+        }
+
+        $user->save();
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Profile updated.')]);
 

@@ -103,6 +103,31 @@ export default function Profile({
                                 />
                             </div>
 
+                            <div className="grid gap-2">
+                                <Label htmlFor="logo">
+                                    Logo para Marca de Agua
+                                </Label>
+
+                                {auth.user.logo_marca_agua_url && (
+                                    <div className="mt-2 mb-2">
+                                        <img src={auth.user.logo_marca_agua_url} alt="Logo" className="h-16 w-auto object-contain" />
+                                    </div>
+                                )}
+
+                                <Input
+                                    id="logo"
+                                    type="file"
+                                    className="mt-1 block w-full"
+                                    name="logo"
+                                    accept="image/*"
+                                />
+
+                                <InputError
+                                    className="mt-2"
+                                    message={errors.logo as string}
+                                />
+                            </div>
+
                             {mustVerifyEmail &&
                                 auth.user.email_verified_at === null && (
                                     <div>

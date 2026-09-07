@@ -19,6 +19,7 @@ trait ProfileValidationRules
             'nombres' => $this->nombresRules(),
             'apellidos' => $this->apellidosRules(),
             'email' => $this->emailRules($userId),
+            'logo' => ['nullable', 'image', 'max:2048'], // 2MB max
         ];
     }
 
