@@ -4,7 +4,6 @@ import {
     BadgeCheck,
     Building2,
     CheckCircle2,
-    ChevronRight,
     Clock,
     FileSpreadsheet,
     MessageSquare,
@@ -15,7 +14,7 @@ import {
     Users,
     Zap,
 } from 'lucide-react';
-import { dashboard, login, register } from '@/routes';
+import { dashboard, login } from '@/routes';
 
 export default function Welcome() {
     const { auth } = usePage().props;
@@ -75,21 +74,13 @@ export default function Welcome() {
                                     <ArrowRight className="h-4 w-4" />
                                 </Link>
                             ) : (
-                                <>
-                                    <Link
-                                        href={login()}
-                                        className="rounded-lg px-3.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-                                    >
-                                        Iniciar sesión
-                                    </Link>
-                                    <Link
-                                        href={register()}
-                                        className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-xs transition-all hover:bg-primary/90 hover:shadow-md"
-                                    >
-                                        <span>Registrar mi equipo</span>
-                                        <ChevronRight className="h-4 w-4" />
-                                    </Link>
-                                </>
+                                <Link
+                                    href={login()}
+                                    className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-xs transition-all hover:bg-primary/90 hover:shadow-md"
+                                >
+                                    <span>Iniciar sesión</span>
+                                    <ArrowRight className="h-4 w-4" />
+                                </Link>
                             )}
                         </div>
                     </div>
@@ -526,11 +517,13 @@ export default function Welcome() {
                                             href={
                                                 auth.user
                                                     ? dashboard()
-                                                    : register()
+                                                    : login()
                                             }
                                             className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
                                         >
-                                            Probar con tu propio inventario{' '}
+                                            {auth.user
+                                                ? 'Ir a tu panel'
+                                                : 'Acceder al sistema'}{' '}
                                             <ArrowRight className="h-3 w-3" />
                                         </Link>
                                     </div>
@@ -687,24 +680,16 @@ export default function Welcome() {
                             </p>
                             <div className="flex flex-col items-center justify-center gap-3 pt-2 sm:flex-row">
                                 <Link
-                                    href={auth.user ? dashboard() : register()}
+                                    href={auth.user ? dashboard() : login()}
                                     className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#a3bd31] px-6 py-3.5 text-sm font-bold text-[#1A2B44] shadow-md transition-all hover:scale-[1.02] hover:bg-[#a3bd31]/90 sm:w-auto"
                                 >
                                     <span>
                                         {auth.user
                                             ? 'Ir a mi panel'
-                                            : 'Crear mi equipo gratis'}
+                                            : 'Iniciar sesión'}
                                     </span>
                                     <ArrowRight className="h-4 w-4" />
                                 </Link>
-                                {!auth.user && (
-                                    <Link
-                                        href={login()}
-                                        className="inline-flex w-full items-center justify-center rounded-xl border border-white/20 px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-white/10 sm:w-auto"
-                                    >
-                                        Ya tengo cuenta
-                                    </Link>
-                                )}
                             </div>
                         </div>
                     </section>
@@ -735,12 +720,6 @@ export default function Welcome() {
                                 className="transition-colors hover:text-foreground"
                             >
                                 Iniciar sesión
-                            </Link>
-                            <Link
-                                href={register()}
-                                className="transition-colors hover:text-foreground"
-                            >
-                                Registrar equipo
                             </Link>
                         </div>
                     </div>

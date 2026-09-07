@@ -1,13 +1,11 @@
 import { Form, Head } from '@inertiajs/react';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
-import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
-import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
 
@@ -110,17 +108,6 @@ export default function Login({ status, canResetPassword }: Props) {
                                 {processing && <Spinner className="mr-2" />}
                                 Iniciar sesión
                             </Button>
-                        </div>
-
-                        <div className="pt-2 text-center text-sm text-muted-foreground">
-                            ¿No tienes cuenta?{' '}
-                            <TextLink
-                                href={register()}
-                                tabIndex={6}
-                                className="font-semibold text-primary underline-offset-4 hover:underline"
-                            >
-                                Regístrate aquí
-                            </TextLink>
                         </div>
                     </>
                 )}
