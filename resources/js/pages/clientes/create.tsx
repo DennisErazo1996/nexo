@@ -42,15 +42,15 @@ export default function ClienteCreate({ step, telefono, etiquetas, municipios }:
         <>
             <Head title="Nuevo cliente — Registro en el Equipo" />
 
-            <div className="mx-auto max-w-2xl space-y-6 p-4 md:p-6 lg:p-8">
+            <div className="mx-auto w-full max-w-2xl min-w-0 space-y-6 px-4 py-6 sm:px-6 md:p-6 lg:p-8">
                 {/* Header */}
-                <div className="flex flex-col gap-4 rounded-2xl border border-border/70 bg-card p-6 shadow-xs sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex items-center gap-4">
+                <div className="flex flex-col gap-4 rounded-2xl border border-border/70 bg-card p-4 shadow-xs sm:flex-row sm:items-center sm:justify-between sm:p-6">
+                    <div className="flex items-center gap-4 min-w-0">
                         <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 text-primary shadow-xs">
                             <UserPlus className="size-6" />
                         </div>
-                        <div className="space-y-1">
-                            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                        <div className="space-y-1 min-w-0">
+                            <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
                                 Registrar Nuevo Cliente
                             </h1>
                             <p className="text-xs text-muted-foreground">
@@ -60,54 +60,54 @@ export default function ClienteCreate({ step, telefono, etiquetas, municipios }:
                         </div>
                     </div>
 
-                    <Button asChild variant="outline" size="sm">
+                    <Button asChild variant="outline" size="sm" className="w-full sm:w-auto">
                         <Link href={index()}>Cancelar</Link>
                     </Button>
                 </div>
 
                 {/* Stepper Indicator */}
-                <div className="flex items-center justify-center gap-3">
+                <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
                     <div
                         className={cn(
-                            'flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors',
+                            'flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors sm:gap-2 sm:px-3.5',
                             step === 'telefono'
                                 ? 'bg-primary text-primary-foreground shadow-xs'
                                 : 'bg-muted text-muted-foreground',
                         )}
                     >
-                        <span className="flex size-5 items-center justify-center rounded-full bg-background/20 text-[11px]">
+                        <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-background/20 text-[11px]">
                             1
                         </span>
-                        <span>Verificación de Teléfono</span>
+                        <span className="truncate">Verificación de Teléfono</span>
                     </div>
 
-                    <div className="h-0.5 w-6 bg-border" />
+                    <div className="hidden h-0.5 w-6 bg-border sm:block" />
 
                     <div
                         className={cn(
-                            'flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors',
+                            'flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-colors sm:gap-2 sm:px-3.5',
                             step === 'datos'
                                 ? 'bg-primary text-primary-foreground shadow-xs'
                                 : 'bg-muted text-muted-foreground',
                         )}
                     >
-                        <span className="flex size-5 items-center justify-center rounded-full bg-background/20 text-[11px]">
+                        <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-background/20 text-[11px]">
                             2
                         </span>
-                        <span>Datos & Preferencias</span>
+                        <span className="truncate">Datos & Preferencias</span>
                     </div>
                 </div>
 
                 {/* Step 1: Telefono Verification */}
                 {step === 'telefono' && (
-                    <Card className="shadow-2xs">
-                        <CardHeader className="pb-3">
-                            <div className="flex items-center gap-2">
-                                <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <Card className="w-full min-w-0 shadow-2xs">
+                        <CardHeader className="px-4 pt-5 pb-3 sm:px-6">
+                            <div className="flex items-center gap-2 min-w-0">
+                                <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                                     <ShieldCheck className="size-4" />
                                 </div>
-                                <div>
-                                    <CardTitle className="text-base font-semibold">
+                                <div className="min-w-0">
+                                    <CardTitle className="text-base font-semibold truncate">
                                         Paso 1: Verificación de Contacto
                                     </CardTitle>
                                     <CardDescription className="text-xs">
@@ -118,7 +118,7 @@ export default function ClienteCreate({ step, telefono, etiquetas, municipios }:
                             </div>
                         </CardHeader>
 
-                        <CardContent className="space-y-4 pt-0">
+                        <CardContent className="space-y-4 px-4 pt-0 pb-5 sm:px-6">
                             <Form
                                 {...ClienteController.buscar.form()}
                                 className="space-y-4"
@@ -141,7 +141,7 @@ export default function ClienteCreate({ step, telefono, etiquetas, municipios }:
                                                     required
                                                     autoFocus
                                                     placeholder="Ej. 9988-7766 o +1 234 567 8900"
-                                                    className="h-10 pl-9.5 text-sm"
+                                                    className="h-10 w-full pl-9.5 text-sm"
                                                 />
                                             </div>
                                             <p className="text-[11px] text-muted-foreground">
@@ -154,11 +154,12 @@ export default function ClienteCreate({ step, telefono, etiquetas, municipios }:
                                             />
                                         </div>
 
-                                        <div className="flex items-center justify-end gap-2 pt-2">
+                                        <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:items-center sm:justify-end">
                                             <Button
                                                 asChild
                                                 variant="outline"
                                                 size="sm"
+                                                className="w-full sm:w-auto"
                                             >
                                                 <Link href={index()}>
                                                     Cancelar
@@ -168,7 +169,7 @@ export default function ClienteCreate({ step, telefono, etiquetas, municipios }:
                                             <Button
                                                 type="submit"
                                                 disabled={processing}
-                                                className="gap-2"
+                                                className="w-full gap-2 sm:w-auto"
                                             >
                                                 <span>
                                                     {processing
@@ -200,14 +201,14 @@ export default function ClienteCreate({ step, telefono, etiquetas, municipios }:
                                 />
 
                                 {/* Phone Verified Badge Banner */}
-                                <div className="flex items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50/60 p-3.5 dark:border-emerald-900/60 dark:bg-emerald-950/30">
-                                    <div className="flex items-center gap-2.5">
-                                        <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400" />
-                                        <div>
-                                            <p className="text-xs font-semibold text-emerald-900 dark:text-emerald-300">
+                                <div className="flex flex-col gap-3 rounded-xl border border-emerald-200 bg-emerald-50/60 p-3.5 dark:border-emerald-900/60 dark:bg-emerald-950/30 sm:flex-row sm:items-center sm:justify-between">
+                                    <div className="flex items-center gap-2.5 min-w-0">
+                                        <CheckCircle2 className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                                        <div className="min-w-0">
+                                            <p className="text-xs font-semibold text-emerald-900 dark:text-emerald-300 truncate">
                                                 Teléfono Verificado Disponible
                                             </p>
-                                            <p className="font-mono text-xs text-emerald-700 dark:text-emerald-400">
+                                            <p className="font-mono text-xs text-emerald-700 dark:text-emerald-400 truncate">
                                                 {telefono}
                                             </p>
                                         </div>
@@ -217,7 +218,7 @@ export default function ClienteCreate({ step, telefono, etiquetas, municipios }:
                                         asChild
                                         variant="ghost"
                                         size="sm"
-                                        className="h-7 text-xs text-muted-foreground hover:text-foreground"
+                                        className="h-7 w-fit text-xs text-muted-foreground hover:text-foreground"
                                     >
                                         <Link href={ClienteController.create()}>
                                             Cambiar número
@@ -226,14 +227,14 @@ export default function ClienteCreate({ step, telefono, etiquetas, municipios }:
                                 </div>
 
                                 {/* Card 1: Contact Details */}
-                                <Card className="shadow-2xs">
-                                    <CardHeader className="pb-3">
-                                        <div className="flex items-center gap-2">
-                                            <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                <Card className="w-full min-w-0 shadow-2xs">
+                                    <CardHeader className="px-4 pt-5 pb-3 sm:px-6">
+                                        <div className="flex items-center gap-2 min-w-0">
+                                            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                                                 <User className="size-4" />
                                             </div>
-                                            <div>
-                                                <CardTitle className="text-base font-semibold">
+                                            <div className="min-w-0">
+                                                <CardTitle className="text-base font-semibold truncate">
                                                     Información del Cliente
                                                 </CardTitle>
                                                 <CardDescription className="text-xs">
@@ -244,9 +245,9 @@ export default function ClienteCreate({ step, telefono, etiquetas, municipios }:
                                         </div>
                                     </CardHeader>
 
-                                    <CardContent className="space-y-4 pt-0">
+                                    <CardContent className="space-y-4 px-4 pt-0 pb-5 sm:px-6">
                                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                            <div className="grid gap-2">
+                                            <div className="grid gap-2 min-w-0">
                                                 <Label
                                                     htmlFor="nombres"
                                                     className="text-xs font-semibold"
@@ -259,13 +260,13 @@ export default function ClienteCreate({ step, telefono, etiquetas, municipios }:
                                                     required
                                                     autoFocus
                                                     placeholder="Ej. Juan Carlos"
-                                                    className="h-10"
+                                                    className="h-10 w-full"
                                                 />
                                                 <InputError
                                                     message={errors.nombres}
                                                 />
                                             </div>
-                                            <div className="grid gap-2">
+                                            <div className="grid gap-2 min-w-0">
                                                 <Label
                                                     htmlFor="apellidos"
                                                     className="text-xs font-semibold"
@@ -277,7 +278,7 @@ export default function ClienteCreate({ step, telefono, etiquetas, municipios }:
                                                     name="apellidos"
                                                     required
                                                     placeholder="Ej. Pérez"
-                                                    className="h-10"
+                                                    className="h-10 w-full"
                                                 />
                                                 <InputError
                                                     message={errors.apellidos}
@@ -288,15 +289,15 @@ export default function ClienteCreate({ step, telefono, etiquetas, municipios }:
                                 </Card>
 
                                 {/* Card 2: Initial Search Interest */}
-                                <Card className="shadow-2xs">
-                                    <CardHeader className="pb-3">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <div className="flex size-8 items-center justify-center rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                                <Card className="w-full min-w-0 shadow-2xs">
+                                    <CardHeader className="px-4 pt-5 pb-3 sm:px-6">
+                                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                            <div className="flex items-center gap-2 min-w-0">
+                                                <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400">
                                                     <Tag className="size-4" />
                                                 </div>
-                                                <div>
-                                                    <CardTitle className="text-base font-semibold">
+                                                <div className="min-w-0">
+                                                    <CardTitle className="text-base font-semibold truncate">
                                                         Interés de Búsqueda
                                                         Inicial
                                                     </CardTitle>
@@ -310,7 +311,7 @@ export default function ClienteCreate({ step, telefono, etiquetas, municipios }:
 
                                             <Badge
                                                 variant="secondary"
-                                                className="gap-1 text-[11px]"
+                                                className="w-fit gap-1 text-[11px]"
                                             >
                                                 <Sparkles className="size-3 text-primary" />
                                                 Auto-Matching
@@ -318,9 +319,9 @@ export default function ClienteCreate({ step, telefono, etiquetas, municipios }:
                                         </div>
                                     </CardHeader>
 
-                                    <CardContent className="space-y-4 pt-0">
+                                    <CardContent className="space-y-4 px-4 pt-0 pb-5 sm:px-6">
                                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                            <div className="grid gap-2">
+                                            <div className="grid gap-2 min-w-0">
                                                 <Label
                                                     htmlFor="etiqueta_id"
                                                     className="text-xs font-semibold"
@@ -331,11 +332,11 @@ export default function ClienteCreate({ step, telefono, etiquetas, municipios }:
                                                     id="etiqueta_id"
                                                     name="etiqueta_id"
                                                     required
-                                                    className="h-9 rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
+                                                    className="h-9 w-full max-w-full rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
                                                 >
                                                     {etiquetas.map(
                                                         (etiqueta) => (
-                                                            <option
+                                                             <option
                                                                 key={
                                                                     etiqueta.id
                                                                 }
@@ -355,7 +356,7 @@ export default function ClienteCreate({ step, telefono, etiquetas, municipios }:
                                                 />
                                             </div>
 
-                                            <div className="grid gap-2">
+                                            <div className="grid gap-2 min-w-0">
                                                 <Label
                                                     htmlFor="zona"
                                                     className="text-xs font-semibold"
@@ -365,7 +366,7 @@ export default function ClienteCreate({ step, telefono, etiquetas, municipios }:
                                                 <select
                                                     id="zona"
                                                     name="zona"
-                                                    className="h-9 rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
+                                                    className="h-9 w-full max-w-full rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
                                                 >
                                                     <option value="">
                                                         Cualquier municipio (Sin
@@ -387,7 +388,7 @@ export default function ClienteCreate({ step, telefono, etiquetas, municipios }:
                                         </div>
 
                                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                            <div className="grid gap-2">
+                                            <div className="grid gap-2 min-w-0">
                                                 <Label
                                                     htmlFor="presupuesto_min"
                                                     className="text-xs font-semibold"
@@ -399,6 +400,7 @@ export default function ClienteCreate({ step, telefono, etiquetas, municipios }:
                                                     name="presupuesto_min"
                                                     type="number"
                                                     placeholder="0"
+                                                    className="w-full"
                                                 />
                                                 <InputError
                                                     message={
@@ -407,7 +409,7 @@ export default function ClienteCreate({ step, telefono, etiquetas, municipios }:
                                                 />
                                             </div>
 
-                                            <div className="grid gap-2">
+                                            <div className="grid gap-2 min-w-0">
                                                 <Label
                                                     htmlFor="presupuesto_max"
                                                     className="text-xs font-semibold"
@@ -419,6 +421,7 @@ export default function ClienteCreate({ step, telefono, etiquetas, municipios }:
                                                     name="presupuesto_max"
                                                     type="number"
                                                     placeholder="Sin límite"
+                                                    className="w-full"
                                                 />
                                                 <InputError
                                                     message={
@@ -431,8 +434,8 @@ export default function ClienteCreate({ step, telefono, etiquetas, municipios }:
                                 </Card>
 
                                 {/* Action Buttons */}
-                                <div className="flex items-center justify-between gap-3 pt-2">
-                                    <Button asChild variant="outline" size="sm">
+                                <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
+                                    <Button asChild variant="outline" size="sm" className="w-full sm:w-auto">
                                         <Link href={ClienteController.create()}>
                                             <ArrowLeft className="mr-1.5 size-4" />
                                             Volver
@@ -442,7 +445,7 @@ export default function ClienteCreate({ step, telefono, etiquetas, municipios }:
                                     <Button
                                         type="submit"
                                         disabled={processing}
-                                        className="gap-2 px-6"
+                                        className="w-full gap-2 px-6 sm:w-auto"
                                     >
                                         <Sparkles className="size-4" />
                                         {processing

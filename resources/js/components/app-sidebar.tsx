@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
+import { NavThemeToggle } from '@/components/nav-theme-toggle';
 import { NavUser } from '@/components/nav-user';
 import {
     Sidebar,
@@ -18,6 +19,7 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    useSidebar,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { index as indexClientes } from '@/routes/clientes';
@@ -61,13 +63,19 @@ const mainNavItems: NavItem[] = [
 ];
 
 export function AppSidebar() {
+    const { setOpenMobile } = useSidebar();
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
+                            <Link
+                                href={dashboard()}
+                                prefetch
+                                onClick={() => setOpenMobile(false)}
+                            >
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>
@@ -80,6 +88,9 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
+                <SidebarMenu>
+                    <NavThemeToggle />
+                </SidebarMenu>
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

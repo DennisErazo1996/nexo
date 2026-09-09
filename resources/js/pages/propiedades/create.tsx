@@ -112,15 +112,15 @@ export default function PropiedadCreate({
         <>
             <Head title="Nueva propiedad — Registrar Inmueble" />
 
-            <div className="mx-auto max-w-4xl space-y-6 p-4 md:p-6 lg:p-8">
+            <div className="mx-auto w-full max-w-4xl min-w-0 space-y-6 px-4 py-6 sm:px-6 md:p-6 lg:p-8">
                 {/* Header */}
-                <div className="flex flex-col gap-4 rounded-2xl border border-border/70 bg-card p-6 shadow-xs sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex items-center gap-4">
+                <div className="flex flex-col gap-4 rounded-2xl border border-border/70 bg-card p-4 shadow-xs sm:flex-row sm:items-center sm:justify-between sm:p-6">
+                    <div className="flex items-center gap-4 min-w-0">
                         <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 text-primary shadow-xs">
                             <Building2 className="size-6" />
                         </div>
-                        <div className="space-y-1">
-                            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                        <div className="space-y-1 min-w-0">
+                            <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
                                 Registrar Nueva Propiedad
                             </h1>
                             <p className="text-xs text-muted-foreground">
@@ -131,7 +131,7 @@ export default function PropiedadCreate({
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <Button asChild variant="outline" size="sm">
+                        <Button asChild variant="outline" size="sm" className="w-full sm:w-auto">
                             <Link href={index()}>Cancelar</Link>
                         </Button>
                     </div>
@@ -140,18 +140,18 @@ export default function PropiedadCreate({
                 {/* Form */}
                 <Form
                     {...PropiedadController.store.form()}
-                    className="space-y-6"
+                    className="w-full min-w-0 space-y-6"
                 >
                     {({ processing, errors }) => (
                         <>
                             {/* Card 1: Main details & Location */}
-                            <Card className="shadow-2xs">
-                                <CardHeader className="pb-3">
+                            <Card className="w-full min-w-0 shadow-2xs">
+                                <CardHeader className="px-4 pt-5 pb-3 sm:px-6">
                                     <div className="flex items-center gap-2">
-                                        <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                                             <MapPin className="size-4" />
                                         </div>
-                                        <div>
+                                        <div className="min-w-0">
                                             <CardTitle className="text-base font-semibold">
                                                 Datos Principales & Ubicación
                                             </CardTitle>
@@ -163,9 +163,9 @@ export default function PropiedadCreate({
                                     </div>
                                 </CardHeader>
 
-                                <CardContent className="space-y-4 pt-0">
+                                <CardContent className="space-y-4 px-4 pt-0 pb-5 sm:px-6">
                                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                        <div className="grid gap-2">
+                                        <div className="grid min-w-0 gap-2">
                                             <Label htmlFor="tipo">
                                                 Tipo de Propiedad *
                                             </Label>
@@ -177,7 +177,7 @@ export default function PropiedadCreate({
                                                 onChange={(event) =>
                                                     setTipo(event.target.value)
                                                 }
-                                                className="h-9 rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
+                                                className="h-9 w-full min-w-0 truncate rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
                                             >
                                                 {tipos.map((tipo) => (
                                                     <option
@@ -191,7 +191,7 @@ export default function PropiedadCreate({
                                             <InputError message={errors.tipo} />
                                         </div>
 
-                                        <div className="grid gap-2">
+                                        <div className="grid min-w-0 gap-2">
                                             <Label htmlFor="zona">
                                                 Municipio / Ubicación *
                                             </Label>
@@ -199,7 +199,7 @@ export default function PropiedadCreate({
                                                 id="zona"
                                                 name="zona"
                                                 required
-                                                className="h-9 rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
+                                                className="h-9 w-full min-w-0 truncate rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
                                             >
                                                 {municipios.map((m) => (
                                                     <option key={m.value} value={m.value}>
@@ -214,7 +214,7 @@ export default function PropiedadCreate({
                                     {!esCarro && (
                                         <>
                                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                                <div className="grid gap-2">
+                                                <div className="grid min-w-0 gap-2">
                                                     <Label htmlFor="area_terreno">
                                                         Área de Terreno *
                                                     </Label>
@@ -225,6 +225,7 @@ export default function PropiedadCreate({
                                                         step="0.01"
                                                         required
                                                         placeholder="Ej. 250.00"
+                                                        className="w-full min-w-0"
                                                     />
                                                     <InputError
                                                         message={
@@ -233,7 +234,7 @@ export default function PropiedadCreate({
                                                     />
                                                 </div>
 
-                                                <div className="grid gap-2">
+                                                <div className="grid min-w-0 gap-2">
                                                     <Label htmlFor="unidad_medida">
                                                         Unidad de Medida *
                                                     </Label>
@@ -241,7 +242,7 @@ export default function PropiedadCreate({
                                                         id="unidad_medida"
                                                         name="unidad_medida"
                                                         required
-                                                        className="h-9 rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
+                                                        className="h-9 w-full min-w-0 truncate rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
                                                     >
                                                         {unidadesMedida.map(
                                                             (unidad) => (
@@ -297,7 +298,7 @@ export default function PropiedadCreate({
                                                 </div>
 
                                                 {tieneConstruccion && (
-                                                    <div className="mt-3.5 grid gap-2 border-t border-border/50 pt-3.5">
+                                                    <div className="mt-3.5 grid min-w-0 gap-2 border-t border-border/50 pt-3.5">
                                                         <Label htmlFor="area_construccion">
                                                             Área de Construcción
                                                         </Label>
@@ -307,6 +308,7 @@ export default function PropiedadCreate({
                                                             type="number"
                                                             step="0.01"
                                                             placeholder="Ej. 120.00"
+                                                            className="w-full min-w-0"
                                                         />
                                                         <InputError
                                                             message={
@@ -322,13 +324,13 @@ export default function PropiedadCreate({
                             </Card>
 
                             {/* Card 2: Commercial & Legal conditions */}
-                            <Card className="shadow-2xs">
-                                <CardHeader className="pb-3">
+                            <Card className="w-full min-w-0 shadow-2xs">
+                                <CardHeader className="px-4 pt-5 pb-3 sm:px-6">
                                     <div className="flex items-center gap-2">
-                                        <div className="flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                                             <CreditCard className="size-4" />
                                         </div>
-                                        <div>
+                                        <div className="min-w-0">
                                             <CardTitle className="text-base font-semibold">
                                                 Condiciones Comerciales &
                                                 Legales
@@ -341,9 +343,9 @@ export default function PropiedadCreate({
                                     </div>
                                 </CardHeader>
 
-                                <CardContent className="space-y-4 pt-0">
+                                <CardContent className="space-y-4 px-4 pt-0 pb-5 sm:px-6">
                                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                                        <div className="grid gap-2 sm:col-span-2">
+                                        <div className="grid min-w-0 gap-2 sm:col-span-2">
                                             <Label htmlFor="precio">
                                                 Precio de Venta *
                                             </Label>
@@ -354,13 +356,14 @@ export default function PropiedadCreate({
                                                 step="0.01"
                                                 required
                                                 placeholder="0.00"
+                                                className="w-full min-w-0"
                                             />
                                             <InputError
                                                 message={errors.precio}
                                             />
                                         </div>
 
-                                        <div className="grid gap-2">
+                                        <div className="grid min-w-0 gap-2">
                                             <Label htmlFor="moneda">
                                                 Moneda *
                                             </Label>
@@ -368,7 +371,7 @@ export default function PropiedadCreate({
                                                 id="moneda"
                                                 name="moneda"
                                                 required
-                                                className="h-9 rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
+                                                className="h-9 w-full min-w-0 truncate rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
                                             >
                                                 {monedas.map((moneda) => (
                                                     <option
@@ -386,7 +389,7 @@ export default function PropiedadCreate({
                                     </div>
 
                                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                        <div className="grid gap-2">
+                                        <div className="grid min-w-0 gap-2">
                                             <Label htmlFor="forma_pago">
                                                 Forma de Pago *
                                             </Label>
@@ -394,7 +397,7 @@ export default function PropiedadCreate({
                                                 id="forma_pago"
                                                 name="forma_pago"
                                                 required
-                                                className="h-9 rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
+                                                className="h-9 w-full min-w-0 truncate rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
                                             >
                                                 {formasPago.map((forma) => (
                                                     <option
@@ -410,7 +413,7 @@ export default function PropiedadCreate({
                                             />
                                         </div>
 
-                                        <div className="grid gap-2">
+                                        <div className="grid min-w-0 gap-2">
                                             <Label htmlFor="condicion_legal">
                                                 Condición Legal
                                             </Label>
@@ -418,7 +421,7 @@ export default function PropiedadCreate({
                                                 id="condicion_legal"
                                                 name="condicion_legal"
                                                 defaultValue=""
-                                                className="h-9 rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
+                                                className="h-9 w-full min-w-0 truncate rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
                                             >
                                                 <option value="">
                                                     Sin especificar
@@ -447,13 +450,13 @@ export default function PropiedadCreate({
                             </Card>
 
                             {/* Card 3: Access & Description */}
-                            <Card className="shadow-2xs">
-                                <CardHeader className="pb-3">
+                            <Card className="w-full min-w-0 shadow-2xs">
+                                <CardHeader className="px-4 pt-5 pb-3 sm:px-6">
                                     <div className="flex items-center gap-2">
-                                        <div className="flex size-8 items-center justify-center rounded-lg bg-sky-500/10 text-sky-600 dark:text-sky-400">
+                                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-sky-500/10 text-sky-600 dark:text-sky-400">
                                             <FileText className="size-4" />
                                         </div>
-                                        <div>
+                                        <div className="min-w-0">
                                             <CardTitle className="text-base font-semibold">
                                                 {esCarro
                                                     ? 'Descripción Detallada'
@@ -468,9 +471,9 @@ export default function PropiedadCreate({
                                     </div>
                                 </CardHeader>
 
-                                <CardContent className="space-y-4 pt-0">
+                                <CardContent className="space-y-4 px-4 pt-0 pb-5 sm:px-6">
                                     {!esCarro && (
-                                        <div className="grid gap-2">
+                                        <div className="grid min-w-0 gap-2">
                                             <Label htmlFor="acceso">
                                                 Vías de Acceso y Cercanías
                                             </Label>
@@ -478,6 +481,7 @@ export default function PropiedadCreate({
                                                 id="acceso"
                                                 name="acceso"
                                                 placeholder="Distancia a pavimento, tiempo desde la ciudad, tipo de vía..."
+                                                className="w-full min-w-0"
                                             />
                                             <InputError
                                                 message={errors.acceso}
@@ -485,7 +489,7 @@ export default function PropiedadCreate({
                                         </div>
                                     )}
 
-                                    <div className="grid gap-2">
+                                    <div className="grid min-w-0 gap-2">
                                         <Label htmlFor="descripcion">
                                             Descripción del Inmueble
                                         </Label>
@@ -494,7 +498,7 @@ export default function PropiedadCreate({
                                             name="descripcion"
                                             rows={4}
                                             placeholder="Escribe una descripción atractiva destacando las mejores cualidades del inmueble..."
-                                            className="min-h-[100px] resize-y"
+                                            className="min-h-[100px] w-full min-w-0 resize-y"
                                         />
                                         <InputError
                                             message={errors.descripcion}
@@ -504,13 +508,13 @@ export default function PropiedadCreate({
                             </Card>
 
                             {/* Card 4: Tags & Co-Agents */}
-                            <Card className="shadow-2xs">
-                                <CardHeader className="pb-3">
+                            <Card className="w-full min-w-0 shadow-2xs">
+                                <CardHeader className="px-4 pt-5 pb-3 sm:px-6">
                                     <div className="flex items-center gap-2">
-                                        <div className="flex size-8 items-center justify-center rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400">
                                             <Tag className="size-4" />
                                         </div>
-                                        <div>
+                                        <div className="min-w-0">
                                             <CardTitle className="text-base font-semibold">
                                                 {esCarro
                                                     ? 'Co-Agentes'
@@ -525,26 +529,27 @@ export default function PropiedadCreate({
                                     </div>
                                 </CardHeader>
 
-                                <CardContent className="space-y-6 pt-0">
+                                <CardContent className="space-y-6 px-4 pt-0 pb-5 sm:px-6">
                                     {/* Tags */}
                                     {!esCarro && (
                                         <div className="space-y-2.5">
                                             <Label className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                                 Etiquetas de Uso / Vocación
                                             </Label>
-                                            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4">
+                                            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                                                 {etiquetas.map((etiqueta) => (
                                                     <label
                                                         key={etiqueta.id}
-                                                        className="flex cursor-pointer items-center gap-2.5 rounded-xl border border-border/60 bg-muted/20 p-2.5 text-xs font-medium transition-colors select-none hover:border-border hover:bg-muted/50"
+                                                        className="flex min-w-0 cursor-pointer items-center gap-2.5 rounded-xl border border-border/60 bg-muted/20 p-2.5 text-xs font-medium transition-colors select-none hover:border-border hover:bg-muted/50"
                                                     >
                                                         <Checkbox
                                                             name="etiquetas[]"
                                                             value={String(
                                                                 etiqueta.id,
                                                             )}
+                                                            className="shrink-0"
                                                         />
-                                                        <span>
+                                                        <span className="truncate min-w-0">
                                                             {etiqueta.nombre}
                                                         </span>
                                                     </label>
@@ -566,22 +571,23 @@ export default function PropiedadCreate({
                                                 {agentes.map((agente) => (
                                                     <label
                                                         key={agente.id}
-                                                        className="flex cursor-pointer items-center gap-3 rounded-xl border border-border/60 bg-muted/20 p-2.5 text-xs font-medium transition-colors select-none hover:border-border hover:bg-muted/50"
+                                                        className="flex min-w-0 cursor-pointer items-center gap-3 rounded-xl border border-border/60 bg-muted/20 p-2.5 text-xs font-medium transition-colors select-none hover:border-border hover:bg-muted/50"
                                                     >
                                                         <Checkbox
                                                             name="agentes[]"
                                                             value={String(
                                                                 agente.id,
                                                             )}
+                                                            className="shrink-0"
                                                         />
-                                                        <Avatar className="size-6 border border-primary/20 bg-primary/10 text-primary">
+                                                        <Avatar className="size-6 shrink-0 border border-primary/20 bg-primary/10 text-primary">
                                                             <AvatarFallback className="bg-primary/10 text-[10px] font-bold text-primary">
                                                                 {getInitials(
                                                                     agente.name,
                                                                 )}
                                                             </AvatarFallback>
                                                         </Avatar>
-                                                        <span className="truncate">
+                                                        <span className="truncate min-w-0">
                                                             {agente.name}
                                                         </span>
                                                     </label>
@@ -596,15 +602,15 @@ export default function PropiedadCreate({
                             </Card>
 
                             {/* Card 5: Photo Upload & Gallery */}
-                            <Card className="shadow-2xs">
-                                <CardHeader className="pb-3">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
-                                            <div className="flex size-8 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                            <Card className="w-full min-w-0 shadow-2xs">
+                                <CardHeader className="px-4 pt-5 pb-3 sm:px-6">
+                                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                        <div className="flex items-center gap-2 min-w-0">
+                                            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400">
                                                 <ImageIcon className="size-4" />
                                             </div>
-                                            <div>
-                                                <CardTitle className="text-base font-semibold">
+                                            <div className="min-w-0">
+                                                <CardTitle className="text-base font-semibold truncate">
                                                     Fotografías de la Propiedad
                                                 </CardTitle>
                                                 <CardDescription className="text-xs">
@@ -618,7 +624,7 @@ export default function PropiedadCreate({
                                         {fotos.length > 0 && (
                                             <Badge
                                                 variant="secondary"
-                                                className="text-xs font-semibold"
+                                                className="w-fit text-xs font-semibold"
                                             >
                                                 {fotos.length} foto(s)
                                                 seleccionada(s)
@@ -627,9 +633,9 @@ export default function PropiedadCreate({
                                     </div>
                                 </CardHeader>
 
-                                <CardContent className="space-y-4 pt-0">
+                                <CardContent className="space-y-4 px-4 pt-0 pb-5 sm:px-6">
                                     {/* Upload Box */}
-                                    <label className="relative flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-border/80 bg-muted/20 p-8 text-center transition-all hover:border-primary/50 hover:bg-muted/40">
+                                    <label className="relative flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-border/80 bg-muted/20 p-6 text-center transition-all hover:border-primary/50 hover:bg-muted/40 sm:p-8">
                                         <div className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
                                             <Upload className="size-6" />
                                         </div>
@@ -656,9 +662,9 @@ export default function PropiedadCreate({
                                     </label>
 
                                     <div className="flex justify-center mt-3">
-                                        <label className="flex items-center gap-2 text-sm text-muted-foreground">
+                                        <label className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground text-center">
                                             <input type="checkbox" name="aplicar_marca_agua" value="1" defaultChecked className="rounded border-gray-300 text-primary shadow-xs focus:border-primary focus:ring focus:ring-primary/20 focus:ring-opacity-50" />
-                                            Aplicar marca de agua (Logo del perfil)
+                                            <span>Aplicar marca de agua (Logo del perfil)</span>
                                         </label>
                                     </div>
 
@@ -681,7 +687,7 @@ export default function PropiedadCreate({
                                                 Vista Previa ({previews.length}{' '}
                                                 fotos)
                                             </p>
-                                            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 md:grid-cols-6">
+                                            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
                                                 {previews.map((src, index) => (
                                                     <div
                                                         key={index}
@@ -713,15 +719,15 @@ export default function PropiedadCreate({
                             </Card>
 
                             {/* Submit Button Bar */}
-                            <div className="flex items-center justify-end gap-3 pt-2">
-                                <Button asChild variant="outline">
+                            <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:items-center sm:justify-end">
+                                <Button asChild variant="outline" className="w-full sm:w-auto">
                                     <Link href={index()}>Cancelar</Link>
                                 </Button>
 
                                 <Button
                                     type="submit"
                                     disabled={processing}
-                                    className="h-10 gap-2 px-6"
+                                    className="h-10 w-full gap-2 px-6 sm:w-auto"
                                 >
                                     <Plus className="size-4" />
                                     {processing

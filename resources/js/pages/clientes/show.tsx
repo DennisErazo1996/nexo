@@ -156,7 +156,7 @@ export default function ClienteShow({
         <>
             <Head title={`${cliente.nombre} — Perfil de Cliente`} />
 
-            <div className="space-y-6 p-4 md:p-6 lg:p-8">
+            <div className="w-full min-w-0 space-y-6 px-4 py-6 sm:px-6 md:p-6 lg:p-8">
                 {/* Hero Header */}
                 <div className="flex flex-col gap-6 rounded-2xl border border-border/70 bg-card p-6 shadow-xs lg:flex-row lg:items-center lg:justify-between">
                     <div className="flex items-start gap-4 sm:items-center">
@@ -433,11 +433,11 @@ export default function ClienteShow({
                                                             Tipo de Propiedad /
                                                             Etiqueta
                                                         </Label>
-                                                        <select
+                                                         <select
                                                             id="etiqueta_id"
                                                             name="etiqueta_id"
                                                             required
-                                                            className="h-9 rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
+                                                            className="h-9 w-full min-w-0 truncate rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
                                                         >
                                                             {etiquetas.map(
                                                                 (etiqueta) => (
@@ -463,14 +463,14 @@ export default function ClienteShow({
                                                         />
                                                     </div>
 
-                                                    <div className="grid gap-2">
+                                                    <div className="grid min-w-0 gap-2">
                                                         <Label htmlFor="zona">
                                                             Municipio / Zona de interés
                                                         </Label>
                                                         <select
                                                             id="zona"
                                                             name="zona"
-                                                            className="h-9 rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
+                                                            className="h-9 w-full min-w-0 truncate rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
                                                         >
                                                             <option value="">
                                                                 Cualquier municipio (Sin preferencia)
@@ -946,7 +946,7 @@ export default function ClienteShow({
                         </Card>
 
                         {/* Seguimiento y Notas Feed */}
-                        <Card className="shadow-2xs">
+                        <Card className="w-full min-w-0 shadow-2xs">
                             <CardHeader className="pb-3">
                                 <div className="flex items-center justify-between">
                                     <div>
@@ -969,12 +969,12 @@ export default function ClienteShow({
                                     )}
                                     resetOnSuccess
                                     options={{ preserveScroll: true }}
-                                    className="space-y-3 rounded-xl border border-border/70 bg-muted/20 p-3.5"
+                                    className="w-full min-w-0 space-y-3 rounded-xl border border-border/70 bg-muted/20 p-3.5"
                                 >
                                     {({ processing, errors }) => (
-                                        <div className="space-y-3">
+                                        <div className="w-full min-w-0 space-y-3">
                                             {coincidencias.length > 0 && (
-                                                <div className="grid gap-1.5">
+                                                <div className="grid w-full min-w-0 gap-1.5">
                                                     <Label
                                                         htmlFor="propiedad_id"
                                                         className="text-xs text-muted-foreground"
@@ -985,7 +985,7 @@ export default function ClienteShow({
                                                     <select
                                                         id="propiedad_id"
                                                         name="propiedad_id"
-                                                        className="h-8 rounded-md border border-input bg-background px-2.5 text-xs focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
+                                                        className="h-9 w-full min-w-0 max-w-full truncate rounded-md border border-input bg-background px-2.5 text-xs focus:ring-2 focus:ring-ring/40 focus:outline-hidden"
                                                     >
                                                         <option value="">
                                                             General (sin
